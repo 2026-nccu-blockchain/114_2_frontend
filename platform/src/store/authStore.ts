@@ -1,53 +1,37 @@
-/**
- * Authentication Store
- * Zustand store for managing auth state
- */
-
 import { create } from 'zustand'
-import type { IUser, IAuthState } from '@/types'
+import Cookies from 'js-cookie'
 
-interface AuthStore extends IAuthState {
-  setToken: (token: string | null) => void
-  setUser: (user: IUser | null) => void
-  setLoading: (loading: boolean) => void
-  setError: (error: string | null) => void
-  login: (user: IUser, token: string) => void
+export type UserRole = 'buyer' | 'seller' | 'admin' | 'driver' | null
+
+interface AuthState {
+  token: string | null
+  role: UserRole
+  setAuth: (token: string, role: UserRole) => void
   logout: () => void
-  clearError: () => void
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
-  token: localStorage.getItem('auth_token'),
-  user: null,
-  isAuthenticated: !!localStorage.getItem('auth_token'),
-  isLoading: false,
-  error: null,
+export const useAuthStore = create<AuthState>((set) => ({
+  token: Cookies.get('token') || null,
+  role: (Cookies.get('role') as UserRole) || null,
 
-  setToken: (token) => {
-    if (token) {
-      localStorage.setItem('auth_token', token)
-      set({ token, isAuthenticated: true })
-    } else {
-      localStorage.removeItem('auth_token')
-      set({ token: null, isAuthenticated: false })
+  setAuth: (token, role) => {
+    const cookieOptions: Cookies.CookieAttributes = {
+      expires: 7,
+      secure: true,
+      sameSite: 'strict',
     }
-  },
 
-  setUser: (user) => { set({ user }) },
+    Cookies.set('token', token, cookieOptions)
+    if (role) {
+      Cookies.set('role', role, cookieOptions)
+    }
 
-  setLoading: (loading) => { set({ isLoading: loading }) },
-
-  setError: (error) => { set({ error }) },
-
-  login: (user, token) => {
-    localStorage.setItem('auth_token', token)
-    set({ user, token, isAuthenticated: true, error: null })
+    set({ token, role })
   },
 
   logout: () => {
-    localStorage.removeItem('auth_token')
-    set({ user: null, token: null, isAuthenticated: false, error: null })
+    Cookies.remove('token')
+    Cookies.remove('role')
+    set({ token: null, role: null })
   },
-
-  clearError: () => { set({ error: null }) },
 }))

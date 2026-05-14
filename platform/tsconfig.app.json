@@ -18,8 +18,8 @@
       "@store/*": ["src/store/*"],
       "@types/*": ["src/types/*"],
       "@utils/*": ["src/utils/*"],
-      "@constants/*": ["src/constants/*"],
-      "@styles/*": ["src/styles/*"]
+      "@constants/*": ["src/constants/*"]
+      ,"@styles/*": ["src/styles/*"]
     },
 
     /* Bundler mode */

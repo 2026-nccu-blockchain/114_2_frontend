@@ -8,50 +8,30 @@ This is an enterprise-level React application with TypeScript, built with Vite a
 ```
 src/
 ├── components/
-│   ├── common/           # Reusable UI components (Button, Modal, etc.)
-│   ├── layout/           # Layout components (Header, Sidebar, etc.)
-│   ├── features/         # Feature-specific components
-│   └── ErrorBoundary.tsx # Global error boundary
+│   ├── common/           # Reusable UI components (ErrorBoundary, etc.)
+│   ├── layout/           # Layout components (Navbar, Sidebar, layouts)
+│   └── features/         # Feature-specific components
 │
 ├── pages/                # Page/route components
-│   └── Home.tsx
+│   ├── admin/
+│   ├── auth/
+│   ├── buyer/
+│   ├── driver/
+│   ├── seller/
+│   └── shared/
 │
 ├── hooks/                # Custom React hooks
 │   ├── useAuth.ts        # Authentication hook
-│   ├── useAsync.ts       # Async operations hook
-│   └── index.ts          # Exports
-│
-├── services/             # API service layer
-│   ├── api.ts            # Axios configuration
-│   ├── auth.api.ts       # Authentication API
-│   ├── user.api.ts       # User API
-│   └── index.ts          # Exports
+│   └── useProfile.ts     # Profile hook
 │
 ├── store/                # Zustand state management
-│   ├── authStore.ts      # Authentication state
-│   ├── uiStore.ts        # UI state
-│   └── index.ts          # Exports
-│
-├── types/                # TypeScript type definitions
-│   ├── api.ts            # API response types
-│   ├── common.ts         # Common types
-│   └── index.ts          # Exports
-│
-├── utils/                # Utility functions
-│   ├── errorHandler.ts   # Error handling
-│   ├── timing.ts         # Debounce, throttle, etc.
-│   ├── classNames.ts     # CSS class utilities
-│   └── index.ts          # Exports
+│   └── authStore.ts      # Authentication state
 │
 ├── constants/            # Application constants
-│   └── index.ts
-│
-├── styles/               # Global styles
-│   └── index.css         # Tailwind imports and custom styles
-│
-├── __tests__/            # Test files
+│   └── navigation.ts
 │
 ├── App.tsx               # Root app component
+├── index.css             # Tailwind imports
 ├── main.tsx              # Application entry point
 └── vite-env.d.ts         # Vite environment types
 ```
@@ -113,82 +93,17 @@ npm run build
 npm run preview
 ```
 
-## API Integration
-
-### Using the API Client
-
-```typescript
-import { userApi } from '@/services'
-
-// Get user profile
-const profile = await userApi.getProfile()
-
-// Get specific user
-const user = await userApi.getUser('user-id')
-
-// List users with pagination
-const users = await userApi.listUsers(1, 20)
-```
-
-### Authentication Example
-
-```typescript
-import { useAuth } from '@/hooks'
-
-function LoginComponent() {
-  const { login, isLoading, error } = useAuth()
-
-  const handleLogin = async (email: string, password: string) => {
-    const success = await login({ email, password })
-    if (success) {
-      // Redirect to dashboard
-    }
-  }
-
-  return (
-    <form onSubmit={(e) => {
-      e.preventDefault()
-      handleLogin(email, password)
-    }}>
-      {error && <p className="text-red-500">{error}</p>}
-      <button disabled={isLoading}>
-        {isLoading ? 'Logging in...' : 'Login'}
-      </button>
-    </form>
-  )
-}
-```
-
 ## State Management
 
 Using Zustand for lightweight state management:
 
 ```typescript
-import { useAuthStore } from '@/store'
+import { useAuthStore } from '@/store/authStore'
 
 function Component() {
-  const { user, isAuthenticated, login, logout } = useAuthStore()
+  const { role, token, logout } = useAuthStore()
 
   // Use auth state and actions
-}
-```
-
-## Error Handling
-
-Global error handling is provided through:
-
-1. **Error Boundary** - Catches React rendering errors
-2. **API Error Handling** - Centralized in axios interceptors
-3. **Utility Functions** - `handleError()`, `getErrorMessage()`
-
-```typescript
-import { handleError, getErrorMessage } from '@/utils'
-
-try {
-  // Some async operation
-} catch (error) {
-  const userMessage = getErrorMessage(error)
-  // Display to user
 }
 ```
 
@@ -207,13 +122,11 @@ Use path aliases for cleaner imports:
 
 ```typescript
 // ✅ Good
-import { useAuth } from '@/hooks'
-import { userApi } from '@/services'
-import type { IUser } from '@/types'
+import { useAuth } from '@/hooks/useAuth'
+import { getNavItems } from '@/constants/navigation'
 
 // ❌ Avoid
 import { useAuth } from '../../../hooks'
-import { userApi } from '../../../services'
 ```
 
 ### Component Structure
