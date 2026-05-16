@@ -18,6 +18,7 @@ import AdminAddDriver from '@/pages/admin/AddDriver';
 import BuyerProducts from '@/pages/buyer/Products';
 import BuyerCart from '@/pages/buyer/Cart';
 import BuyerOrders from '@/pages/buyer/MyOrders';
+import ProductDetail from './pages/buyer/ProductDetail';
 
 // Driver
 import DriverTasks from '@/pages/driver/Tasks';
@@ -51,8 +52,9 @@ function AppRoutes() {
             ) : (
               <BuyerProducts />
             )
-          }
+          }   
         />
+        <Route path="products/:id" element={<ProductDetail />} />
       </Route>
 
       <Route element={<AuthGuard />}>
