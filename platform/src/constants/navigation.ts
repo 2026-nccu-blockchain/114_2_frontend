@@ -18,36 +18,38 @@ export interface NavItem {
   icon: any;
 }
 
-export const getNavItems = (role: UserRole): NavItem[] => {
+export const getNavItems = (role: UserRole | null): NavItem[] => {
+  if (!role) return [];
+
   switch (role) {
     case 'seller':
       return [
-        { name: 'Dashboard', path: '/seller', icon: LayoutDashboard },
-        { name: 'Products', path: '/seller/products', icon: Package },
-        { name: 'Add Product', path: '/seller/add-product', icon: PlusCircle },
-        { name: 'Orders', path: '/seller/orders', icon: ShoppingBag },
-        { name: 'Profile', path: '/seller/profile', icon: User },
+        { name: 'Dashboard', path: '/', icon: LayoutDashboard }, 
+        { name: 'Products', path: '/products', icon: Package },
+        { name: 'Add Product', path: '/add-product', icon: PlusCircle },
+        { name: 'Orders', path: '/orders', icon: ShoppingBag },
+        { name: 'Profile', path: '/profile', icon: User },
       ];
     case 'buyer':
       return [
-        { name: 'Products', path: '/buyer', icon: Package },
-        { name: 'My Orders', path: '/buyer/orders', icon: FileText },
-        { name: 'Profile', path: '/buyer/profile', icon: User },
+        { name: 'Products', path: '/', icon: Package }, 
+        { name: 'My Orders', path: '/orders', icon: FileText },
+        { name: 'Profile', path: '/profile', icon: User },
       ];
     case 'driver':
       return [
-        { name: 'Available Tasks', path: '/driver', icon: Truck },
-        { name: 'Active Delivery', path: '/driver/active', icon: Package },
-        { name: 'Completed', path: '/driver/completed', icon: CheckCircle },
-        { name: 'Profile', path: '/driver/profile', icon: User },
+        { name: 'Available Tasks', path: '/', icon: Truck }, 
+        { name: 'Active Delivery', path: '/active', icon: Package },
+        { name: 'Completed', path: '/completed', icon: CheckCircle },
+        { name: 'Profile', path: '/profile', icon: User },
       ];
     case 'admin':
       return [
-        { name: 'Dashboard', path: '/admin', icon: LayoutDashboard },
-        { name: 'Users', path: '/admin/users', icon: Users },
-        { name: 'Add Seller', path: '/admin/add-seller', icon: UserPlus },
-        { name: 'Add Driver', path: '/admin/add-driver', icon: UserPlus },
-        { name: 'Profile', path: '/admin/profile', icon: User },
+        { name: 'Dashboard', path: '/', icon: LayoutDashboard }, 
+        { name: 'Users', path: '/users', icon: Users },
+        { name: 'Add Seller', path: '/add-seller', icon: UserPlus },
+        { name: 'Add Driver', path: '/add-driver', icon: UserPlus },
+        { name: 'Profile', path: '/profile', icon: User },
       ];
     default:
       return [];
