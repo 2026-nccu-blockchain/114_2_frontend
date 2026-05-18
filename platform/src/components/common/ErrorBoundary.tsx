@@ -3,7 +3,7 @@
  * Catches React errors and displays fallback UI
  */
 
-import React, { ReactNode } from 'react'
+import React, { type ReactNode } from 'react'
 
 interface Props {
   children: ReactNode
@@ -25,7 +25,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     return { hasError: true, error }
   }
 
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+  override componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     // Log error details to console in development
     if (import.meta.env.DEV) {
       console.error('Error Boundary caught an error:')
@@ -41,7 +41,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     this.setState({ hasError: false, error: undefined })
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       return (
         this.props.fallback || (
