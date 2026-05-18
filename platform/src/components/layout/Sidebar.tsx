@@ -5,6 +5,10 @@ import { getNavItems } from '@/constants/navigation';
 export default function Sidebar() {
   const { role } = useAuthStore();
   const location = useLocation();
+  
+  // 訪客
+  if (!role) return null;
+
   const items = getNavItems(role);
 
   return (
