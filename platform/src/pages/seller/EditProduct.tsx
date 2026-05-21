@@ -125,7 +125,7 @@ export default function SellerEditProduct() {
       <section className={styles.panel}>
         <p className={styles.eyebrow}>Edit Product</p>
         <h1 className={styles.title}>Product #{productId}</h1>
-        <p className={styles.subtitle}>Update product information, stock, category, and product photo.</p>
+        {/* <p className={styles.subtitle}>Update product information, stock, category, and product photo.</p> */}
 
         <form id="edit-product-form" className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
@@ -203,7 +203,7 @@ export default function SellerEditProduct() {
             <label className={styles.uploadBox} htmlFor="product-photo">
               <ImagePlus className={styles.uploadIcon} />
               <span className={styles.uploadTitle}>{photoName || 'Upload product photo'}</span>
-              <span className={styles.uploadText}>PNG, JPG, or WebP up to 10MB</span>
+              <span className={styles.uploadText}>PNG, JPG</span>
             </label>
             <input
               id="product-photo"

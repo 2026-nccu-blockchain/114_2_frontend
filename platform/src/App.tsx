@@ -30,6 +30,7 @@ import SellerProducts from '@/pages/seller/Products';
 import SellerAddProduct from '@/pages/seller/AddProduct';
 import SellerEditProduct from '@/pages/seller/EditProduct';
 import SellerOrders from '@/pages/seller/Orders';
+import SellerOrderDetail from '@/pages/seller/OrderDetail';
 
 function AppRoutes() {
   const { role } = useAuthStore();
@@ -76,6 +77,7 @@ function AppRoutes() {
               <Route path="products/:productId/edit" element={<SellerEditProduct />} />
               <Route path="add-product" element={<SellerAddProduct />} />
               <Route path="orders" element={<SellerOrders />} />
+              <Route path="orders/:orderId" element={<SellerOrderDetail />} />
             </>
           )}
 
