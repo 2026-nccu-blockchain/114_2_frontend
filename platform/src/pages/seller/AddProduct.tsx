@@ -1,6 +1,6 @@
 import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const styles = {
   page: 'space-y-6',
@@ -36,10 +36,35 @@ const styles = {
 };
 
 const NEW_CATEGORY_VALUE = '__new_category__';
-const categories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
+const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
+const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
+
+const getStoredCategories = () => {
+  const storedCategories = window.localStorage.getItem(CATEGORY_STORAGE_KEY);
+  if (!storedCategories) return defaultCategories;
+
+  try {
+    const parsedCategories = JSON.parse(storedCategories);
+    return Array.isArray(parsedCategories) ? parsedCategories : defaultCategories;
+  } catch {
+    return defaultCategories;
+  }
+};
+
+const saveCategory = (categoryName: string) => {
+  const nextCategory = categoryName.trim();
+  if (!nextCategory) return;
+
+  const categories = getStoredCategories();
+  if (categories.some((category) => category.toLowerCase() === nextCategory.toLowerCase())) return;
+
+  window.localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify([...categories, nextCategory]));
+};
 
 export default function SellerAddProduct() {
+  const navigate = useNavigate();
   const [photoName, setPhotoName] = useState('');
+  const [categories, setCategories] = useState(getStoredCategories);
   const [category, setCategory] = useState('');
   const [customCategory, setCustomCategory] = useState('');
   const createdAt = useMemo(
@@ -50,6 +75,17 @@ export default function SellerAddProduct() {
       }).format(new Date()),
     [],
   );
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (category === NEW_CATEGORY_VALUE) {
+      saveCategory(customCategory);
+      setCategories(getStoredCategories());
+    }
+
+    navigate('/products');
+  };
 
   return (
     <div className={styles.page}>
@@ -63,7 +99,7 @@ export default function SellerAddProduct() {
         <h1 className={styles.title}>Create a new product</h1>
         <p className={styles.subtitle}>Add product information, stock, category, and product photo.</p>
 
-        <form className={styles.form}>
+        <form id="add-product-form" className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="product-name">
               Product name <span className={styles.required}>*</span>
@@ -110,7 +146,7 @@ export default function SellerAddProduct() {
             <label className={styles.label} htmlFor="price">
               Price <span className={styles.required}>*</span>
             </label>
-            <input id="price" className={styles.input} min="0" placeholder="0.00" required step="0.01" type="number" />
+            <input id="price" className={styles.input} inputMode="decimal" placeholder="0" required type="text" />
           </div>
 
           <div className={styles.field}>
@@ -151,7 +187,7 @@ export default function SellerAddProduct() {
           <Link to="/products" className={styles.secondaryButton}>
             Cancel
           </Link>
-          <button type="button" className={styles.primaryButton}>
+          <button type="submit" form="add-product-form" className={styles.primaryButton}>
             <Save className={styles.buttonIcon} />
             Create Product
           </button>

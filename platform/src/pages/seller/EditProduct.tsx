@@ -36,7 +36,30 @@ const styles = {
 };
 
 const NEW_CATEGORY_VALUE = '__new_category__';
-const categories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
+const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
+const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
+const getStoredCategories = () => {
+  const storedCategories = window.localStorage.getItem(CATEGORY_STORAGE_KEY);
+  if (!storedCategories) return defaultCategories;
+
+  try {
+    const parsedCategories = JSON.parse(storedCategories);
+    return Array.isArray(parsedCategories) ? parsedCategories : defaultCategories;
+  } catch {
+    return defaultCategories;
+  }
+};
+
+const saveCategory = (categoryName: string) => {
+  const nextCategory = categoryName.trim();
+  if (!nextCategory) return;
+
+  const categories = getStoredCategories();
+  if (categories.some((category) => category.toLowerCase() === nextCategory.toLowerCase())) return;
+
+  window.localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify([...categories, nextCategory]));
+};
+
 const mockProducts = {
   '1': {
     name: 'Organic Apple Box',
@@ -73,12 +96,22 @@ export default function SellerEditProduct() {
   const navigate = useNavigate();
   const product = mockProducts[productId as keyof typeof mockProducts] ?? mockProducts['1'];
   const [photoName, setPhotoName] = useState('');
+  const [categories, setCategories] = useState(() => {
+    const storedCategories = getStoredCategories();
+    return storedCategories.includes(product.category) ? storedCategories : [...storedCategories, product.category];
+  });
   const [category, setCategory] = useState(product.category);
   const [customCategory, setCustomCategory] = useState('');
   const createdAt = useMemo(() => product.createdAt, [product.createdAt]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (category === NEW_CATEGORY_VALUE) {
+      saveCategory(customCategory);
+      setCategories(getStoredCategories());
+    }
+
     navigate('/products');
   };
 
@@ -142,11 +175,10 @@ export default function SellerEditProduct() {
               id="price"
               className={styles.input}
               defaultValue={product.price}
-              min="0"
+              inputMode="decimal"
               placeholder="0.00"
               required
-              step="0.01"
-              type="number"
+              type="text"
             />
           </div>
 
