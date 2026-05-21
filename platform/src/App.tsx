@@ -25,12 +25,14 @@ import DriverActive from '@/pages/driver/Active';
 import DriverCompleted from '@/pages/driver/Completed';
 
 // Seller
-import SellerDashboard from '@/pages/seller/Dashboard';
-import SellerProducts from '@/pages/seller/Products';
-import SellerAddProduct from '@/pages/seller/AddProduct';
-import SellerEditProduct from '@/pages/seller/EditProduct';
-import SellerOrders from '@/pages/seller/Orders';
-import SellerOrderDetail from '@/pages/seller/OrderDetail';
+import {
+  SellerAddProduct,
+  SellerDashboard,
+  SellerEditProduct,
+  SellerOrderDetail,
+  SellerOrders,
+  SellerProducts,
+} from '@/pages/seller';
 
 function AppRoutes() {
   const { role } = useAuthStore();
