@@ -28,6 +28,7 @@ import DriverCompleted from '@/pages/driver/Completed';
 import SellerDashboard from '@/pages/seller/Dashboard';
 import SellerProducts from '@/pages/seller/Products';
 import SellerAddProduct from '@/pages/seller/AddProduct';
+import SellerEditProduct from '@/pages/seller/EditProduct';
 import SellerOrders from '@/pages/seller/Orders';
 
 function AppRoutes() {
@@ -72,6 +73,7 @@ function AppRoutes() {
           {role === 'seller' && (
             <>
               <Route path="products" element={<SellerProducts />} />
+              <Route path="products/:productId/edit" element={<SellerEditProduct />} />
               <Route path="add-product" element={<SellerAddProduct />} />
               <Route path="orders" element={<SellerOrders />} />
             </>

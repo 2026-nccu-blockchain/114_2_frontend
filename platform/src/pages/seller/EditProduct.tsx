@@ -1,6 +1,6 @@
 import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const styles = {
   page: 'space-y-6',
@@ -37,19 +37,50 @@ const styles = {
 
 const NEW_CATEGORY_VALUE = '__new_category__';
 const categories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
+const mockProducts = {
+  '1': {
+    name: 'Organic Apple Box',
+    category: 'Fresh Fruit',
+    price: '24.00',
+    stock: 18,
+    createdAt: 'May 20, 2026, 10:30 AM',
+  },
+  '2': {
+    name: 'Honey Oat Granola',
+    category: 'Pantry',
+    price: '12.50',
+    stock: 42,
+    createdAt: 'May 19, 2026, 2:15 PM',
+  },
+  '3': {
+    name: 'Cold Brew Pack',
+    category: 'Beverage',
+    price: '18.00',
+    stock: 9,
+    createdAt: 'May 18, 2026, 9:45 AM',
+  },
+  '4': {
+    name: 'Seasonal Jam Set',
+    category: 'Gift Set',
+    price: '32.00',
+    stock: 0,
+    createdAt: 'May 17, 2026, 4:20 PM',
+  },
+};
 
-export default function SellerAddProduct() {
+export default function SellerEditProduct() {
+  const { productId } = useParams();
+  const navigate = useNavigate();
+  const product = mockProducts[productId as keyof typeof mockProducts] ?? mockProducts['1'];
   const [photoName, setPhotoName] = useState('');
-  const [category, setCategory] = useState('');
+  const [category, setCategory] = useState(product.category);
   const [customCategory, setCustomCategory] = useState('');
-  const createdAt = useMemo(
-    () =>
-      new Intl.DateTimeFormat('en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(new Date()),
-    [],
-  );
+  const createdAt = useMemo(() => product.createdAt, [product.createdAt]);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    navigate('/products');
+  };
 
   return (
     <div className={styles.page}>
@@ -59,16 +90,16 @@ export default function SellerAddProduct() {
       </Link>
 
       <section className={styles.panel}>
-        <p className={styles.eyebrow}>Add Product</p>
-        <h1 className={styles.title}>Create a new product</h1>
-        <p className={styles.subtitle}>Add product information, stock, category, and product photo.</p>
+        <p className={styles.eyebrow}>Edit Product</p>
+        <h1 className={styles.title}>Product #{productId}</h1>
+        <p className={styles.subtitle}>Update product information, stock, category, and product photo.</p>
 
-        <form className={styles.form}>
+        <form id="edit-product-form" className={styles.form} onSubmit={handleSubmit}>
           <div className={styles.field}>
             <label className={styles.label} htmlFor="product-name">
               Product name <span className={styles.required}>*</span>
             </label>
-            <input id="product-name" className={styles.input} placeholder="Product name" required />
+            <input id="product-name" className={styles.input} defaultValue={product.name} placeholder="Product name" required />
           </div>
 
           <div className={styles.field}>
@@ -83,9 +114,6 @@ export default function SellerAddProduct() {
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
               >
-                <option value="" disabled>
-                  Select category
-                </option>
                 {categories.map((categoryName) => (
                   <option key={categoryName} value={categoryName}>
                     {categoryName}
@@ -110,14 +138,23 @@ export default function SellerAddProduct() {
             <label className={styles.label} htmlFor="price">
               Price <span className={styles.required}>*</span>
             </label>
-            <input id="price" className={styles.input} min="0" placeholder="0.00" required step="0.01" type="number" />
+            <input
+              id="price"
+              className={styles.input}
+              defaultValue={product.price}
+              min="0"
+              placeholder="0.00"
+              required
+              step="0.01"
+              type="number"
+            />
           </div>
 
           <div className={styles.field}>
             <label className={styles.label} htmlFor="stock">
               Stock <span className={styles.required}>*</span>
             </label>
-            <input id="stock" className={styles.input} min="0" placeholder="0" required type="number" />
+            <input id="stock" className={styles.input} defaultValue={product.stock} min="0" placeholder="0" required type="number" />
           </div>
 
           <div className={styles.field}>
@@ -129,7 +166,7 @@ export default function SellerAddProduct() {
 
           <div className={styles.wideField}>
             <label className={styles.label} htmlFor="product-photo">
-              Product photo <span className={styles.required}>*</span>
+              Product photo
             </label>
             <label className={styles.uploadBox} htmlFor="product-photo">
               <ImagePlus className={styles.uploadIcon} />
@@ -140,7 +177,6 @@ export default function SellerAddProduct() {
               id="product-photo"
               accept="image/png,image/jpeg,image/webp"
               className={styles.hiddenInput}
-              required
               type="file"
               onChange={(event) => setPhotoName(event.target.files?.[0]?.name ?? '')}
             />
@@ -151,9 +187,9 @@ export default function SellerAddProduct() {
           <Link to="/products" className={styles.secondaryButton}>
             Cancel
           </Link>
-          <button type="button" className={styles.primaryButton}>
+          <button type="submit" form="edit-product-form" className={styles.primaryButton}>
             <Save className={styles.buttonIcon} />
-            Create Product
+            Save Changes
           </button>
         </div>
       </section>
