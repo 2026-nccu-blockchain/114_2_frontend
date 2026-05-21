@@ -20,10 +20,12 @@ import BuyerCart from '@/pages/buyer/Cart';
 import BuyerOrders from '@/pages/buyer/MyOrders';
 
 // Driver
-import DriverTasks from '@/pages/driver/Tasks';
-import DriverActive from '@/pages/driver/Active';
-import DriverCompleted from '@/pages/driver/Completed';
-
+import{
+  Activetask,
+  Completedtask,
+  TaskDetail,
+  Tasks
+} from '@/pages/driver';
 // Seller
 import {
   SellerAddProduct,
@@ -49,7 +51,7 @@ function AppRoutes() {
             role === 'seller' ? (
               <SellerDashboard />
             ) : role === 'driver' ? (
-              <DriverTasks />
+              <Tasks />
             ) : role === 'admin' ? (
               <AdminDashboard />
             ) : (
@@ -86,8 +88,9 @@ function AppRoutes() {
           {/* driver */}
           {role === 'driver' && (
             <>
-              <Route path="active" element={<DriverActive />} />
-              <Route path="completed" element={<DriverCompleted />} />
+              <Route path="tasks/:taskId" element={<TaskDetail />} />
+              <Route path="active" element={<Activetask />} />
+              <Route path="completed" element={<Completedtask />} />
             </>
           )}
 
