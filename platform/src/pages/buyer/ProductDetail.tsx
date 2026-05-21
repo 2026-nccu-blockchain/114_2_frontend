@@ -3,22 +3,16 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Plus, Minus } from 'lucide-react';
 import { mockProducts } from '@/mock/products';
 import { useCartStore } from '@/store/cartStore';
+import toast from 'react-hot-toast';
 
 export default function ProductDetail() {
-  // 1. 從網址取得 :id 參數
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
-  // 2. 從 Zustand 取得加入購物車的方法
-  const addItem = useCartStore((state) => state.addItem);
-  
-  // 3. 本地元數量狀態 (預設為 1)
+  const addItem = useCartStore((state) => state.addItem); 
   const [quantity, setQuantity] = useState(1);
-
-  // 4. 尋找對應的商品資料
   const product = mockProducts.find((p) => p.id === id);
 
-  // 防呆機制：如果找不到商品
   if (!product) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh]">
@@ -42,8 +36,19 @@ export default function ProductDetail() {
   // 加入購物車
   const handleAddToCart = () => {
     addItem(product, quantity);
-    alert(`Success! Added ${quantity} x ${product.name} to your cart.`);
-    // 實務上這裡可以改成跳出一個漂亮的 Toast 提示，或直接導向購物車頁面
+
+    toast.success(`${product.name} added to cart`, {
+      style: {
+        border: '1px solid #14b8a6', 
+        padding: '12px 16px',
+        color: '#1f2937', 
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      },
+      iconTheme: {
+        primary: '#14b8a6',
+        secondary: '#fff',
+      },
+    });
   };
 
   return (
@@ -58,12 +63,12 @@ export default function ProductDetail() {
       </button>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[500px]">
-        {/* 左側：商品大圖區 */}
+        {/* 商品大圖區 */}
         <div className="md:w-1/2 bg-gray-50 relative flex items-center justify-center min-h-[300px] border-r border-gray-100">
           <span className="text-4xl text-gray-300 font-medium tracking-wider">Product</span>
         </div>
 
-        {/* 右側：商品資訊區 */}
+        {/* 商品資訊區 */}
         <div className="md:w-1/2 p-8 md:p-12 flex flex-col">
           {/* 分類標籤 */}
           <div className="mb-4">

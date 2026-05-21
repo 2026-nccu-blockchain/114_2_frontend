@@ -7,10 +7,8 @@ export default function BuyerProducts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  // 取得所有不重複的分類
   const categories = ['All', ...new Set(mockProducts.map(p => p.category))];
 
-  // 根據搜尋關鍵字與分類過濾商品
   const filteredProducts = mockProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
@@ -40,7 +38,6 @@ export default function BuyerProducts() {
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
-        {/* 左側：過濾器 (Filters) */}
         <div className="w-full md:w-64 flex-shrink-0">
           <div className="bg-white border border-gray-200 rounded-lg p-5">
             <h3 className="text-sm font-semibold text-gray-900 mb-4">Filters</h3>
@@ -59,7 +56,7 @@ export default function BuyerProducts() {
           </div>
         </div>
 
-        {/* 右側：商品卡片網格 (Product Grid) */}
+        {/* 商品卡片網格 */}
         <div className="flex-1">
           {filteredProducts.length === 0 ? (
             <div className="text-center py-12 text-gray-500">No products found.</div>
@@ -68,13 +65,11 @@ export default function BuyerProducts() {
               {filteredProducts.map((product) => (
                 <Link
                   key={product.id}
-                  // 重點：點擊卡片會跳轉到詳細頁面，並帶上商品 ID
                   to={`/products/${product.id}`} 
                   className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col group"
                 >
                   {/* 商品圖片 */}
                   <div className="aspect-w-1 aspect-h-1 bg-gray-100 relative overflow-hidden h-48">
-                    {/* 我們先用個灰底假裝有圖片，並顯示商品名稱 */}
                     <div className="absolute inset-0 flex items-center justify-center text-gray-400 font-medium group-hover:scale-105 transition-transform duration-300">
                       Product
                     </div>
