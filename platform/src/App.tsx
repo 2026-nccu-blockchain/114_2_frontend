@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { AuthGuard } from './components/layout/AuthGuard';
 import { useAuthStore } from '@/store/authStore';
+import { Toaster } from 'react-hot-toast';
 
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
@@ -18,6 +19,9 @@ import AdminAddDriver from '@/pages/admin/AddDriver';
 import BuyerProducts from '@/pages/buyer/Products';
 import BuyerCart from '@/pages/buyer/Cart';
 import BuyerOrders from '@/pages/buyer/MyOrders';
+import ProductDetail from './pages/buyer/ProductDetail';
+import BuyerCheckout from '@/pages/buyer/Checkout';
+import BuyerOrderDetail from '@/pages/buyer/OrderDetail';
 
 // Driver
 import DriverTasks from '@/pages/driver/Tasks';
@@ -51,8 +55,9 @@ function AppRoutes() {
             ) : (
               <BuyerProducts />
             )
-          }
+          }   
         />
+        <Route path="products/:id" element={<ProductDetail />} />
       </Route>
 
       <Route element={<AuthGuard />}>
@@ -65,6 +70,8 @@ function AppRoutes() {
             <>
               <Route path="cart" element={<BuyerCart />} />
               <Route path="orders" element={<BuyerOrders />} />
+              <Route path="checkout" element={<BuyerCheckout />} />
+              <Route path="orders/:id" element={<BuyerOrderDetail />} />
             </>
           )}
 
@@ -106,6 +113,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Router>
+        <Toaster position="bottom-right" reverseOrder={false} /> 
         <AppRoutes />
       </Router>
     </ErrorBoundary>
