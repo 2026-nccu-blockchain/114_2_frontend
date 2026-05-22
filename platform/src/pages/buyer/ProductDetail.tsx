@@ -4,12 +4,15 @@ import { ArrowLeft, Plus, Minus } from 'lucide-react';
 import { mockProducts } from '@/mock/products';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
+import { useAuthStore } from '@/store/authStore';
+
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   
   const addItem = useCartStore((state) => state.addItem); 
+  const {role} = useAuthStore();
   const [quantity, setQuantity] = useState(1);
   const product = mockProducts.find((p) => p.id === id);
 
@@ -35,15 +38,22 @@ export default function ProductDetail() {
 
   // 加入購物車
   const handleAddToCart = () => {
+    if (!role) {
+      toast.error('Please sign in to add items to your cart.', {
+        className: 'border border-red-500 px-4 py-3 text-gray-800 shadow-sm',
+        iconTheme: {
+          primary: '#ef4444',
+          secondary: '#fff',
+        },
+      });
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
+
     addItem(product, quantity);
 
     toast.success(`${product.name} added to cart`, {
-      style: {
-        border: '1px solid #14b8a6', 
-        padding: '12px 16px',
-        color: '#1f2937', 
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-      },
+      className: 'border border-teal-500 px-4 py-3 text-gray-800 shadow-md',
       iconTheme: {
         primary: '#14b8a6',
         secondary: '#fff',
