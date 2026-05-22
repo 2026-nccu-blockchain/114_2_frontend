@@ -9,6 +9,7 @@
 
     /* Path Aliases */
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
@@ -53,6 +54,5 @@
     "allowUnreachableCode": false,
     "erasableSyntaxOnly": true
   },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["src"]
 }

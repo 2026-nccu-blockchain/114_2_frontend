@@ -29,10 +29,14 @@ import DriverActive from '@/pages/driver/Active';
 import DriverCompleted from '@/pages/driver/Completed';
 
 // Seller
-import SellerDashboard from '@/pages/seller/Dashboard';
-import SellerProducts from '@/pages/seller/Products';
-import SellerAddProduct from '@/pages/seller/AddProduct';
-import SellerOrders from '@/pages/seller/Orders';
+import {
+  SellerAddProduct,
+  SellerDashboard,
+  SellerEditProduct,
+  SellerOrderDetail,
+  SellerOrders,
+  SellerProducts,
+} from '@/pages/seller';
 
 function AppRoutes() {
   const { role } = useAuthStore();
@@ -79,8 +83,10 @@ function AppRoutes() {
           {role === 'seller' && (
             <>
               <Route path="products" element={<SellerProducts />} />
+              <Route path="products/:productId/edit" element={<SellerEditProduct />} />
               <Route path="add-product" element={<SellerAddProduct />} />
               <Route path="orders" element={<SellerOrders />} />
+              <Route path="orders/:orderId" element={<SellerOrderDetail />} />
             </>
           )}
 
