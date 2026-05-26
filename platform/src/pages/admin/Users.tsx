@@ -1,3 +1,5 @@
+import { styles } from './Users.styles';
+
 export default function AdminUsers() {
-  return <div className="text-gray-700">Admin Users</div>;
+  return <div className={styles.style}>Admin Users</div>;
 }

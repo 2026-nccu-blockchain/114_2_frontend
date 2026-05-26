@@ -1,3 +1,5 @@
+import { styles } from './AddDriver.styles';
+
 export default function AdminAddDriver() {
-  return <div className="text-gray-700">Add Driver</div>;
+  return <div className={styles.style}>Add Driver</div>;
 }

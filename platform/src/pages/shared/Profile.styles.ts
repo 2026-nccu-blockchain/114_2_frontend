@@ -1,0 +1,18 @@
+export const styles = {
+  page: 'p-6 max-w-3xl mx-auto',
+  title: 'text-2xl font-bold text-gray-900 mb-6',
+  panel: 'bg-white border border-gray-200 rounded-xl p-6 shadow-sm',
+  style: 'flex items-center gap-4 mb-8 pb-6 border-b border-gray-100',
+  style2: 'w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-xl',
+  sectionTitle: 'text-lg font-semibold text-gray-900',
+  mutedText: 'text-sm text-gray-500',
+  style3: 'inline-block mt-1 px-2.5 py-0.5 bg-teal-50 text-teal-600 text-xs font-medium rounded',
+  style4: 'mb-4 text-sm text-red-600 bg-red-50 p-2.5 rounded-lg',
+  style5: 'mb-4 text-sm text-green-600 bg-green-50 p-2.5 rounded-lg',
+  page2: 'space-y-5',
+  style6: 'block text-sm font-medium text-gray-700 mb-1',
+  required: 'text-red-500',
+  input: 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm',
+  input2: 'w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm font-mono text-xs truncate',
+  primaryButton: 'px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg text-sm transition-colors disabled:opacity-60',
+};

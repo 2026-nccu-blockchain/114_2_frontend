@@ -1,3 +1,5 @@
+import { styles } from './AddSeller.styles';
+
 export default function AdminAddSeller() {
-  return <div className="text-gray-700">Add Seller</div>;
+  return <div className={styles.style}>Add Seller</div>;
 }

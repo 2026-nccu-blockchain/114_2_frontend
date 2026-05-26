@@ -1,3 +1,5 @@
+import { styles } from './Dashboard.styles';
+
 export default function AdminDashboard() {
-  return <div className="text-gray-700">Admin Dashboard</div>;
+  return <div className={styles.style}>Admin Dashboard</div>;
 }

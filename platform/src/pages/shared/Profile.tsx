@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useProfile } from '@/hooks/useProfile';
+import { styles } from './Profile.styles';
 
 export default function Profile() {
   const { role } = useAuthStore();
@@ -15,7 +16,7 @@ export default function Profile() {
 
   const { updateProfile, loading, error, success } = useProfile();
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     await updateProfile({
       fullName: fullName,
@@ -25,68 +26,68 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile</h1>
+    <div className={styles.page}>
+      <h1 className={styles.title}>Profile</h1>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-xl">
+      <div className={styles.panel}>
+        <div className={styles.style}>
+          <div className={styles.style2}>
             {fullName.charAt(0)}
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{fullName}</h2>
-            <p className="text-sm text-gray-500">{role}@demo.local</p>
-            <span className="inline-block mt-1 px-2.5 py-0.5 bg-teal-50 text-teal-600 text-xs font-medium rounded">
+            <h2 className={styles.sectionTitle}>{fullName}</h2>
+            <p className={styles.mutedText}>{role}@demo.local</p>
+            <span className={styles.style3}>
               {role ? role.charAt(0).toUpperCase() + role.slice(1) : ''}
             </span>
           </div>
         </div>
 
-        {error && <div className="mb-4 text-sm text-red-600 bg-red-50 p-2.5 rounded-lg">{error}</div>}
+        {error && <div className={styles.style4}>{error}</div>}
         {success && (
-          <div className="mb-4 text-sm text-green-600 bg-green-50 p-2.5 rounded-lg">
+          <div className={styles.style5}>
             儲存成功
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className={styles.page2}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name <span className="text-red-500">*</span>
+            <label className={styles.style6}>
+              Full Name <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+              className={styles.input}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className={styles.style6}>Phone</label>
             <input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+              className={styles.input}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Avatar URL</label>
+            <label className={styles.style6}>Avatar URL</label>
             <input
               type="text"
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm font-mono text-xs truncate"
+              className={styles.input2}
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg text-sm transition-colors disabled:opacity-60"
+            className={styles.primaryButton}
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>

@@ -1,42 +1,43 @@
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '@/store/orderStore';
+import { styles } from './MyOrders.styles';
 
 export default function BuyerOrders() {
   const navigate = useNavigate();
   const { orders } = useOrderStore();
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">My Orders</h1>
+    <div className={styles.page}>
+      <h1 className={styles.title}>My Orders</h1>
 
       {orders.length === 0 ? (
-        <div className="bg-white border border-gray-200 rounded-xl p-12 text-center text-gray-500 shadow-sm">
+        <div className={styles.panel}>
           You haven't placed any orders yet.
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className={styles.page2}>
           {orders.map((order) => (
             <div
               key={order.id}
               onClick={() => navigate(`/orders/${order.id}`)}
-              className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col md:flex-row justify-between items-start md:items-center gap-4 group"
+              className={styles.panel2}
             >
               <div>
-                <div className="flex items-center gap-3 mb-1">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-teal-600 transition-colors">
+                <div className={styles.style}>
+                  <h3 className={styles.style2}>
                     Order #{order.id}
                   </h3>
-                  <span className="px-2.5 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium rounded-full">
+                  <span className={styles.style3}>
                     {order.status}
                   </span>
                 </div>
-                <p className="text-xs text-gray-400">{order.createdAt}</p>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className={styles.style4}>{order.createdAt}</p>
+                <p className={styles.mutedText}>
                   {order.items.reduce((sum, item) => sum + item.quantity, 0)} item(s)
                 </p>
               </div>
 
-              <div className="text-lg font-bold text-gray-900 self-end md:self-center">
+              <div className={styles.style5}>
                 ${order.total.toFixed(2)}
               </div>
             </div>
