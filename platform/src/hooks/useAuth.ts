@@ -1,8 +1,18 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore, type UserRole } from '@/store/authStore'
+import toast from 'react-hot-toast' 
+import { authService } from '@/services/authService' 
 
 export type LoginRole = Exclude<UserRole, 'admin' | null>
+
+export interface RegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  address: string;
+}
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false)
@@ -27,18 +37,23 @@ export const useAuth = () => {
     }
   }
 
-  const register = async (_fullName: string, _email: string, _password: string) => {
+  const register = async (data: RegisterData) => {
     setLoading(true)
     setError(null)
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800))
-      const mockToken = 'mock_jwt_token_example'
+     const response = await authService.buyerRegister(data)
 
-      setAuth(mockToken, 'buyer')
-      navigate('/buyer')
+      if (response.data.status_code === '00000') {
+        toast.success('Account created successfully! Please sign in.')
+        navigate('/login') 
+      } else if (response.data.status_code === '10006') {
+        setError('account already exists.')
+      } else {
+        setError(response.data.message || 'Registration failed')
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || '註冊失敗，請稍後再試')
+      setError('Network error. Please try again later.')
     } finally {
       setLoading(false)
     }
