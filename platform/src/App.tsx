@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
+import AdminRegister from '@/pages/auth/adminRegister';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Profile from '@/pages/shared/Profile';
 
@@ -47,6 +48,7 @@ function AppRoutes() {
     <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/admin/register" element={<AdminRegister />} />
 
       <Route path="/" element={<DashboardLayout />}>
         <Route

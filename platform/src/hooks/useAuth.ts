@@ -13,6 +13,11 @@ export interface RegisterData {
   phone: string;
   address: string;
 }
+export interface AdminRegisterData {
+  name: string;
+  email: string;
+  password: string;
+}
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false)
@@ -58,6 +63,27 @@ export const useAuth = () => {
       setLoading(false)
     }
   }
+  const adminRegister = async (data: AdminRegisterData) => {
+    setLoading(true)
+    setError(null)
 
-  return { login, register, loading, error }
+    try {
+      const response = await authService.adminRegister(data)
+
+      if (response.data.status_code === '00000') {
+        toast.success('Admin account created successfully! Please sign in.')
+        navigate('/login') 
+      } else if (response.data.status_code === '10006') {
+        setError('This email is already registered. Please log in.')
+      } else {
+        setError(response.data.message || 'Registration failed')
+      }
+    } catch (err: any) {
+      setError('Network error. Please try again later.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { login, register, adminRegister, loading, error }
 }

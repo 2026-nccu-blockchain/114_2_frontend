@@ -1,4 +1,4 @@
-import { apiRequest } from './api';
+import { apiRequest } from '@/services/api';
 
 export interface AuthResponse {
   status_code: string;
@@ -28,6 +28,11 @@ export const authService = {
       body: data,
     });
   },
+  sellerRegister: (data: any) => {
+    return apiRequest<AuthResponse>('/api/v2/auth/seller/register', {
+      method: 'POST', body: data,
+    });
+  },
   //Admin
   adminLogin: (data: any) => {
     return apiRequest<AuthResponse>('/api/v2/auth/admin/login', {
@@ -35,11 +40,21 @@ export const authService = {
       body: data,
     });
   },
+  adminRegister: (data: any) => {
+    return apiRequest<AuthResponse>('/api/v2/auth/admin/register', {
+      method: 'POST', body: data,
+    });
+  },
   //Driver
   driverLogin: (data: any) => {
     return apiRequest<AuthResponse>('/api/v2/auth/driver/login', {
       method: 'POST',
       body: data,
+    });
+  },
+  driverRegister: (data: any) => {
+    return apiRequest<AuthResponse>('/api/v2/auth/driver/register', {
+      method: 'POST', body: data,
     });
   }
 };
