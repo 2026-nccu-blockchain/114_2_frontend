@@ -2,24 +2,27 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore, type UserRole } from '@/store/authStore'
 
-export type LoginRole = Exclude<UserRole, 'admin' | null>
-
 export const useAuth = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const setAuth = useAuthStore((state) => state.setAuth)
   const navigate = useNavigate()
 
-  const login = async (_email: string, _password: string, role: LoginRole) => {
+  const login = async (email: string, _password: string) => {
     setLoading(true)
     setError(null)
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 800))
 
+      let role: UserRole = 'buyer'
+      if (email.includes('admin')) role = 'admin'
+      else if (email.includes('seller')) role = 'seller'
+      else if (email.includes('driver')) role = 'driver'
+
       const mockToken = 'mock_jwt_token_example'
       setAuth(mockToken, role)
-      navigate(`/${role}`)
+      navigate('/')
     } catch (err: any) {
       setError(err.response?.data?.message || '登入失敗，請檢查帳號密碼')
     } finally {
