@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { initialOrders, statusOptions, statusStyles, type OrderStatus } from '@/pages/seller/orderData';
-import { styles } from './Orders.styles';
+import { styles } from '@/styles/pages/seller/Orders.styles';
 export default function SellerOrders() {
   const [statusFilter, setStatusFilter] = useState<OrderStatus>('all');
 

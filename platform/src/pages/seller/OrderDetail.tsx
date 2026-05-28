@@ -1,7 +1,7 @@
 import { ArrowLeft, CalendarClock, MapPin, PackageCheck, Truck, XCircle } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import { initialOrders, statusStyles } from '@/pages/seller/orderData';
-import { styles } from './OrderDetail.styles';
+import { styles } from '@/styles/pages/seller/OrderDetail.styles';
 export default function SellerOrderDetail() {
   const { orderId } = useParams();
   const order = initialOrders.find((currentOrder) => currentOrder.id === orderId);

@@ -1,6 +1,6 @@
 import { AlertTriangle, ClipboardList, DollarSign, Package, PlusCircle, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { statTones, styles } from './Dashboard.styles';
+import { statTones, styles } from '@/styles/pages/seller/Dashboard.styles';
 
 type StatTone = keyof typeof statTones;
 

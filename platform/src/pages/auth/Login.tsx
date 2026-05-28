@@ -1,7 +1,7 @@
-import { useState, type SubmitEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth, type LoginRole } from '@/hooks/useAuth';
-import { styles } from './Login.styles';
+import { styles } from '@/styles/pages/auth/Login.styles';
 
 const roleOptions: Array<{ value: LoginRole; label: string }> = [
   { value: 'buyer', label: 'Buyer' },
@@ -15,7 +15,7 @@ export default function Login() {
   const [role, setRole] = useState<LoginRole>('buyer');
   const { login, loading, error } = useAuth();
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) return;
     await login(email, password, role);

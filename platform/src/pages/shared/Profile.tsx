@@ -1,7 +1,7 @@
-import { useState, type SubmitEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useProfile } from '@/hooks/useProfile';
-import { styles } from './Profile.styles';
+import { styles } from '@/styles/pages/shared/Profile.styles';
 
 export default function Profile() {
   const { role } = useAuthStore();
@@ -16,7 +16,7 @@ export default function Profile() {
 
   const { updateProfile, loading, error, success } = useProfile();
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await updateProfile({
       fullName: fullName,

@@ -1,7 +1,7 @@
 import { CalendarClock, MapPin, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { completeTask, driverTasks, getActiveTaskIds } from '@/pages/driver/driverData';
-import { styles } from './Active.styles';
+import { styles } from '@/styles/pages/driver/Active.styles';
 export default function DriverActive() {
   const navigate = useNavigate();
   const activeTaskIds = getActiveTaskIds();

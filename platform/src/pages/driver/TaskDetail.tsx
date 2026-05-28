@@ -1,7 +1,7 @@
 import { ArrowLeft, CalendarClock, MapPin, PackageCheck, Route, Truck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { acceptTask as saveAcceptedTask, driverTasks } from '@/pages/driver/driverData';
-import { styles } from './TaskDetail.styles';
+import { styles } from '@/styles/pages/driver/TaskDetail.styles';
 export default function DriverTaskDetail() {
   const { taskId } = useParams();
   const navigate = useNavigate();

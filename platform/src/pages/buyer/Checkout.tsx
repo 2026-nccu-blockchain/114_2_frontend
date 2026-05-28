@@ -1,9 +1,9 @@
-import { useState, useEffect, type SubmitEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useCartStore } from '@/store/cartStore';
 import { useOrderStore } from '@/store/orderStore';
-import { styles } from './Checkout.styles';
+import { styles } from '@/styles/pages/buyer/Checkout.styles';
 
 export default function BuyerCheckout() {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ export default function BuyerCheckout() {
     }
   }, [items, navigate]);
 
-  const handlePlaceOrder = (e: SubmitEvent) => {
+  const handlePlaceOrder = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!address.trim()) {

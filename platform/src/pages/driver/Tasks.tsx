@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { driverTasks, getActiveTaskIds, getCompletedTaskIds } from '@/pages/driver/driverData';
-import { styles } from './Tasks.styles';
+import { styles } from '@/styles/pages/driver/Tasks.styles';
 export default function DriverTasks() {
   const activeTaskIds = getActiveTaskIds();
   const completedTaskIds = getCompletedTaskIds();

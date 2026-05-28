@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '@/store/orderStore';
-import { styles } from './MyOrders.styles';
+import { styles } from '@/styles/pages/buyer/MyOrders.styles';
 
 export default function BuyerOrders() {
   const navigate = useNavigate();

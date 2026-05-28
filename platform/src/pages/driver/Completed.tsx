@@ -1,5 +1,5 @@
 import { driverTasks, getCompletedTaskIds } from '@/pages/driver/driverData';
-import { styles } from './Completed.styles';
+import { styles } from '@/styles/pages/driver/Completed.styles';
 export default function DriverCompleted() {
   const completedTaskIds = getCompletedTaskIds();
   const completedTasks = driverTasks.filter((task) => completedTaskIds.includes(task.id));

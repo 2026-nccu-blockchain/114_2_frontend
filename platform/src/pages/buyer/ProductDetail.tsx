@@ -5,7 +5,7 @@ import { mockProducts } from '@/mock/products';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
-import { styles } from './ProductDetail.styles';
+import { styles } from '@/styles/pages/buyer/ProductDetail.styles';
 
 
 export default function ProductDetail() {

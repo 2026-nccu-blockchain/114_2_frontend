@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useOrderStore } from '@/store/orderStore';
-import { styles } from './OrderDetail.styles';
+import { styles } from '@/styles/pages/buyer/OrderDetail.styles';
 
 export default function BuyerOrderDetail() {
   const { id } = useParams<{ id: string }>();

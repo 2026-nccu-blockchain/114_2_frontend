@@ -1,7 +1,7 @@
-import { useState, type SubmitEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { styles } from './Register.styles';
+import { styles } from '@/styles/pages/auth/Register.styles';
 
 export default function Register() {
   const [fullName, setFullName] = useState('');
@@ -11,7 +11,7 @@ export default function Register() {
   const [validationError, setValidationError] = useState('');
   const { register, loading, error } = useAuth();
 
-  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setValidationError('');
 

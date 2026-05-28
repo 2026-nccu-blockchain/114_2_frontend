@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, Inbox } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
-import { styles } from './Cart.styles';
+import { styles } from '@/styles/pages/buyer/Cart.styles';
 
 export default function BuyerCart() {
   const navigate = useNavigate();

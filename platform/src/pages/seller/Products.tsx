@@ -1,7 +1,7 @@
 import { Edit3, Package, PlusCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { styles } from './Products.styles';
+import { styles } from '@/styles/pages/seller/Products.styles';
 interface Product {
   id: number;
   name: string;

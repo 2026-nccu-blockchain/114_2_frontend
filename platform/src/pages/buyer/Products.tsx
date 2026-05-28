@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { mockProducts } from '@/mock/products';
-import { styles } from './Products.styles';
+import { styles } from '@/styles/pages/buyer/Products.styles';
 
 export default function BuyerProducts() {
   const [searchTerm, setSearchTerm] = useState('');

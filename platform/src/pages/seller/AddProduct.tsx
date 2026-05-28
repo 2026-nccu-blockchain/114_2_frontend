@@ -1,7 +1,7 @@
 import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { styles } from './AddProduct.styles';
+import { styles } from '@/styles/pages/seller/AddProduct.styles';
 const NEW_CATEGORY_VALUE = '__new_category__';
 const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
 const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
