@@ -1,5 +1,6 @@
 import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import Cookies from 'js-cookie';
+import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 const styles = {
@@ -38,8 +39,13 @@ const styles = {
 const NEW_CATEGORY_VALUE = '__new_category__';
 const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
 const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
+const cookieOptions: Cookies.CookieAttributes = {
+  expires: 30,
+  sameSite: 'strict',
+};
+
 const getStoredCategories = () => {
-  const storedCategories = window.localStorage.getItem(CATEGORY_STORAGE_KEY);
+  const storedCategories = Cookies.get(CATEGORY_STORAGE_KEY);
   if (!storedCategories) return defaultCategories;
 
   try {
@@ -57,7 +63,7 @@ const saveCategory = (categoryName: string) => {
   const categories = getStoredCategories();
   if (categories.some((category) => category.toLowerCase() === nextCategory.toLowerCase())) return;
 
-  window.localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify([...categories, nextCategory]));
+  Cookies.set(CATEGORY_STORAGE_KEY, JSON.stringify([...categories, nextCategory]), cookieOptions);
 };
 
 const mockProducts = {
@@ -104,7 +110,7 @@ export default function SellerEditProduct() {
   const [customCategory, setCustomCategory] = useState('');
   const createdAt = useMemo(() => product.createdAt, [product.createdAt]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (category === NEW_CATEGORY_VALUE) {

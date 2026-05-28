@@ -1,5 +1,5 @@
 // src/types/order.ts
-import { type CartItem } from './product';
+import { type CartItem } from '@/types/product';
 
 export interface Order {
   id: string;
