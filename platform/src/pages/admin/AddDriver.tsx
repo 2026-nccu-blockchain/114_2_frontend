@@ -1,5 +1,5 @@
-import styles from '@/styles/pages/admin/AddDriver.module.css';
+import '@/styles/pages/admin/AddDriver.css';
 
 export default function AdminAddDriver() {
-  return <div className={styles['style']}>Add Driver</div>;
+  return <div className="adminAddDriver__style">Add Driver</div>;
 }

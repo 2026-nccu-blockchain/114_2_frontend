@@ -1,5 +1,5 @@
-import styles from '@/styles/pages/admin/AddSeller.module.css';
+import '@/styles/pages/admin/AddSeller.css';
 
 export default function AdminAddSeller() {
-  return <div className={styles['style']}>Add Seller</div>;
+  return <div className="adminAddSeller__style">Add Seller</div>;
 }

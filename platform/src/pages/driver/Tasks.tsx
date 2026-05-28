@@ -1,34 +1,34 @@
 import { Link } from 'react-router-dom';
 import { driverTasks, getActiveTaskIds, getCompletedTaskIds } from '@/pages/driver/driverData';
-import styles from '@/styles/pages/driver/Tasks.module.css';
+import '@/styles/pages/driver/Tasks.css';
 export default function DriverTasks() {
   const activeTaskIds = getActiveTaskIds();
   const completedTaskIds = getCompletedTaskIds();
   const availableTasks = driverTasks.filter((task) => !activeTaskIds.includes(task.id) && !completedTaskIds.includes(task.id));
 
   return (
-    <div className={styles['page']}>
-      <header className={styles['header']}>
+    <div className="driverTasks__page">
+      <header className="driverTasks__header">
         <div>
-          <p className={styles['eyebrow']}>Driver Tasks</p>
-          <h1 className={styles['title']}>Available tasks</h1>
-          <p className={styles['subtitle']}>Open a task to review order details and delivery addresses.</p>
+          <p className="driverTasks__eyebrow">Driver Tasks</p>
+          <h1 className="driverTasks__title">Available tasks</h1>
+          <p className="driverTasks__subtitle">Open a task to review order details and delivery addresses.</p>
         </div>
       </header>
 
       {availableTasks.length > 0 ? (
-        <section className={styles['list']}>
+        <section className="driverTasks__list">
           {availableTasks.map((task) => (
-            <Link key={task.id} to={`/tasks/${task.id}`} className={styles['card']}>
-              <div className={styles['cardTop']}>
+            <Link key={task.id} to={`/tasks/${task.id}`} className="driverTasks__card">
+              <div className="driverTasks__cardTop">
                 <div>
-                  <p className={styles['cardTitle']}>{task.id}</p>
-                  <p className={styles['cardMeta']}>{task.orderId}</p>
+                  <p className="driverTasks__cardTitle">{task.id}</p>
+                  <p className="driverTasks__cardMeta">{task.orderId}</p>
                 </div>
-                <span className={styles['badge']}>{task.distance}</span>
+                <span className="driverTasks__badge">{task.distance}</span>
               </div>
 
-              <div className={styles['cardFooter']}>
+              <div className="driverTasks__cardFooter">
                 <span>{task.createdAt}</span>
                 <span>{task.customer}</span>
               </div>
@@ -36,7 +36,7 @@ export default function DriverTasks() {
           ))}
         </section>
       ) : (
-        <div className={styles['empty']}>No available tasks right now.</div>
+        <div className="driverTasks__empty">No available tasks right now.</div>
       )}
     </div>
   );

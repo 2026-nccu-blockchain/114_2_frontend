@@ -1,0 +1,99 @@
+.buyerMyOrders__page {
+  max-width:56rem;
+  margin-left:auto;
+  margin-right:auto;
+  padding:1.5rem
+}
+.buyerMyOrders__title {
+  color:#111827;
+  margin-bottom:1.5rem;
+  font-size:1.5rem;
+  font-weight:700;
+  line-height:2rem
+}
+.buyerMyOrders__panel {
+  text-align:center;
+  color:#6b7280;
+  background-color:#fff;
+  border-width:1px;
+  border-color:#e5e7eb;
+  border-radius:.75rem;
+  padding:3rem;
+  box-shadow:0 1px 2px #0000000d
+}
+.buyerMyOrders__panel2 {
+  cursor:pointer;
+  background-color:#fff;
+  border-width:1px;
+  border-color:#e5e7eb;
+  border-radius:.75rem;
+  flex-direction:column;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:1rem;
+  padding:1.5rem;
+  transition-property:box-shadow;
+  transition-duration:.15s;
+  transition-timing-function:cubic-bezier(.4,0,.2,1);
+  display:flex;
+  box-shadow:0 1px 2px #0000000d
+}
+.buyerMyOrders__panel2:hover {
+  box-shadow:0 4px 6px -1px #0000001a,0 2px 4px -2px #0000001a
+}
+@media (width>=768px) {
+  .buyerMyOrders__panel2 {
+    flex-direction:row;
+    align-items:center
+}
+
+}
+.buyerMyOrders__style {
+  align-items:center;
+  gap:.75rem;
+  margin-bottom:.25rem;
+  display:flex
+}
+.buyerMyOrders__style2 {
+  color:#111827;
+  font-weight:600;
+  transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;
+  transition-duration:.15s;
+  transition-timing-function:cubic-bezier(.4,0,.2,1)
+}
+.group:hover .buyerMyOrders__style2 {
+  color:#0d9488
+}
+.buyerMyOrders__style3 {
+  color:#2563eb;
+  background-color:#eff6ff;
+  border-radius:9999px;
+  padding:.125rem .625rem;
+  font-size:.75rem;
+  font-weight:500;
+  line-height:1rem
+}
+.buyerMyOrders__style4 {
+  color:#9ca3af;
+  font-size:.75rem;
+  line-height:1rem
+}
+.buyerMyOrders__mutedText {
+  color:#6b7280;
+  margin-top:.5rem;
+  font-size:.875rem;
+  line-height:1.25rem
+}
+.buyerMyOrders__style5 {
+  color:#111827;
+  align-self:flex-end;
+  font-size:1.125rem;
+  font-weight:700;
+  line-height:1.75rem
+}
+@media (width>=768px) {
+  .buyerMyOrders__style5 {
+    align-self:center
+}
+
+}

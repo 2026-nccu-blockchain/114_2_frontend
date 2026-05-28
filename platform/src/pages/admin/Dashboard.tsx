@@ -1,5 +1,5 @@
-import styles from '@/styles/pages/admin/Dashboard.module.css';
+import '@/styles/pages/admin/Dashboard.css';
 
 export default function AdminDashboard() {
-  return <div className={styles['style']}>Admin Dashboard</div>;
+  return <div className="adminDashboard__style">Admin Dashboard</div>;
 }

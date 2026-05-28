@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { mockProducts } from '@/mock/products';
-import styles from '@/styles/pages/buyer/Products.module.css';
+import '@/styles/pages/buyer/Products.css';
 
 export default function BuyerProducts() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -17,35 +17,35 @@ export default function BuyerProducts() {
   });
 
   return (
-    <div className={styles['page']}>
+    <div className="buyerProducts__page">
       {/* 標題區 */}
-      <div className={styles['style']}>
-        <h1 className={styles['title']}>Products</h1>
-        <p className={styles['mutedText']}>Browse and shop products</p>
+      <div className="buyerProducts__style">
+        <h1 className="buyerProducts__title">Products</h1>
+        <p className="buyerProducts__mutedText">Browse and shop products</p>
       </div>
 
       {/* 搜尋列 */}
-      <div className={styles['style2']}>
-        <div className={styles['style3']}>
-          <Search className={styles['icon']} />
+      <div className="buyerProducts__style2">
+        <div className="buyerProducts__style3">
+          <Search className="buyerProducts__icon" />
         </div>
         <input
           type="text"
-          className={styles['input']}
+          className="buyerProducts__input"
           placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
-      <div className={styles['style4']}>
-        <div className={styles['style5']}>
-          <div className={styles['panel']}>
-            <h3 className={styles['style6']}>Filters</h3>
-            <div className={styles['page2']}>
-              <label className={styles['style7']}>Category</label>
+      <div className="buyerProducts__style4">
+        <div className="buyerProducts__style5">
+          <div className="buyerProducts__panel">
+            <h3 className="buyerProducts__style6">Filters</h3>
+            <div className="buyerProducts__page2">
+              <label className="buyerProducts__style7">Category</label>
               <select
-                className={styles['input2']}
+                className="buyerProducts__input2"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -58,32 +58,32 @@ export default function BuyerProducts() {
         </div>
 
         {/* 商品卡片網格 */}
-        <div className={styles['style8']}>
+        <div className="buyerProducts__style8">
           {filteredProducts.length === 0 ? (
-            <div className={styles['style9']}>No products found.</div>
+            <div className="buyerProducts__style9">No products found.</div>
           ) : (
-            <div className={styles['style10']}>
+            <div className="buyerProducts__style10">
               {filteredProducts.map((product) => (
                 <Link
                   key={product.id}
                   to={`/products/${product.id}`} 
-                  className={`group ${styles['panel2']}`}
+                  className="group buyerProducts__panel2"
                 >
                   {/* 商品圖片 */}
-                  <div className={styles['style11']}>
-                    <div className={styles['style12']}>
+                  <div className="buyerProducts__style11">
+                    <div className="buyerProducts__style12">
                       Product
                     </div>
                   </div>
 
                   {/* 商品資訊 */}
-                  <div className={styles['style13']}>
-                    <div className={styles['style14']}>{product.category}</div>
-                    <h3 className={styles['style15']}>{product.name}</h3>
+                  <div className="buyerProducts__style13">
+                    <div className="buyerProducts__style14">{product.category}</div>
+                    <h3 className="buyerProducts__style15">{product.name}</h3>
                     
-                    <div className={styles['style16']}>
-                      <span className={styles['style17']}>${product.price.toFixed(2)}</span>
-                      <span className={`${styles['stockStatus']} ${product.stock > 0 ? styles['inStock'] : styles['outOfStock']}`}>
+                    <div className="buyerProducts__style16">
+                      <span className="buyerProducts__style17">${product.price.toFixed(2)}</span>
+                      <span className={`${'buyerProducts__stockStatus'} ${product.stock > 0 ? 'buyerProducts__inStock' : 'buyerProducts__outOfStock'}`}>
                         {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
                       </span>
                     </div>

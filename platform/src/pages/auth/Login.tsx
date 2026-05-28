@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth, type LoginRole } from '@/hooks/useAuth';
-import styles from '@/styles/pages/auth/Login.module.css';
+import '@/styles/pages/auth/Login.css';
 
 const roleOptions: Array<{ value: LoginRole; label: string }> = [
   { value: 'buyer', label: 'Buyer' },
@@ -22,26 +22,26 @@ export default function Login() {
   };
 
   return (
-    <div className={styles['page']}>
-      <div className={styles['panel']}>
-        <div className={styles['style']}>
-          <h2 className={styles['title']}>Sign in to your account</h2>
-          <p className={styles['mutedText']}>
+    <div className="authLogin__page">
+      <div className="authLogin__panel">
+        <div className="authLogin__style">
+          <h2 className="authLogin__title">Sign in to your account</h2>
+          <p className="authLogin__mutedText">
             Don&apos;t have an account?{' '}
-            <Link to="/register" className={styles['primaryButton']}>
+            <Link to="/register" className="authLogin__primaryButton">
               Sign up
             </Link>
           </p>
         </div>
 
-        {error && <div className={styles['style2']}>{error}</div>}
+        {error && <div className="authLogin__style2">{error}</div>}
 
-        <form onSubmit={handleSubmit} className={styles['page2']}>
+        <form onSubmit={handleSubmit} className="authLogin__page2">
           
 
           <div>
-            <label className={styles['style3']}>
-              Email <span className={styles['required']}>*</span>
+            <label className="authLogin__style3">
+              Email <span className="authLogin__required">*</span>
             </label>
             <input
               type="email"
@@ -49,13 +49,13 @@ export default function Login() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className={styles['input']}
+              className="authLogin__input"
             />
           </div>
 
           <div>
-            <label className={styles['style3']}>
-              Password <span className={styles['required']}>*</span>
+            <label className="authLogin__style3">
+              Password <span className="authLogin__required">*</span>
             </label>
             <input
               type="password"
@@ -63,22 +63,22 @@ export default function Login() {
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className={styles['input']}
+              className="authLogin__input"
             />
           </div>
 
           <div>
-            {/* <label className={styles['style3']}>
-              Account type <span className={styles['required']}>*</span>
+            {/* <label className="authLogin__style3">
+              Account type <span className="authLogin__required">*</span>
             </label> */}
-            <div className={styles['style4']}>
+            <div className="authLogin__style4">
               {roleOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
                   onClick={() => setRole(option.value)}
-                  className={`${styles['roleButton']} ${
-                    role === option.value ? styles['roleButtonActive'] : styles['roleButtonInactive']
+                  className={`${'authLogin__roleButton'} ${
+                    role === option.value ? 'authLogin__roleButtonActive' : 'authLogin__roleButtonInactive'
                   }`}
                 >
                   {option.label}
@@ -90,7 +90,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loading}
-            className={styles['primaryButton2']}
+            className="authLogin__primaryButton2"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>

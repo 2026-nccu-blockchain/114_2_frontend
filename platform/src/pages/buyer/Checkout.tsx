@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useCartStore } from '@/store/cartStore';
 import { useOrderStore } from '@/store/orderStore';
-import styles from '@/styles/pages/buyer/Checkout.module.css';
+import '@/styles/pages/buyer/Checkout.css';
 
 export default function BuyerCheckout() {
   const navigate = useNavigate();
@@ -52,63 +52,63 @@ export default function BuyerCheckout() {
   if (items.length === 0) return null;
 
   return (
-    <div className={styles['page']}>
-      <h1 className={styles['title']}>Checkout</h1>
+    <div className="buyerCheckout__page">
+      <h1 className="buyerCheckout__title">Checkout</h1>
 
       {/* 訂單摘要 */}
-      <div className={styles['panel']}>
-        <div className={styles['style']}>
-          <h2 className={styles['sectionTitle']}>Order Summary</h2>
-          <ul className={styles['page2']}>
+      <div className="buyerCheckout__panel">
+        <div className="buyerCheckout__style">
+          <h2 className="buyerCheckout__sectionTitle">Order Summary</h2>
+          <ul className="buyerCheckout__page2">
             {items.map((item) => (
-              <li key={item.id} className={styles['style2']}>
+              <li key={item.id} className="buyerCheckout__style2">
                 <span>{item.name} x {item.quantity}</span>
-                <span className={styles['style3']}>${(item.price * item.quantity).toFixed(2)}</span>
+                <span className="buyerCheckout__style3">${(item.price * item.quantity).toFixed(2)}</span>
               </li>
             ))}
           </ul>
-          <div className={styles['style4']}>
-            <span className={styles['style5']}>Total</span>
-            <span className={styles['style6']}>${getTotalPrice().toFixed(2)}</span>
+          <div className="buyerCheckout__style4">
+            <span className="buyerCheckout__style5">Total</span>
+            <span className="buyerCheckout__style6">${getTotalPrice().toFixed(2)}</span>
           </div>
         </div>
       </div>
 
       {/* 運送與付款資訊 */}
-      <div className={styles['panel2']}>
-        <div className={styles['style']}>
-          <h2 className={styles['sectionTitle2']}>Delivery Information</h2>
-          <p className={styles['mutedText']}>Payment: Cash on Delivery (COD)</p>
+      <div className="buyerCheckout__panel2">
+        <div className="buyerCheckout__style">
+          <h2 className="buyerCheckout__sectionTitle2">Delivery Information</h2>
+          <p className="buyerCheckout__mutedText">Payment: Cash on Delivery (COD)</p>
 
-          <form onSubmit={handlePlaceOrder} className={styles['page3']}>
+          <form onSubmit={handlePlaceOrder} className="buyerCheckout__page3">
             <div>
-              <label className={styles['style7']}>
-                Recipient Name <span className={styles['required']}>*</span>
+              <label className="buyerCheckout__style7">
+                Recipient Name <span className="buyerCheckout__required">*</span>
               </label>
               <input
                 type="text"
                 disabled
                 value="Demo Buyer"
-                className={styles['mutedText2']}
+                className="buyerCheckout__mutedText2"
               />
             </div>
 
             <div>
-              <label className={styles['style7']}>
-                Phone Number <span className={styles['required']}>*</span>
+              <label className="buyerCheckout__style7">
+                Phone Number <span className="buyerCheckout__required">*</span>
               </label>
               <input
                 type="text"
                 disabled
                 value="0912-000-111"
-                className={styles['mutedText2']}
+                className="buyerCheckout__mutedText2"
               />
             </div>
 
             {/* 收件地址 (必填) */}
             <div>
-              <label className={styles['style7']}>
-                Shipping Address <span className={styles['required']}>*</span>
+              <label className="buyerCheckout__style7">
+                Shipping Address <span className="buyerCheckout__required">*</span>
               </label>
               <input
                 type="text"
@@ -116,13 +116,13 @@ export default function BuyerCheckout() {
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 placeholder="Enter your full delivery address"
-                className={styles['input']}
+                className="buyerCheckout__input"
               />
             </div>
 
             {/* 備註 (選填) */}
             <div>
-              <label className={styles['style7']}>
+              <label className="buyerCheckout__style7">
                 Notes (optional)
               </label>
               <textarea
@@ -130,13 +130,13 @@ export default function BuyerCheckout() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="Any special instructions for delivery"
-                className={styles['input2']}
+                className="buyerCheckout__input2"
               />
             </div>
             
             <button
               type="submit"
-              className={styles['primaryButton']}
+              className="buyerCheckout__primaryButton"
             >
               Place Order (COD)
             </button>
