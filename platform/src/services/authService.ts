@@ -8,53 +8,56 @@ export interface AuthResponse {
 }
 
 export const authService = {
-  //buyer
+  //login
   buyerLogin: (data: any) => {
     return apiRequest<AuthResponse>('/api/v2/auth/buyer/login', {
       method: 'POST',
       body: data,
     });
   },
-  buyerRegister: (data: any) => {
-    return apiRequest<AuthResponse>('/api/v2/auth/buyer/register', {
-      method: 'POST',
-      body: data,
-    });
-  },
-  //seller
   sellerLogin: (data: any) => {
     return apiRequest<AuthResponse>('/api/v2/auth/seller/login', {
       method: 'POST',
       body: data,
     });
   },
-  sellerRegister: (data: any) => {
-    return apiRequest<AuthResponse>('/api/v2/auth/seller/register', {
-      method: 'POST', body: data,
-    });
-  },
-  //Admin
   adminLogin: (data: any) => {
     return apiRequest<AuthResponse>('/api/v2/auth/admin/login', {
       method: 'POST',
       body: data,
     });
   },
-  adminRegister: (data: any) => {
-    return apiRequest<AuthResponse>('/api/v2/auth/admin/register', {
-      method: 'POST', body: data,
-    });
-  },
-  //Driver
   driverLogin: (data: any) => {
     return apiRequest<AuthResponse>('/api/v2/auth/driver/login', {
       method: 'POST',
       body: data,
     });
   },
-  driverRegister: (data: any) => {
+  //register
+  buyerRegister: (data: any) => {
+    return apiRequest<AuthResponse>('/api/v2/auth/buyer/register', {
+      method: 'POST',
+      body: data,
+    });
+  },
+  sellerRegister: (data: any, token: string) => {
+    return apiRequest<AuthResponse>('/api/v2/auth/seller/register', {
+      method: 'POST',
+      body: data,
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+  },
+  adminRegister: (data: any) => {
+    return apiRequest<AuthResponse>('/api/v2/auth/admin/register', {
+      method: 'POST',
+      body: data,
+    });
+  },
+  driverRegister: (data: any, token: string) => {
     return apiRequest<AuthResponse>('/api/v2/auth/driver/register', {
-      method: 'POST', body: data,
+      method: 'POST',
+      body: data,
+      headers: { 'Authorization': `Bearer ${token}` }
     });
   }
 };

@@ -25,18 +25,51 @@ export const useAuth = () => {
   const setAuth = useAuthStore((state) => state.setAuth)
   const navigate = useNavigate()
 
-  const login = async (_email: string, _password: string, role: LoginRole) => {
+  const handleStatusCode = (statusCode: string, defaultMessage: string) => {
+    switch (statusCode) {
+      case '00000': return null;
+      case '00001': return '操作失敗，請稍後再試';
+      case '00002': return '輸入欄位格式錯誤';
+      case '00005': return '請求的資源不存在';
+      case '00006': return '系統伺服器錯誤，請聯絡系統管理員';
+      
+      case '10001': return '該使用者帳號不存在';
+      case '10002': return '密碼輸入錯誤，請重新確認';
+      case '10003': return '帳號或密碼錯誤，登入失敗';
+      case '10006': return '此 Email 帳號已被註冊';
+      case '10007': return 'Email 格式不正確';
+      case '10008': return '密碼強度不足 (長度至少需 6 位數)';
+      case '10009': return '登出失敗';
+      
+      default:
+        return defaultMessage || `認證錯誤 (${statusCode})`;
+    }
+  };
+
+  const login = async (email: string, password: string, role: LoginRole | 'admin') => {
     setLoading(true)
     setError(null)
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800))
+      let res: any;
+      if (role === 'admin') res = await authService.adminLogin({ email, password });
+      else if (role === 'buyer') res = await authService.buyerLogin({ email, password });
+      else if (role === 'seller') res = await authService.sellerLogin({ email, password });
+      else if (role === 'driver') res = await authService.driverLogin({ email, password });
 
-      const mockToken = 'mock_jwt_token_example'
-      setAuth(mockToken, role)
-      navigate(`/${role}`)
+      const code = res?.data?.status_code;
+      if (code === '00000') {
+        const token = res.data.token || 'mock_jwt_token_example';
+        
+        setAuth(token, role);
+        toast.success('登入成功！');
+        navigate(`/${role}`);
+      } else {
+        const errorMessage = handleStatusCode(code, res?.data?.message);
+        setError(errorMessage);
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || '登入失敗，請檢查帳號密碼')
+      setError('網路連線失敗，請檢查網路連線後再試');
     } finally {
       setLoading(false)
     }
@@ -50,15 +83,14 @@ export const useAuth = () => {
      const response = await authService.buyerRegister(data)
 
       if (response.data.status_code === '00000') {
-        toast.success('Account created successfully! Please sign in.')
+        toast.success('帳號註冊成功！請重新登入。')
         navigate('/login') 
-      } else if (response.data.status_code === '10006') {
-        setError('account already exists.')
       } else {
-        setError(response.data.message || 'Registration failed')
+        const errorMessage = handleStatusCode(response.data.status_code, response?.data?.message)
+        setError(errorMessage)
       }
     } catch (err: any) {
-      setError('Network error. Please try again later.')
+      setError('網路連線失敗，請稍後再試')
     } finally {
       setLoading(false)
     }
@@ -71,15 +103,14 @@ export const useAuth = () => {
       const response = await authService.adminRegister(data)
 
       if (response.data.status_code === '00000') {
-        toast.success('Admin account created successfully! Please sign in.')
+        toast.success('管理員帳號建立成功！請重新登入。')
         navigate('/login') 
-      } else if (response.data.status_code === '10006') {
-        setError('This email is already registered. Please log in.')
       } else {
-        setError(response.data.message || 'Registration failed')
+        const errorMessage = handleStatusCode(response.data.status_code, response?.data?.message)
+        setError(errorMessage)
       }
     } catch (err: any) {
-      setError('Network error. Please try again later.')
+      setError('網路連線失敗，請稍後再試')
     } finally {
       setLoading(false)
     }
