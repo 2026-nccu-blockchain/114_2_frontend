@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 export interface DriverTaskItem {
   name: string;
   quantity: number;
@@ -17,6 +19,27 @@ export interface DriverTask {
 const LEGACY_ACTIVE_TASK_KEY = 'driverActiveTaskId';
 export const ACTIVE_TASKS_KEY = 'driverActiveTaskIds';
 export const COMPLETED_TASKS_KEY = 'driverCompletedTaskIds';
+
+const cookieOptions: Cookies.CookieAttributes = {
+  expires: 30,
+  sameSite: 'strict',
+};
+
+const getStoredIds = (key: string) => {
+  const storedIds = Cookies.get(key);
+  if (!storedIds) return [];
+
+  try {
+    const parsedIds = JSON.parse(storedIds);
+    return Array.isArray(parsedIds) ? parsedIds : [];
+  } catch {
+    return [];
+  }
+};
+
+const saveStoredIds = (key: string, ids: string[]) => {
+  Cookies.set(key, JSON.stringify(ids), cookieOptions);
+};
 
 export const driverTasks: DriverTask[] = [
   {
@@ -55,42 +78,18 @@ export const driverTasks: DriverTask[] = [
 ];
 
 export const getCompletedTaskIds = () => {
-  const storedIds = window.localStorage.getItem(COMPLETED_TASKS_KEY);
-  if (!storedIds) return [];
-
-  try {
-    const parsedIds = JSON.parse(storedIds);
-    return Array.isArray(parsedIds) ? parsedIds : [];
-  } catch {
-    return [];
-  }
+  return getStoredIds(COMPLETED_TASKS_KEY);
 };
 
 export const getActiveTaskIds = () => {
-  const storedIds = window.localStorage.getItem(ACTIVE_TASKS_KEY);
-
-  if (storedIds) {
-    try {
-      const parsedIds = JSON.parse(storedIds);
-      return Array.isArray(parsedIds) ? parsedIds : [];
-    } catch {
-      return [];
-    }
-  }
-
-  const legacyTaskId = window.localStorage.getItem(LEGACY_ACTIVE_TASK_KEY);
-  if (!legacyTaskId) return [];
-
-  window.localStorage.setItem(ACTIVE_TASKS_KEY, JSON.stringify([legacyTaskId]));
-  window.localStorage.removeItem(LEGACY_ACTIVE_TASK_KEY);
-  return [legacyTaskId];
+  return getStoredIds(ACTIVE_TASKS_KEY);
 };
 
 export const acceptTask = (taskId: string) => {
   const activeIds = getActiveTaskIds();
   const nextIds = activeIds.includes(taskId) ? activeIds : [...activeIds, taskId];
 
-  window.localStorage.setItem(ACTIVE_TASKS_KEY, JSON.stringify(nextIds));
+  saveStoredIds(ACTIVE_TASKS_KEY, nextIds);
 };
 
 export const completeTask = (taskId: string) => {
@@ -98,7 +97,7 @@ export const completeTask = (taskId: string) => {
   const nextIds = completedIds.includes(taskId) ? completedIds : [...completedIds, taskId];
   const activeIds = getActiveTaskIds().filter((activeTaskId) => activeTaskId !== taskId);
 
-  window.localStorage.setItem(COMPLETED_TASKS_KEY, JSON.stringify(nextIds));
-  window.localStorage.setItem(ACTIVE_TASKS_KEY, JSON.stringify(activeIds));
-  window.localStorage.removeItem(LEGACY_ACTIVE_TASK_KEY);
+  saveStoredIds(COMPLETED_TASKS_KEY, nextIds);
+  saveStoredIds(ACTIVE_TASKS_KEY, activeIds);
+  Cookies.remove(LEGACY_ACTIVE_TASK_KEY);
 };
