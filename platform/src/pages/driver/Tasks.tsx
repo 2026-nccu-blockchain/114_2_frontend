@@ -1,50 +1,34 @@
 import { Link } from 'react-router-dom';
 import { driverTasks, getActiveTaskIds, getCompletedTaskIds } from '@/pages/driver/driverData';
-
-const styles = {
-  page: 'space-y-6',
-  header: 'flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between',
-  eyebrow: 'text-sm font-medium text-teal-700',
-  title: 'mt-1 text-2xl font-bold text-gray-900',
-  subtitle: 'mt-1 text-sm text-gray-500',
-  list: 'grid gap-3',
-  card: 'block rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-colors hover:border-teal-300 hover:bg-teal-50',
-  cardTop: 'flex items-start justify-between gap-4',
-  cardTitle: 'font-semibold text-gray-900',
-  cardMeta: 'mt-1 text-sm text-gray-500',
-  cardFooter: 'mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-600',
-  badge: 'rounded-full bg-teal-50 px-2.5 py-1 text-xs font-medium text-teal-700',
-  empty: 'rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center text-sm text-gray-500',
-};
-
+import '@/styles/pages/driver/Tasks.css';
 export default function DriverTasks() {
   const activeTaskIds = getActiveTaskIds();
   const completedTaskIds = getCompletedTaskIds();
   const availableTasks = driverTasks.filter((task) => !activeTaskIds.includes(task.id) && !completedTaskIds.includes(task.id));
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
+    <div className="driverTasks__page">
+      <header className="driverTasks__header">
         <div>
-          <p className={styles.eyebrow}>Driver Tasks</p>
-          <h1 className={styles.title}>Available tasks</h1>
-          <p className={styles.subtitle}>Open a task to review order details and delivery addresses.</p>
+          <p className="driverTasks__eyebrow">Driver Tasks</p>
+          <h1 className="driverTasks__title">Available tasks</h1>
+          <p className="driverTasks__subtitle">Open a task to review order details and delivery addresses.</p>
         </div>
       </header>
 
       {availableTasks.length > 0 ? (
-        <section className={styles.list}>
+        <section className="driverTasks__list">
           {availableTasks.map((task) => (
-            <Link key={task.id} to={`/tasks/${task.id}`} className={styles.card}>
-              <div className={styles.cardTop}>
+            <Link key={task.id} to={`/tasks/${task.id}`} className="driverTasks__card">
+              <div className="driverTasks__cardTop">
                 <div>
-                  <p className={styles.cardTitle}>{task.id}</p>
-                  <p className={styles.cardMeta}>{task.orderId}</p>
+                  <p className="driverTasks__cardTitle">{task.id}</p>
+                  <p className="driverTasks__cardMeta">{task.orderId}</p>
                 </div>
-                <span className={styles.badge}>{task.distance}</span>
+                <span className="driverTasks__badge">{task.distance}</span>
               </div>
 
-              <div className={styles.cardFooter}>
+              <div className="driverTasks__cardFooter">
                 <span>{task.createdAt}</span>
                 <span>{task.customer}</span>
               </div>
@@ -52,7 +36,7 @@ export default function DriverTasks() {
           ))}
         </section>
       ) : (
-        <div className={styles.empty}>No available tasks right now.</div>
+        <div className="driverTasks__empty">No available tasks right now.</div>
       )}
     </div>
   );

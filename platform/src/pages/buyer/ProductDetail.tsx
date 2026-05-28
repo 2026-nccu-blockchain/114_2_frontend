@@ -5,6 +5,7 @@ import { mockProducts } from '@/mock/products';
 import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
+import '@/styles/pages/buyer/ProductDetail.css';
 
 
 export default function ProductDetail() {
@@ -18,9 +19,9 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh]">
-        <h2 className="text-2xl font-bold text-gray-700 mb-4">Product not found</h2>
-        <button onClick={() => navigate('/')} className="text-teal-600 hover:underline">
+      <div className="buyerProductDetail__style">
+        <h2 className="buyerProductDetail__title">Product not found</h2>
+        <button onClick={() => navigate('/')} className="buyerProductDetail__primaryButton">
           Return to Home
         </button>
       </div>
@@ -40,7 +41,7 @@ export default function ProductDetail() {
   const handleAddToCart = () => {
     if (!role) {
       toast.error('Please sign in to add items to your cart.', {
-        className: 'border border-red-500 px-4 py-3 text-gray-800 shadow-sm',
+        className: 'buyerProductDetail__errorToast',
         iconTheme: {
           primary: '#ef4444',
           secondary: '#fff',
@@ -53,7 +54,7 @@ export default function ProductDetail() {
     addItem(product, quantity);
 
     toast.success(`${product.name} added to cart`, {
-      className: 'border border-teal-500 px-4 py-3 text-gray-800 shadow-md',
+      className: 'buyerProductDetail__successToast',
       iconTheme: {
         primary: '#14b8a6',
         secondary: '#fff',
@@ -62,73 +63,73 @@ export default function ProductDetail() {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="buyerProductDetail__page">
       {/* 頂部返回按鈕 */}
       <button 
         onClick={() => navigate(-1)} 
-        className="flex items-center text-gray-500 hover:text-gray-900 mb-6 transition-colors"
+        className="buyerProductDetail__style2"
       >
-        <ArrowLeft className="w-4 h-4 mr-2" />
+        <ArrowLeft className="buyerProductDetail__icon" />
         Back
       </button>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row min-h-[500px]">
+      <div className="buyerProductDetail__panel">
         {/* 商品大圖區 */}
-        <div className="md:w-1/2 bg-gray-50 relative flex items-center justify-center min-h-[300px] border-r border-gray-100">
-          <span className="text-4xl text-gray-300 font-medium tracking-wider">Product</span>
+        <div className="buyerProductDetail__style3">
+          <span className="buyerProductDetail__style4">Product</span>
         </div>
 
         {/* 商品資訊區 */}
-        <div className="md:w-1/2 p-8 md:p-12 flex flex-col">
+        <div className="buyerProductDetail__style5">
           {/* 分類標籤 */}
-          <div className="mb-4">
-             <span className="inline-block px-3 py-1 bg-teal-50 text-teal-600 text-xs font-medium rounded-full">
+          <div className="buyerProductDetail__style6">
+             <span className="buyerProductDetail__style7">
                {product.category}
              </span>
           </div>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+          <h1 className="buyerProductDetail__title2">{product.name}</h1>
           
-          <div className="mb-6 pb-6 border-b border-gray-100">
-            <span className="text-3xl font-bold text-gray-900">${product.price.toFixed(2)}</span>
-            <div className={`mt-2 text-sm font-medium ${product.stock > 0 ? 'text-teal-600' : 'text-red-500'}`}>
+          <div className="buyerProductDetail__style8">
+            <span className="buyerProductDetail__title3">${product.price.toFixed(2)}</span>
+            <div className={`${'buyerProductDetail__stockStatus'} ${product.stock > 0 ? 'buyerProductDetail__inStock' : 'buyerProductDetail__outOfStock'}`}>
               {product.stock > 0 ? `${product.stock} in stock` : 'Out of stock'}
             </div>
           </div>
 
-          <div className="mb-8 flex-1">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-600 leading-relaxed text-sm">
+          <div className="buyerProductDetail__style9">
+            <h3 className="buyerProductDetail__style10">Description</h3>
+            <p className="buyerProductDetail__style11">
               {product.description}
             </p>
           </div>
 
           {/* 底部操作區 */}
-          <div className="mt-auto">
+          <div className="buyerProductDetail__style12">
             {/* 賣家資訊 */}
-            <div className="mb-6">
-               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Seller</h3>
-               <p className="text-sm text-gray-900">{product.sellerName}</p>
+            <div className="buyerProductDetail__style13">
+               <h3 className="buyerProductDetail__style14">Seller</h3>
+               <p className="buyerProductDetail__style15">{product.sellerName}</p>
             </div>
 
             {/* 加入購物車按鈕群 */}
-            <div className="flex items-center gap-4">
+            <div className="buyerProductDetail__style16">
               {/* 數量選擇器 */}
-              <div className="flex items-center border border-gray-300 rounded-lg h-11 w-32">
+              <div className="buyerProductDetail__icon2">
                 <button 
                   onClick={decreaseQuantity}
                   disabled={quantity <= 1}
-                  className="flex-1 flex items-center justify-center text-gray-500 hover:text-gray-900 disabled:opacity-50"
+                  className="buyerProductDetail__style17"
                 >
-                  <Minus className="w-4 h-4" />
+                  <Minus className="buyerProductDetail__icon3" />
                 </button>
-                <span className="w-10 text-center font-medium text-gray-900">{quantity}</span>
+                <span className="buyerProductDetail__style18">{quantity}</span>
                 <button 
                   onClick={increaseQuantity}
                   disabled={quantity >= product.stock}
-                  className="flex-1 flex items-center justify-center text-gray-500 hover:text-gray-900 disabled:opacity-50"
+                  className="buyerProductDetail__style17"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="buyerProductDetail__icon3" />
                 </button>
               </div>
 
@@ -136,7 +137,7 @@ export default function ProductDetail() {
               <button 
                 onClick={handleAddToCart}
                 disabled={product.stock === 0}
-                className="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-medium h-11 rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                className="buyerProductDetail__primaryButton2"
               >
                 Add to Cart
               </button>

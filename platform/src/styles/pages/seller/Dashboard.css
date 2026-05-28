@@ -1,0 +1,155 @@
+:where(.sellerDashboard__page>:not(:last-child)) {
+  --tw-space-y-reverse:0;
+  margin-block-start:calc(calc(var(--spacing,.25rem) * 8) * var(--tw-space-y-reverse));
+  margin-block-end:calc(calc(var(--spacing,.25rem) * 8) * calc(1 - var(--tw-space-y-reverse)))
+}
+.sellerDashboard__eyebrow {
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  --tw-font-weight:var(--font-weight-medium,500);
+  font-weight:var(--font-weight-medium,500);
+  color:var(--color-teal-700,oklch(51.1% .096 186.391))
+}
+.sellerDashboard__title {
+  margin-top:calc(var(--spacing,.25rem) * 1);
+  font-size:var(--text-2xl,1.5rem);
+  line-height:var(--tw-leading,var(--text-2xl--line-height,calc(2 / 1.5)));
+  --tw-font-weight:var(--font-weight-bold,700);
+  font-weight:var(--font-weight-bold,700);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerDashboard__statsGrid {
+  gap:calc(var(--spacing,.25rem) * 4);
+  display:grid
+}
+@media (width>=48rem) {
+  .sellerDashboard__statsGrid {
+    grid-template-columns:repeat(2,minmax(0,1fr))
+}
+
+}
+@media (width>=80rem) {
+  .sellerDashboard__statsGrid {
+    grid-template-columns:repeat(4,minmax(0,1fr))
+}
+
+}
+.sellerDashboard__statCard {
+  border-radius:var(--radius-lg,.5rem);
+  border-style:var(--tw-border-style);
+  border-width:1px;
+  border-color:var(--color-gray-200,oklch(92.8% .006 264.531));
+  background-color:var(--color-white,#fff);
+  padding:calc(var(--spacing,.25rem) * 5);
+  --tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);
+  box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow)
+}
+.sellerDashboard__statHeader {
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:calc(var(--spacing,.25rem) * 4);
+  display:flex
+}
+.sellerDashboard__statLabel {
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  --tw-font-weight:var(--font-weight-medium,500);
+  font-weight:var(--font-weight-medium,500);
+  color:var(--color-gray-500,oklch(55.1% .027 264.364))
+}
+.sellerDashboard__statValue {
+  margin-top:calc(var(--spacing,.25rem) * 3);
+  font-size:var(--text-3xl,1.875rem);
+  line-height:var(--tw-leading,var(--text-3xl--line-height,calc(2.25 / 1.875)));
+  --tw-font-weight:var(--font-weight-bold,700);
+  font-weight:var(--font-weight-bold,700);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerDashboard__statIcon {
+  border-radius:var(--radius-lg,.5rem);
+  border-style:var(--tw-border-style);
+  padding:calc(var(--spacing,.25rem) * 2.5);
+  border-width:1px
+}
+.sellerDashboard__statSvg {
+  height:calc(var(--spacing,.25rem) * 5);
+  width:calc(var(--spacing,.25rem) * 5)
+}
+.sellerDashboard__sectionTitle {
+  font-size:var(--text-lg,1.125rem);
+  line-height:var(--tw-leading,var(--text-lg--line-height,calc(1.75 / 1.125)));
+  --tw-font-weight:var(--font-weight-semibold,600);
+  font-weight:var(--font-weight-semibold,600);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerDashboard__actionsGrid {
+  margin-top:calc(var(--spacing,.25rem) * 4);
+  gap:calc(var(--spacing,.25rem) * 4);
+  display:grid
+}
+@media (width>=48rem) {
+  .sellerDashboard__actionsGrid {
+    grid-template-columns:repeat(2,minmax(0,1fr))
+}
+
+}
+.sellerDashboard__actionCard {
+  border-radius:var(--radius-lg,.5rem);
+  border-style:var(--tw-border-style);
+  border-width:1px;
+  border-color:var(--color-gray-200,oklch(92.8% .006 264.531));
+  background-color:var(--color-white,#fff);
+  padding:calc(var(--spacing,.25rem) * 5);
+  --tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);
+  box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;
+  transition-timing-function:var(--tw-ease,var(--default-transition-timing-function,cubic-bezier(.4, 0, .2, 1)));
+  transition-duration:var(--tw-duration,var(--default-transition-duration,.15s));
+  justify-content:space-between;
+  align-items:center;
+  display:flex
+}
+@media (hover:hover) {
+  .sellerDashboard__actionCard:hover {
+    border-color:var(--color-teal-300,oklch(85.5% .138 181.071));
+    background-color:var(--color-teal-50,oklch(98.4% .014 180.72))
+}
+
+}
+.sellerDashboard__actionTitle {
+  --tw-font-weight:var(--font-weight-semibold,600);
+  font-weight:var(--font-weight-semibold,600);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerDashboard__actionDescription {
+  margin-top:calc(var(--spacing,.25rem) * 1);
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  color:var(--color-gray-500,oklch(55.1% .027 264.364))
+}
+.sellerDashboard__actionIcon {
+  height:calc(var(--spacing,.25rem) * 6);
+  width:calc(var(--spacing,.25rem) * 6);
+  color:var(--color-teal-600,oklch(60% .118 184.704));
+  flex:none
+}
+.sellerDashboard__teal {
+  border-color:var(--color-teal-100,oklch(95.3% .051 180.801));
+  background-color:var(--color-teal-50,oklch(98.4% .014 180.72));
+  color:var(--color-teal-700,oklch(51.1% .096 186.391))
+}
+.sellerDashboard__amber {
+  border-color:var(--color-amber-100,oklch(96.2% .059 95.617));
+  background-color:var(--color-amber-50,oklch(98.7% .022 95.277));
+  color:var(--color-amber-700,oklch(55.5% .163 48.998))
+}
+.sellerDashboard__emerald {
+  border-color:var(--color-emerald-100,oklch(95% .052 163.051));
+  background-color:var(--color-emerald-50,oklch(97.9% .021 166.113));
+  color:var(--color-emerald-700,oklch(50.8% .118 165.612))
+}
+.sellerDashboard__red {
+  border-color:var(--color-red-100,oklch(93.6% .032 17.717));
+  background-color:var(--color-red-50,oklch(97.1% .013 17.38));
+  color:var(--color-red-700,oklch(50.5% .213 27.518))
+}

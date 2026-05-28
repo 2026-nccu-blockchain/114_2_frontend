@@ -1,3 +1,5 @@
+import '@/styles/pages/admin/AddSeller.css';
+
 export default function AdminAddSeller() {
-  return <div className="text-gray-700">Add Seller</div>;
+  return <div className="adminAddSeller__style">Add Seller</div>;
 }
