@@ -10,6 +10,8 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [validationError, setValidationError] = useState('');
   const { register, loading, error } = useAuth();
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -24,7 +26,13 @@ export default function Register() {
       return;
     }
 
-    await register(fullName, email, password);
+    await register({
+      name: fullName,
+      email: email,
+      password: password,
+      phone: phone,
+      address: address
+    });
   };
 
   return (
@@ -103,7 +111,39 @@ export default function Register() {
             />
           </div>
 
+<<<<<<< HEAD
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Phone <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="tel"
+              required
+              placeholder="0912345678"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Address <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Taipei City..."
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+            />
+          </div>
+
+          <p className="text-xs text-gray-500 leading-relaxed pt-1">
+=======
           <p className="authRegister__style4">
+>>>>>>> origin/develop
             Seller and driver accounts are created by administrators. If you need a seller or driver
             account, please contact the admin.
           </p>
