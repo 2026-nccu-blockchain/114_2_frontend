@@ -1,3 +1,5 @@
+import '@/styles/pages/admin/Users.css';
+
 export default function AdminUsers() {
-  return <div className="text-gray-700">Admin Users</div>;
+  return <div className="adminUsers__style">Admin Users</div>;
 }

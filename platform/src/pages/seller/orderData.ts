@@ -1,3 +1,4 @@
+//假資料
 export type OrderStatus = 'all' | 'refund' | 'fail' | 'ordered' | 'success' | 'packed' | 'deliever' | 'arrived';
 
 export interface OrderItem {
