@@ -1,0 +1,125 @@
+@reference "../../index.css";
+
+.page {
+  @apply p-6 max-w-5xl mx-auto flex flex-col items-center justify-center min-h-[60vh];
+}
+
+.title {
+  @apply text-2xl font-bold text-gray-900 self-start mb-16 w-full;
+}
+
+.style {
+  @apply flex flex-col items-center;
+}
+
+.style2 {
+  @apply w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4;
+}
+
+.icon {
+  @apply w-8 h-8 text-gray-400;
+}
+
+.sectionTitle {
+  @apply text-lg font-semibold text-gray-900 mb-2;
+}
+
+.mutedText {
+  @apply text-gray-500 mb-6 text-sm;
+}
+
+.primaryButton {
+  @apply bg-teal-600 hover:bg-teal-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors;
+}
+
+.page2 {
+  @apply p-6 max-w-5xl mx-auto;
+}
+
+.style3 {
+  @apply flex items-center justify-between mb-6;
+}
+
+.title2 {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.style4 {
+  @apply text-sm text-red-500 hover:text-red-600 font-medium transition-colors;
+}
+
+.panel {
+  @apply bg-white border border-gray-200 rounded-xl mb-6 overflow-hidden shadow-sm;
+}
+
+.style5 {
+  @apply divide-y divide-gray-200;
+}
+
+.style6 {
+  @apply p-6 flex items-center flex-col sm:flex-row gap-6;
+}
+
+.style7 {
+  @apply w-20 h-20 bg-gray-50 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-100;
+}
+
+.style8 {
+  @apply text-[10px] text-gray-400;
+}
+
+.style9 {
+  @apply flex-1 min-w-0;
+}
+
+.style10 {
+  @apply text-base font-medium text-gray-900 hover:text-teal-600 truncate block;
+}
+
+.mutedText2 {
+  @apply text-sm text-gray-500 mt-1;
+}
+
+.style11 {
+  @apply flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end;
+}
+
+.icon2 {
+  @apply flex items-center border border-gray-300 rounded-lg h-9 w-28;
+}
+
+.style12 {
+  @apply flex-1 flex items-center justify-center text-gray-500 hover:text-gray-900 disabled:opacity-50;
+}
+
+.icon3 {
+  @apply w-3.5 h-3.5;
+}
+
+.style13 {
+  @apply w-8 text-center text-sm font-medium text-gray-900;
+}
+
+.style14 {
+  @apply text-base font-bold text-gray-900 w-20 text-right;
+}
+
+.style15 {
+  @apply p-2 text-gray-400 hover:text-red-500 transition-colors rounded-lg hover:bg-red-50;
+}
+
+.icon4 {
+  @apply w-5 h-5;
+}
+
+.panel2 {
+  @apply bg-white border border-gray-200 rounded-xl p-6 shadow-sm;
+}
+
+.style16 {
+  @apply text-gray-600 font-medium;
+}
+
+.primaryButton2 {
+  @apply w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-lg transition-colors text-base;
+}

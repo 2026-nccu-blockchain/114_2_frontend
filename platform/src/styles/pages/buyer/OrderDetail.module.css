@@ -1,0 +1,137 @@
+@reference "../../index.css";
+
+.style {
+  @apply p-6 text-center;
+}
+
+.style2 {
+  @apply text-gray-500;
+}
+
+.primaryButton {
+  @apply text-teal-600 hover:underline mt-2;
+}
+
+.page {
+  @apply p-6 max-w-4xl mx-auto;
+}
+
+.mutedText {
+  @apply flex items-center text-sm text-gray-500 hover:text-gray-900 mb-6 transition-colors;
+}
+
+.icon {
+  @apply w-4 h-4 mr-1;
+}
+
+.style3 {
+  @apply flex justify-between items-start mb-6;
+}
+
+.title {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.style4 {
+  @apply text-sm text-gray-400 mt-1;
+}
+
+.style5 {
+  @apply px-3 py-1 bg-blue-50 text-blue-600 text-sm font-medium rounded-full;
+}
+
+.panel {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden mb-6;
+}
+
+.style6 {
+  @apply p-6;
+}
+
+.style7 {
+  @apply text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 text-gray-400;
+}
+
+.style8 {
+  @apply divide-y divide-gray-100;
+}
+
+.style9 {
+  @apply py-3 flex justify-between text-sm;
+}
+
+.style10 {
+  @apply text-gray-800;
+}
+
+.style11 {
+  @apply text-gray-400 text-xs;
+}
+
+.style12 {
+  @apply font-medium text-gray-900;
+}
+
+.style13 {
+  @apply border-t border-gray-100 mt-4 pt-4 flex justify-between items-center font-bold text-gray-900;
+}
+
+.style14 {
+  @apply text-lg;
+}
+
+.panel2 {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm p-6 mb-6;
+}
+
+.style15 {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mb-4;
+}
+
+.style16 {
+  @apply text-gray-900 font-medium mt-0.5;
+}
+
+.page2 {
+  @apply text-sm space-y-4;
+}
+
+.style17 {
+  @apply text-gray-600 mt-0.5;
+}
+
+.panel3 {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm p-6;
+}
+
+.style18 {
+  @apply flex items-center gap-2 mb-6;
+}
+
+.mutedText2 {
+  @apply text-sm text-gray-500;
+}
+
+.style19 {
+  @apply px-2.5 py-0.5 bg-blue-50 text-blue-600 text-xs font-medium rounded-full;
+}
+
+.style20 {
+  @apply relative border-l-2 border-teal-500 pl-4 ml-2 pb-2;
+}
+
+.style21 {
+  @apply absolute -left-[7px] top-1.5 w-3 h-3 rounded-full bg-teal-500 border border-white;
+}
+
+.style22 {
+  @apply text-sm font-medium text-gray-900;
+}
+
+.style23 {
+  @apply text-xs text-gray-400 mt-0.5;
+}
+
+.style24 {
+  @apply text-center text-[11px] text-gray-400 mt-8;
+}

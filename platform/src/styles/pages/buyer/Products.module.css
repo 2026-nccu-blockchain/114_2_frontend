@@ -1,0 +1,117 @@
+@reference "../../index.css";
+
+.page {
+  @apply p-6 max-w-7xl mx-auto;
+}
+
+.style {
+  @apply mb-8;
+}
+
+.title {
+  @apply text-2xl font-bold text-gray-900 mb-1;
+}
+
+.mutedText {
+  @apply text-gray-500 text-sm;
+}
+
+.style2 {
+  @apply relative mb-8;
+}
+
+.style3 {
+  @apply absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none;
+}
+
+.icon {
+  @apply h-5 w-5 text-gray-400;
+}
+
+.input {
+  @apply block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition duration-150 ease-in-out;
+}
+
+.style4 {
+  @apply flex flex-col md:flex-row gap-6;
+}
+
+.style5 {
+  @apply w-full md:w-64 flex-shrink-0;
+}
+
+.panel {
+  @apply bg-white border border-gray-200 rounded-lg p-5;
+}
+
+.style6 {
+  @apply text-sm font-semibold text-gray-900 mb-4;
+}
+
+.page2 {
+  @apply space-y-3;
+}
+
+.style7 {
+  @apply block text-xs font-medium text-gray-700;
+}
+
+.input2 {
+  @apply mt-1 block w-full pl-3 pr-10 py-2 text-sm border-gray-300 focus:outline-none focus:ring-teal-500 focus:border-teal-500 rounded-md;
+}
+
+.style8 {
+  @apply flex-1;
+}
+
+.style9 {
+  @apply text-center py-12 text-gray-500;
+}
+
+.style10 {
+  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+}
+
+.panel2 {
+  @apply bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col;
+}
+
+.style11 {
+  @apply aspect-square bg-gray-100 relative overflow-hidden h-48;
+}
+
+.style12 {
+  @apply absolute inset-0 flex items-center justify-center text-gray-400 font-medium group-hover:scale-105 transition-transform duration-300;
+}
+
+.style13 {
+  @apply p-5 flex-1 flex flex-col;
+}
+
+.style14 {
+  @apply text-xs text-gray-500 mb-1;
+}
+
+.style15 {
+  @apply text-sm font-semibold text-gray-900 mb-4 line-clamp-2;
+}
+
+.style16 {
+  @apply mt-auto flex items-center justify-between;
+}
+
+.style17 {
+  @apply text-lg font-bold text-gray-900;
+}
+
+.stockStatus {
+  @apply text-xs font-medium;
+}
+
+.inStock {
+  @apply text-teal-600;
+}
+
+.outOfStock {
+  @apply text-red-500;
+}

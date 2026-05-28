@@ -1,5 +1,5 @@
-import { styles } from '@/styles/pages/admin/Users.styles';
+import styles from '@/styles/pages/admin/Users.module.css';
 
 export default function AdminUsers() {
-  return <div className={styles.style}>Admin Users</div>;
+  return <div className={styles['style']}>Admin Users</div>;
 }

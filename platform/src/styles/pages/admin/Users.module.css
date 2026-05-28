@@ -1,0 +1,5 @@
+@reference "../../index.css";
+
+.style {
+  @apply text-gray-700;
+}

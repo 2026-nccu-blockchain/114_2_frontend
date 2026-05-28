@@ -1,7 +1,7 @@
 import { Edit3, Package, PlusCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { styles } from '@/styles/pages/seller/Products.styles';
+import styles from '@/styles/pages/seller/Products.module.css';
 interface Product {
   id: number;
   name: string;
@@ -61,51 +61,51 @@ function ProductCard({
   const editPath = `/products/${product.id}/edit`;
 
   return (
-    <article className={`${styles.card} ${product.active ? '' : styles.cardInactive}`}>
-      <Link to={editPath} className={styles.cardLink}>
-        <div className={styles.image}>
-          <Package className={styles.imageIcon} />
+    <article className={`${styles['card']} ${product.active ? '' : styles['cardInactive']}`}>
+      <Link to={editPath} className={styles['cardLink']}>
+        <div className={styles['image']}>
+          <Package className={styles['imageIcon']} />
         </div>
       </Link>
 
-      <div className={styles.body}>
-        <div className={styles.top}>
-          <Link to={editPath} className={styles.cardLink}>
-            <h3 className={styles.name}>{product.name}</h3>
-            <p className={styles.category}>{product.category}</p>
+      <div className={styles['body']}>
+        <div className={styles['top']}>
+          <Link to={editPath} className={styles['cardLink']}>
+            <h3 className={styles['name']}>{product.name}</h3>
+            <p className={styles['category']}>{product.category}</p>
           </Link>
 
-          <p className={styles.price}>{product.price}</p>
+          <p className={styles['price']}>{product.price}</p>
         </div>
 
-        <div className={styles.meta}>
+        <div className={styles['meta']}>
           <div>
-            <p className={styles.metaLabel}>Stock</p>
-            <p className={styles.metaValue}>{product.stock}</p>
+            <p className={styles['metaLabel']}>Stock</p>
+            <p className={styles['metaValue']}>{product.stock}</p>
           </div>
           <div>
-            <p className={styles.metaLabel}>Sold</p>
-            <p className={styles.metaValue}>{product.sold}</p>
+            <p className={styles['metaLabel']}>Sold</p>
+            <p className={styles['metaValue']}>{product.sold}</p>
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Link to={editPath} className={styles.editButton}>
-            <Edit3 className={styles.editIcon} />
+        <div className={styles['actions']}>
+          <Link to={editPath} className={styles['editButton']}>
+            <Edit3 className={styles['editIcon']} />
             Edit
           </Link>
 
-          <span className={`${styles.status} ${product.active ? styles.statusActive : styles.statusInactive}`}>
+          <span className={`${styles['status']} ${product.active ? styles['statusActive'] : styles['statusInactive']}`}>
             {product.active ? 'Online' : 'Deactivated'}
           </span>
 
           <button
             type="button"
             onClick={() => onToggle(product.id)}
-            className={`${styles.toggle} ${product.active ? styles.toggleActive : styles.toggleInactive}`}
+            className={`${styles['toggle']} ${product.active ? styles['toggleActive'] : styles['toggleInactive']}`}
             aria-label={product.active ? 'Deactivate product' : 'Activate product'}
           >
-            <span className={`${styles.thumb} ${product.active ? styles.thumbActive : ''}`} />
+            <span className={`${styles['thumb']} ${product.active ? styles['thumbActive'] : ''}`} />
           </button>
         </div>
       </div>
@@ -128,62 +128,62 @@ export default function SellerProducts() {
   };
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
+    <div className={styles['page']}>
+      <header className={styles['header']}>
         <div>
-          <p className={styles.eyebrow}>Seller Products</p>
-          <h1 className={styles.title}>Product management</h1>
+          <p className={styles['eyebrow']}>Seller Products</p>
+          <h1 className={styles['title']}>Product management</h1>
           
         </div>
 
-        <Link to="/add-product" className={styles.addButton}>
-          <PlusCircle className={styles.addButtonIcon} />
+        <Link to="/add-product" className={styles['addButton']}>
+          <PlusCircle className={styles['addButtonIcon']} />
           Add Product
         </Link>
       </header>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleWrap}>
-            <Package className={styles.sectionIcon} />
-            <h2 className={styles.sectionTitle}>Active Products</h2>
+      <section className={styles['section']}>
+        <div className={styles['sectionHeader']}>
+          <div className={styles['sectionTitleWrap']}>
+            <Package className={styles['sectionIcon']} />
+            <h2 className={styles['sectionTitle']}>Active Products</h2>
           </div>
-          <span className={styles.count}>{activeProducts.length}</span>
+          <span className={styles['count']}>{activeProducts.length}</span>
         </div>
 
         {activeProducts.length > 0 ? (
-          <div className={styles.grid}>
+          <div className={styles['grid']}>
             {activeProducts.map((product) => (
               <ProductCard key={product.id} product={product} onToggle={toggleProduct} />
             ))}
           </div>
         ) : (
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>No active products</p>
-            <p className={styles.emptyText}>Activate a product or add a new one to start selling.</p>
+          <div className={styles['empty']}>
+            <p className={styles['emptyTitle']}>No active products</p>
+            <p className={styles['emptyText']}>Activate a product or add a new one to start selling.</p>
           </div>
         )}
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleWrap}>
-            <Package className={styles.sectionIcon} />
-            <h2 className={styles.sectionTitle}>Deactivated Products</h2>
+      <section className={styles['section']}>
+        <div className={styles['sectionHeader']}>
+          <div className={styles['sectionTitleWrap']}>
+            <Package className={styles['sectionIcon']} />
+            <h2 className={styles['sectionTitle']}>Deactivated Products</h2>
           </div>
-          <span className={styles.count}>{deactivatedProducts.length}</span>
+          <span className={styles['count']}>{deactivatedProducts.length}</span>
         </div>
 
         {deactivatedProducts.length > 0 ? (
-          <div className={styles.grid}>
+          <div className={styles['grid']}>
             {deactivatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} onToggle={toggleProduct} />
             ))}
           </div>
         ) : (
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>No deactivated products</p>
-            <p className={styles.emptyText}>Products you turn off will appear here.</p>
+          <div className={styles['empty']}>
+            <p className={styles['emptyTitle']}>No deactivated products</p>
+            <p className={styles['emptyText']}>Products you turn off will appear here.</p>
           </div>
         )}
       </section>

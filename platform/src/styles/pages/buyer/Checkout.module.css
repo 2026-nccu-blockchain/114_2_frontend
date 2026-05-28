@@ -1,0 +1,85 @@
+@reference "../../index.css";
+
+.page {
+  @apply p-6 max-w-4xl mx-auto;
+}
+
+.title {
+  @apply text-2xl font-bold text-gray-900 mb-6;
+}
+
+.panel {
+  @apply bg-white border border-gray-200 rounded-xl mb-6 shadow-sm overflow-hidden;
+}
+
+.style {
+  @apply p-6;
+}
+
+.sectionTitle {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.page2 {
+  @apply space-y-3 mb-4;
+}
+
+.style2 {
+  @apply flex justify-between text-sm text-gray-600;
+}
+
+.style3 {
+  @apply font-medium;
+}
+
+.style4 {
+  @apply border-t border-gray-100 pt-4 flex justify-between items-center;
+}
+
+.style5 {
+  @apply text-base font-bold text-gray-900;
+}
+
+.style6 {
+  @apply text-xl font-bold text-gray-900;
+}
+
+.panel2 {
+  @apply bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden;
+}
+
+.sectionTitle2 {
+  @apply text-lg font-semibold text-gray-900 mb-1;
+}
+
+.mutedText {
+  @apply text-sm text-gray-500 mb-6;
+}
+
+.page3 {
+  @apply space-y-5;
+}
+
+.style7 {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.required {
+  @apply text-red-500;
+}
+
+.mutedText2 {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed sm:text-sm;
+}
+
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm;
+}
+
+.input2 {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-teal-500 focus:border-teal-500 sm:text-sm resize-none;
+}
+
+.primaryButton {
+  @apply w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-lg transition-colors text-base mt-2;
+}

@@ -1,7 +1,7 @@
 import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
 import { useMemo, useState, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { styles } from '@/styles/pages/seller/EditProduct.styles';
+import styles from '@/styles/pages/seller/EditProduct.module.css';
 const NEW_CATEGORY_VALUE = '__new_category__';
 const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
 const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
@@ -83,33 +83,33 @@ export default function SellerEditProduct() {
   };
 
   return (
-    <div className={styles.page}>
-      <Link to="/products" className={styles.backLink}>
-        <ArrowLeft className={styles.backIcon} />
+    <div className={styles['page']}>
+      <Link to="/products" className={styles['backLink']}>
+        <ArrowLeft className={styles['backIcon']} />
         Back to products
       </Link>
 
-      <section className={styles.panel}>
-        <p className={styles.eyebrow}>Edit Product</p>
-        <h1 className={styles.title}>Product #{productId}</h1>
-        {/* <p className={styles.subtitle}>Update product information, stock, category, and product photo.</p> */}
+      <section className={styles['panel']}>
+        <p className={styles['eyebrow']}>Edit Product</p>
+        <h1 className={styles['title']}>Product #{productId}</h1>
+        {/* <p className={styles['subtitle']}>Update product information, stock, category, and product photo.</p> */}
 
-        <form id="edit-product-form" className={styles.form} onSubmit={handleSubmit}>
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="product-name">
-              Product name <span className={styles.required}>*</span>
+        <form id="edit-product-form" className={styles['form']} onSubmit={handleSubmit}>
+          <div className={styles['field']}>
+            <label className={styles['label']} htmlFor="product-name">
+              Product name <span className={styles['required']}>*</span>
             </label>
-            <input id="product-name" className={styles.input} defaultValue={product.name} placeholder="Product name" required />
+            <input id="product-name" className={styles['input']} defaultValue={product.name} placeholder="Product name" required />
           </div>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="category">
-              Category <span className={styles.required}>*</span>
+          <div className={styles['field']}>
+            <label className={styles['label']} htmlFor="category">
+              Category <span className={styles['required']}>*</span>
             </label>
-            <div className={styles.categoryFields}>
+            <div className={styles['categoryFields']}>
               <select
                 id="category"
-                className={styles.select}
+                className={styles['select']}
                 required
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
@@ -124,7 +124,7 @@ export default function SellerEditProduct() {
 
               {category === NEW_CATEGORY_VALUE && (
                 <input
-                  className={styles.input}
+                  className={styles['input']}
                   placeholder="New category name"
                   required
                   value={customCategory}
@@ -134,13 +134,13 @@ export default function SellerEditProduct() {
             </div>
           </div>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="price">
-              Price <span className={styles.required}>*</span>
+          <div className={styles['field']}>
+            <label className={styles['label']} htmlFor="price">
+              Price <span className={styles['required']}>*</span>
             </label>
             <input
               id="price"
-              className={styles.input}
+              className={styles['input']}
               defaultValue={product.price}
               inputMode="decimal"
               placeholder="0.00"
@@ -149,45 +149,45 @@ export default function SellerEditProduct() {
             />
           </div>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="stock">
-              Stock <span className={styles.required}>*</span>
+          <div className={styles['field']}>
+            <label className={styles['label']} htmlFor="stock">
+              Stock <span className={styles['required']}>*</span>
             </label>
-            <input id="stock" className={styles.input} defaultValue={product.stock} min="0" placeholder="0" required type="number" />
+            <input id="stock" className={styles['input']} defaultValue={product.stock} min="0" placeholder="0" required type="number" />
           </div>
 
-          <div className={styles.field}>
-            <label className={styles.label} htmlFor="created-at">
+          <div className={styles['field']}>
+            <label className={styles['label']} htmlFor="created-at">
               Created time
             </label>
-            <input id="created-at" className={styles.readonlyInput} readOnly value={createdAt} />
+            <input id="created-at" className={styles['readonlyInput']} readOnly value={createdAt} />
           </div>
 
-          <div className={styles.wideField}>
-            <label className={styles.label} htmlFor="product-photo">
+          <div className={styles['wideField']}>
+            <label className={styles['label']} htmlFor="product-photo">
               Product photo
             </label>
-            <label className={styles.uploadBox} htmlFor="product-photo">
-              <ImagePlus className={styles.uploadIcon} />
-              <span className={styles.uploadTitle}>{photoName || 'Upload product photo'}</span>
-              <span className={styles.uploadText}>PNG, JPG</span>
+            <label className={styles['uploadBox']} htmlFor="product-photo">
+              <ImagePlus className={styles['uploadIcon']} />
+              <span className={styles['uploadTitle']}>{photoName || 'Upload product photo'}</span>
+              <span className={styles['uploadText']}>PNG, JPG</span>
             </label>
             <input
               id="product-photo"
               accept="image/png,image/jpeg,image/webp"
-              className={styles.hiddenInput}
+              className={styles['hiddenInput']}
               type="file"
               onChange={(event) => setPhotoName(event.target.files?.[0]?.name ?? '')}
             />
           </div>
         </form>
 
-        <div className={styles.actions}>
-          <Link to="/products" className={styles.secondaryButton}>
+        <div className={styles['actions']}>
+          <Link to="/products" className={styles['secondaryButton']}>
             Cancel
           </Link>
-          <button type="submit" form="edit-product-form" className={styles.primaryButton}>
-            <Save className={styles.buttonIcon} />
+          <button type="submit" form="edit-product-form" className={styles['primaryButton']}>
+            <Save className={styles['buttonIcon']} />
             Save Changes
           </button>
         </div>

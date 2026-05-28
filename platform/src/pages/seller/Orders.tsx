@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { initialOrders, statusOptions, statusStyles, type OrderStatus } from '@/pages/seller/orderData';
-import { styles } from '@/styles/pages/seller/Orders.styles';
+import styles from '@/styles/pages/seller/Orders.module.css';
 export default function SellerOrders() {
   const [statusFilter, setStatusFilter] = useState<OrderStatus>('all');
 
@@ -11,21 +11,21 @@ export default function SellerOrders() {
   );
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
+    <div className={styles['page']}>
+      <header className={styles['header']}>
         <div>
-          <p className={styles.eyebrow}>Seller Orders</p>
-          <h1 className={styles.title}>Order management</h1>
+          <p className={styles['eyebrow']}>Seller Orders</p>
+          <h1 className={styles['title']}>Order management</h1>
          
         </div>
 
-        <div className={styles.filterField}>
-          <label className={styles.filterLabel} htmlFor="order-status">
+        <div className={styles['filterField']}>
+          <label className={styles['filterLabel']} htmlFor="order-status">
             Status
           </label>
           <select
             id="order-status"
-            className={styles.select}
+            className={styles['select']}
             value={statusFilter}
             onChange={(event) => setStatusFilter(event.target.value as OrderStatus)}
           >
@@ -39,26 +39,26 @@ export default function SellerOrders() {
       </header>
 
       {filteredOrders.length > 0 ? (
-        <section className={styles.list}>
+        <section className={styles['list']}>
           {filteredOrders.map((order) => (
-            <Link key={order.id} to={`/orders/${order.id}`} className={styles.orderCard}>
-              <div className={styles.orderTop}>
+            <Link key={order.id} to={`/orders/${order.id}`} className={styles['orderCard']}>
+              <div className={styles['orderTop']}>
                 <div>
-                  <p className={styles.orderId}>{order.id}</p>
-                  <p className={styles.orderMeta}>{order.customer}</p>
+                  <p className={styles['orderId']}>{order.id}</p>
+                  <p className={styles['orderMeta']}>{order.customer}</p>
                 </div>
-                <span className={`${styles.status} ${statusStyles[order.status]}`}>{order.status}</span>
+                <span className={`${styles['status']} ${statusStyles[order.status]}`}>{order.status}</span>
               </div>
 
-              <div className={styles.orderFooter}>
-                <span className={styles.orderMeta}>{order.createdAt}</span>
-                <span className={styles.total}>{order.total}</span>
+              <div className={styles['orderFooter']}>
+                <span className={styles['orderMeta']}>{order.createdAt}</span>
+                <span className={styles['total']}>{order.total}</span>
               </div>
             </Link>
           ))}
         </section>
       ) : (
-        <div className={styles.empty}>No orders match this status.</div>
+        <div className={styles['empty']}>No orders match this status.</div>
       )}
     </div>
   );

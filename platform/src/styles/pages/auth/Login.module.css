@@ -1,0 +1,65 @@
+@reference "../../index.css";
+
+.page {
+  @apply min-h-screen bg-gray-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8;
+}
+
+.panel {
+  @apply max-w-md w-full bg-white p-8 border border-gray-200 rounded-xl shadow-sm;
+}
+
+.style {
+  @apply text-center mb-6;
+}
+
+.title {
+  @apply text-2xl font-bold text-gray-900;
+}
+
+.mutedText {
+  @apply text-sm text-gray-500 mt-1;
+}
+
+.primaryButton {
+  @apply text-teal-600 hover:text-teal-500 font-medium;
+}
+
+.style2 {
+  @apply mb-4 text-sm text-red-600 bg-red-50 p-2.5 rounded-lg;
+}
+
+.page2 {
+  @apply space-y-4;
+}
+
+.style3 {
+  @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.required {
+  @apply text-red-500;
+}
+
+.input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm;
+}
+
+.style4 {
+  @apply grid grid-cols-3 gap-2;
+}
+
+.roleButton {
+  @apply h-10 rounded-lg border text-sm font-medium transition-colors;
+}
+
+.roleButtonActive {
+  @apply border-teal-600 bg-teal-50 text-teal-700;
+}
+
+.roleButtonInactive {
+  @apply border-gray-300 bg-white text-gray-600 hover:border-teal-400 hover:text-teal-700;
+}
+
+.primaryButton2 {
+  @apply w-full py-2.5 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg text-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:opacity-50 mt-2;
+}
