@@ -49,7 +49,7 @@ export default function BuyerOrderDetail() {
           <h2 className="buyerOrderDetail__style7">Items</h2>
           <ul className="buyerOrderDetail__style8">
             {order.items.map((item) => (
-              <li key={item.id} className="buyerOrderDetail__style9">
+              <li key={item.pid} className="buyerOrderDetail__style9">
                 <span className="buyerOrderDetail__style10">{item.name} <span className="buyerOrderDetail__style11">x {item.quantity}</span></span>
                 <span className="buyerOrderDetail__style12">${(item.price * item.quantity).toFixed(2)}</span>
               </li>
