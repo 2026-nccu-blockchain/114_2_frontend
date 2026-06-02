@@ -16,12 +16,12 @@ export const useCartStore = create<CartState>((set, get) => ({
   // 加入購物車
   addItem: (product, quantity) => {
     set((state) => {
-      const existingItem = state.items.find((item) => item.id === product.id);
+      const existingItem = state.items.find((item) => item.pid === product.pid);
 
       if (existingItem) {
         return {
           items: state.items.map((item) =>
-            item.id === product.id
+            item.pid === product.pid
               ? { ...item, quantity: item.quantity + quantity }
               : item
           ),
@@ -35,7 +35,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   // 移除商品
   removeItem: (productId) => {
     set((state) => ({
-      items: state.items.filter((item) => item.id !== productId),
+      items: state.items.filter((item) => item.pid !== productId),
     }));
   },
 
@@ -43,7 +43,7 @@ export const useCartStore = create<CartState>((set, get) => ({
   updateQuantity: (productId, quantity) => {
     set((state) => ({
       items: state.items.map((item) =>
-        item.id === productId ? { ...item, quantity } : item
+        item.pid === productId ? { ...item, quantity } : item
       ),
     }));
   },
