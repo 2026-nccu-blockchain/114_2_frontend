@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import '@/styles/pages/auth/Register.css';
@@ -13,7 +13,7 @@ export default function Register() {
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setValidationError('');
 
@@ -111,10 +111,9 @@ export default function Register() {
             />
           </div>
 
-<<<<<<< HEAD
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone <span className="text-red-500">*</span>
+            <label className="authRegister__style3">
+              Phone <span className="authRegister__required">*</span>
             </label>
             <input
               type="tel"
@@ -122,13 +121,13 @@ export default function Register() {
               placeholder="0912345678"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+              className="authRegister__input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Address <span className="text-red-500">*</span>
+            <label className="authRegister__style3">
+              Address <span className="authRegister__required">*</span>
             </label>
             <input
               type="text"
@@ -136,14 +135,11 @@ export default function Register() {
               placeholder="Taipei City..."
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-sm"
+              className="authRegister__input"
             />
           </div>
-
-          <p className="text-xs text-gray-500 leading-relaxed pt-1">
-=======
+          
           <p className="authRegister__style4">
->>>>>>> origin/develop
             Seller and driver accounts are created by administrators. If you need a seller or driver
             account, please contact the admin.
           </p>
