@@ -1,12 +1,14 @@
-import { useState, useEffect, type SyntheticEvent } from 'react';
+import { useState, useEffect, type SyntheticEvent, useRef } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useProfile, type UpdateProfileData } from '@/hooks/useProfile';
+import { useUpload } from '@/hooks/useUpload';
 import '@/styles/pages/shared/Profile.css'; 
 
 export default function Profile() {
   const { role } = useAuthStore();
   const { fetchProfile, updateProfile, deleteAccount, loading, error, success } = useProfile();
-  
+  const { upload, uploading } = useUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [userId, setUserId] = useState('');
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -17,7 +19,6 @@ export default function Profile() {
   const [companyPhone, setCompanyPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
 
-  // 1. 初始化拉取後端真實資料 (遵循規格書)
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchProfile();
@@ -42,8 +43,19 @@ export default function Profile() {
     };
     loadData();
   }, [role]);
+  
+   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-  // 2. 處理資料更新送出
+    const selectedFile = files[0];
+    const uploadedUrl = await upload(selectedFile, email);
+    
+    if (uploadedUrl) {
+      setAvatarUrl(uploadedUrl);
+    }
+  };
+
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -75,8 +87,6 @@ export default function Profile() {
       <h1 className="sharedProfile__title">Profile Settings</h1>
 
       <div className="sharedProfile__panel">
-        
-        {/* 上方使用者資訊卡區 */}
         <div className="sharedProfile__style">
           {avatarUrl ? (
             <img 
@@ -102,8 +112,7 @@ export default function Profile() {
         {success && <div className="sharedProfile__style5">資料更新成功！</div>}
 
         <form onSubmit={handleSubmit} className="sharedProfile__page2">
-          
-          {/* 🌟 透過判斷式，動態決定是一欄還是兩欄的 Grid Layout */}
+
           <div className={`sharedProfile__formGrid ${role !== 'admin' ? 'sharedProfile__formGrid--2cols' : ''}`}>
             <div>
               <label className="sharedProfile__style6">
@@ -136,14 +145,31 @@ export default function Profile() {
             <label className="sharedProfile__style6">
               Avatar URL <span className="sharedProfile__required">*</span>
             </label>
-            <input
-              type="text"
-              required
-              placeholder="https://example.com/image.jpg"
-              value={avatarUrl}
-              onChange={(e) => setAvatarUrl(e.target.value)}
-              className="sharedProfile__input2"
-            />
+            <div className="sharedProfile__formGrid sharedProfile__formGrid--2cols">
+              <input
+                type="text"
+                required
+                placeholder="https://example.com/image.jpg"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                className="sharedProfile__input2"
+              />
+              <input 
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+                className="sharedProfile__primaryButton"
+              >
+                {uploading ? '上傳中...' : 'Upload Image File'}
+              </button>
+            </div>
           </div>
 
           {role !== 'admin' && (
@@ -176,7 +202,6 @@ export default function Profile() {
             </div>
           )}
 
-          {/* 賣家專屬區塊 */}
           {role === 'seller' && (
             <div className="sharedProfile__companySection">
               <h3 className="sharedProfile__companyTitle">Company Information</h3>
@@ -235,7 +260,6 @@ export default function Profile() {
           </div>
         </form>
 
-        {/* 危險區域 */}
         {role !== 'admin' && (
           <div className="sharedProfile__dangerZone">
             <h3 className="sharedProfile__dangerTitle">Danger Zone</h3>
