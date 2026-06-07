@@ -1,16 +1,25 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/buyer/MyOrders.css';
 
 export default function BuyerOrders() {
   const navigate = useNavigate();
-  const { orders } = useOrderStore();
+  const { orders, fetchMyOrders, isLoading, error } = useOrderStore();
+
+  useEffect(() => {
+    void fetchMyOrders();
+  }, [fetchMyOrders]);
 
   return (
     <div className="buyerMyOrders__page">
       <h1 className="buyerMyOrders__title">My Orders</h1>
 
-      {orders.length === 0 ? (
+      {isLoading ? (
+        <div className="buyerMyOrders__panel">Loading orders...</div>
+      ) : error ? (
+        <div className="buyerMyOrders__panel">{error}</div>
+      ) : orders.length === 0 ? (
         <div className="buyerMyOrders__panel">
           You haven't placed any orders yet.
         </div>
@@ -31,7 +40,7 @@ export default function BuyerOrders() {
                     {order.status}
                   </span>
                 </div>
-                <p className="buyerMyOrders__style4">{order.createdAt}</p>
+                <p className="buyerMyOrders__style4">{order.createdAt || 'Order time unavailable'}</p>
                 <p className="buyerMyOrders__mutedText">
                   {order.items.reduce((sum, item) => sum + item.quantity, 0)} item(s)
                 </p>

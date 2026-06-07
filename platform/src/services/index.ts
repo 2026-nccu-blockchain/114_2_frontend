@@ -4,3 +4,4 @@
  */
 
 export { apiRequest } from '@/services/api';
+export * as orderApi from '@/services/orderApi';

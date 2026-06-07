@@ -1,73 +1,98 @@
 import { create } from 'zustand';
-import { type Order } from '@/types';
+import { orderApi } from '@/services';
+import { type Order, type OrderStatus } from '@/types';
 
 interface OrderState {
   orders: Order[];
-  addOrder: (order: Omit<Order, 'id' | 'createdAt' | 'status' | 'trackingStatus'>) => void;
+  selectedOrder: Order | null;
+  isLoading: boolean;
+  error: string | null;
+  createOrder: (toAddress: string) => Promise<Order>;
+  fetchMyOrders: () => Promise<Order[]>;
+  fetchOrderById: (id: string) => Promise<Order>;
+  updateOrderStatus: (id: string, status: OrderStatus) => Promise<Order>;
   getOrderById: (id: string) => Order | undefined;
 }
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error instanceof Error) return error.message;
+  if (typeof error === 'object' && error && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string') return message;
+  }
+  return fallback;
+};
+
 export const useOrderStore = create<OrderState>((set, get) => ({
-  // 範例訂單
-  orders: [
-    {
-      id: 'order_00',
-      createdAt: 'May 21, 2026, 02:21 PM',
-      status: 'Confirmed',
-      trackingStatus: 'Assigned',
-      total: 1010,
-      recipientName: 'Demo Buyer',
-      phone: '0912-000-111',
-      address: 'Taipei City, Xinyi Rd. No. 88',
-      notes: 'Leave at the front desk.',
-      items: [
-        {
-          id: 'prod_001',
-          name: 'COD Starter Kit',
-          description: '',
-          price: 890,
-          stock: 25,
-          category: 'Starter',
-          sellerId: 's1',
-          sellerName: 'Demo Seller',
-          quantity: 1
-        },
-        {
-          id: 'prod_002',
-          name: 'Delivery Box M',
-          description: '',
-          price: 120,
-          stock: 120,
-          category: 'Packaging',
-          sellerId: 's1',
-          sellerName: 'Demo Seller',
-          quantity: 1
-        }
-      ]
+  orders: [],
+  selectedOrder: null,
+  isLoading: false,
+  error: null,
+
+  createOrder: async (toAddress) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const order = await orderApi.createOrder(toAddress);
+      set((state) => ({
+        orders: [order, ...state.orders.filter((currentOrder) => currentOrder.id !== order.id)],
+        selectedOrder: order,
+        isLoading: false,
+      }));
+      return order;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to create order'), isLoading: false });
+      throw error;
     }
-  ],
+  },
 
-  // 創建新訂單
-  addOrder: (newOrder) => {
-    set((state) => {
-      const orderId = `order_${String(state.orders.length).padStart(2, '0')}`;
-      const now = new Date();
-      const formattedDate = now.toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }) + `, ${now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  fetchMyOrders: async () => {
+    set({ isLoading: true, error: null });
 
-      const fullOrder: Order = {
-        ...newOrder,
-        id: orderId,
-        createdAt: formattedDate,
-        status: 'Confirmed',
-        trackingStatus: 'Assigned',
-      };
+    try {
+      const orders = await orderApi.getMyOrders();
+      set({ orders, isLoading: false });
+      return orders;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to load orders'), isLoading: false });
+      throw error;
+    }
+  },
 
-      return { orders: [fullOrder, ...state.orders] }; 
-    });
+  fetchOrderById: async (id) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const order = await orderApi.getOrder(id);
+      set((state) => ({
+        selectedOrder: order,
+        orders: state.orders.some((currentOrder) => currentOrder.id === id)
+          ? state.orders.map((currentOrder) => (currentOrder.id === id ? order : currentOrder))
+          : [order, ...state.orders],
+        isLoading: false,
+      }));
+      return order;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to load order'), isLoading: false });
+      throw error;
+    }
+  },
+
+  updateOrderStatus: async (id, status) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const order = await orderApi.updateOrderStatus(id, status);
+      set((state) => ({
+        selectedOrder: order,
+        orders: state.orders.map((currentOrder) => (currentOrder.id === id ? order : currentOrder)),
+        isLoading: false,
+      }));
+      return order;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to update order'), isLoading: false });
+      throw error;
+    }
   },
 
   getOrderById: (id) => get().orders.find((o) => o.id === id),

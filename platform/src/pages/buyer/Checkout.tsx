@@ -8,6 +8,7 @@ import '@/styles/pages/buyer/Checkout.css';
 export default function BuyerCheckout() {
   const navigate = useNavigate();
   const { items, getTotalPrice, clearCart } = useCartStore();
+  const { createOrder, isLoading } = useOrderStore();
   
   // 表單狀態
   const [address, setAddress] = useState('');
@@ -21,32 +22,27 @@ export default function BuyerCheckout() {
     }
   }, [items, navigate]);
 
-  const handlePlaceOrder = (e: FormEvent<HTMLFormElement>) => {
+  const handlePlaceOrder = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!address.trim()) {
       toast.error('Please enter your shipping address');
       return;
     }
-    
-    const addOrder = useOrderStore.getState().addOrder;
-    addOrder({
-      items,
-      total: getTotalPrice(),
-      recipientName: 'Demo Buyer',
-      phone: '0912-000-111',
-      address: address,
-      notes: notes,
-    });
 
-    // 模擬送出訂單到後端
-    toast.success('Order placed successfully!', {
-      style: { border: '1px solid #14b8a6', padding: '12px 16px', color: '#1f2937' },
-      iconTheme: { primary: '#14b8a6', secondary: '#fff' },
-    });
-    
-    clearCart();
-    navigate('/orders'); // 導向「我的訂單」頁面
+    try {
+      await createOrder(address.trim());
+
+      toast.success('Order placed successfully!', {
+        style: { border: '1px solid #14b8a6', padding: '12px 16px', color: '#1f2937' },
+        iconTheme: { primary: '#14b8a6', secondary: '#fff' },
+      });
+
+      clearCart();
+      navigate('/orders');
+    } catch {
+      toast.error('Failed to place order. Please try again.');
+    }
   };
 
   if (items.length === 0) return null;
@@ -137,8 +133,9 @@ export default function BuyerCheckout() {
             <button
               type="submit"
               className="buyerCheckout__primaryButton"
+              disabled={isLoading}
             >
-              Place Order (COD)
+              {isLoading ? 'Placing order...' : 'Place Order (COD)'}
             </button>
           </form>
         </div>
