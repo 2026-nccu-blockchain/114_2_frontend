@@ -13,6 +13,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   
   const addItem = useCartStore((state) => state.addItem); 
+  const isAddingToCart = useCartStore((state) => state.isLoading);
   const {role} = useAuthStore();
   const [quantity, setQuantity] = useState(1);
   const product = mockProducts.find((p) => p.id === id);
@@ -38,7 +39,7 @@ export default function ProductDetail() {
   };
 
   // 加入購物車
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!role) {
       toast.error('Please sign in to add items to your cart.', {
         className: 'buyerProductDetail__errorToast',
@@ -51,15 +52,20 @@ export default function ProductDetail() {
       return;
     }
 
-    addItem(product, quantity);
+    try {
+      await addItem(product, quantity);
 
-    toast.success(`${product.name} added to cart`, {
-      className: 'buyerProductDetail__successToast',
-      iconTheme: {
-        primary: '#14b8a6',
-        secondary: '#fff',
-      },
-    });
+      toast.success(`${product.name} added to cart`, {
+        className: 'buyerProductDetail__successToast',
+        iconTheme: {
+          primary: '#14b8a6',
+          secondary: '#fff',
+        },
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to add item to cart.';
+      toast.error(message);
+    }
   };
 
   return (
@@ -135,11 +141,11 @@ export default function ProductDetail() {
 
               {/* Add to Cart 按鈕 */}
               <button 
-                onClick={handleAddToCart}
-                disabled={product.stock === 0}
+                onClick={() => void handleAddToCart()}
+                disabled={product.stock === 0 || isAddingToCart}
                 className="buyerProductDetail__primaryButton2"
               >
-                Add to Cart
+                {isAddingToCart ? 'Adding...' : 'Add to Cart'}
               </button>
             </div>
           </div>
