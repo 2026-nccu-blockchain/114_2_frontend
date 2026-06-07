@@ -1,0 +1,227 @@
+.buyerOrderDetail__style {
+  text-align:center;
+  padding:1.5rem
+}
+.buyerOrderDetail__style2 {
+  color:#6b7280
+}
+.buyerOrderDetail__primaryButton {
+  color:#0d9488;
+  margin-top:.5rem
+}
+.buyerOrderDetail__primaryButton:hover {
+  text-decoration-line:underline
+}
+.buyerOrderDetail__page {
+  max-width:56rem;
+  margin-left:auto;
+  margin-right:auto;
+  padding:1.5rem
+}
+.buyerOrderDetail__mutedText {
+  color:#6b7280;
+  align-items:center;
+  margin-bottom:1.5rem;
+  font-size:.875rem;
+  line-height:1.25rem;
+  transition-property:color,background-color,border-color,text-decoration-color,fill,stroke;
+  transition-duration:.15s;
+  transition-timing-function:cubic-bezier(.4,0,.2,1);
+  display:flex
+}
+.buyerOrderDetail__mutedText:hover {
+  color:#111827
+}
+.buyerOrderDetail__icon {
+  width:1rem;
+  height:1rem;
+  margin-right:.25rem
+}
+.buyerOrderDetail__style3 {
+  justify-content:space-between;
+  align-items:flex-start;
+  margin-bottom:1.5rem;
+  display:flex
+}
+.buyerOrderDetail__title {
+  color:#111827;
+  font-size:1.5rem;
+  font-weight:700;
+  line-height:2rem
+}
+.buyerOrderDetail__style4 {
+  color:#9ca3af;
+  margin-top:.25rem;
+  font-size:.875rem;
+  line-height:1.25rem
+}
+.buyerOrderDetail__style5 {
+  color:#2563eb;
+  background-color:#eff6ff;
+  border-radius:9999px;
+  padding:.25rem .75rem;
+  font-size:.875rem;
+  font-weight:500;
+  line-height:1.25rem
+}
+.buyerOrderDetail__panel {
+  background-color:#fff;
+  border-width:1px;
+  border-color:#e5e7eb;
+  border-radius:.75rem;
+  margin-bottom:1.5rem;
+  overflow:hidden;
+  box-shadow:0 1px 2px #0000000d
+}
+.buyerOrderDetail__style6 {
+  padding:1.5rem
+}
+.buyerOrderDetail__style7 {
+  color:#9ca3af;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  margin-bottom:1rem;
+  font-size:.875rem;
+  font-weight:600;
+  line-height:1.25rem
+}
+.buyerOrderDetail__style9 {
+  justify-content:space-between;
+  padding-top:.75rem;
+  padding-bottom:.75rem;
+  font-size:.875rem;
+  line-height:1.25rem;
+  display:flex
+}
+.buyerOrderDetail__style10 {
+  color:#1f2937
+}
+.buyerOrderDetail__style11 {
+  color:#9ca3af;
+  font-size:.75rem;
+  line-height:1rem
+}
+.buyerOrderDetail__style12 {
+  color:#111827;
+  font-weight:500
+}
+.buyerOrderDetail__style13 {
+  color:#111827;
+  border-color:#f3f4f6;
+  border-top-width:1px;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:1rem;
+  padding-top:1rem;
+  font-weight:700;
+  display:flex
+}
+.buyerOrderDetail__style14 {
+  font-size:1.125rem;
+  line-height:1.75rem
+}
+.buyerOrderDetail__panel2 {
+  background-color:#fff;
+  border-width:1px;
+  border-color:#e5e7eb;
+  border-radius:.75rem;
+  margin-bottom:1.5rem;
+  padding:1.5rem;
+  box-shadow:0 1px 2px #0000000d
+}
+.buyerOrderDetail__style15 {
+  grid-template-columns:repeat(1,minmax(0,1fr));
+  gap:1rem;
+  margin-bottom:1rem;
+  font-size:.875rem;
+  line-height:1.25rem;
+  display:grid
+}
+@media (width>=768px) {
+  .buyerOrderDetail__style15 {
+    grid-template-columns:repeat(2,minmax(0,1fr))
+}
+
+}
+.buyerOrderDetail__style16 {
+  color:#111827;
+  margin-top:.125rem;
+  font-weight:500
+}
+.buyerOrderDetail__page2 {
+  font-size:.875rem;
+  line-height:1.25rem
+}
+.buyerOrderDetail__page2>:not(:last-child) {
+  margin-top:0;
+  margin-bottom:1rem
+}
+.buyerOrderDetail__style17 {
+  color:#4b5563;
+  margin-top:.125rem
+}
+.buyerOrderDetail__panel3 {
+  background-color:#fff;
+  border-width:1px;
+  border-color:#e5e7eb;
+  border-radius:.75rem;
+  padding:1.5rem;
+  box-shadow:0 1px 2px #0000000d
+}
+.buyerOrderDetail__style18 {
+  align-items:center;
+  gap:.5rem;
+  margin-bottom:1.5rem;
+  display:flex
+}
+.buyerOrderDetail__mutedText2 {
+  color:#6b7280;
+  font-size:.875rem;
+  line-height:1.25rem
+}
+.buyerOrderDetail__style19 {
+  color:#2563eb;
+  background-color:#eff6ff;
+  border-radius:9999px;
+  padding:.125rem .625rem;
+  font-size:.75rem;
+  font-weight:500;
+  line-height:1rem
+}
+.buyerOrderDetail__style20 {
+  border-color:#14b8a6;
+  border-left-width:2px;
+  margin-left:.5rem;
+  padding-bottom:.5rem;
+  padding-left:1rem;
+  position:relative
+}
+.buyerOrderDetail__style21 {
+  background-color:#14b8a6;
+  border-width:1px;
+  border-color:#fff;
+  border-radius:9999px;
+  width:.75rem;
+  height:.75rem;
+  position:absolute;
+  top:.375rem;
+  left:-7px
+}
+.buyerOrderDetail__style22 {
+  color:#111827;
+  font-size:.875rem;
+  font-weight:500;
+  line-height:1.25rem
+}
+.buyerOrderDetail__style23 {
+  color:#9ca3af;
+  margin-top:.125rem;
+  font-size:.75rem;
+  line-height:1rem
+}
+.buyerOrderDetail__style24 {
+  text-align:center;
+  color:#9ca3af;
+  margin-top:2rem;
+  font-size:11px
+}

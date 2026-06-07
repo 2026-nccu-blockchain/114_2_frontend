@@ -1,54 +1,7 @@
 import { Edit3, Package, PlusCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-
-const styles = {
-  page: 'space-y-8',
-  header: 'flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
-  eyebrow: 'text-sm font-medium text-teal-700',
-  title: 'mt-1 text-2xl font-bold text-gray-900',
-  subtitle: 'mt-1 text-sm text-gray-500',
-  addButton:
-    'inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 text-sm font-medium text-white transition-colors hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2',
-  addButtonIcon: 'h-4 w-4',
-  section: 'space-y-4',
-  sectionHeader: 'flex items-center justify-between gap-3',
-  sectionTitleWrap: 'flex items-center gap-3',
-  sectionTitle: 'text-lg font-semibold text-gray-900',
-  sectionIcon: 'h-5 w-5 text-teal-600',
-  count: 'rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600',
-  grid: 'grid gap-4 md:grid-cols-2 xl:grid-cols-3',
-  card: 'overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-colors hover:border-teal-300',
-  cardInactive: 'bg-gray-50 opacity-80 hover:border-gray-300',
-  cardLink: 'block text-left',
-  image: 'flex aspect-[4/3] w-full items-center justify-center bg-gray-100 text-gray-300',
-  imageIcon: 'h-12 w-12',
-  body: 'space-y-4 p-4',
-  top: 'flex items-start justify-between gap-3',
-  name: 'text-base font-semibold text-gray-900',
-  category: 'mt-1 text-sm text-gray-500',
-  price: 'text-base font-semibold text-gray-900',
-  meta: 'grid grid-cols-2 gap-3 text-sm',
-  metaLabel: 'text-gray-500',
-  metaValue: 'mt-1 font-medium text-gray-900',
-  actions: 'flex items-center justify-between gap-3 border-t border-gray-100 pt-4',
-  editButton:
-    'inline-flex h-9 items-center justify-center gap-2 rounded-lg border border-gray-300 px-3 text-sm font-medium text-gray-700 transition-colors hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700',
-  editIcon: 'h-4 w-4',
-  status: 'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium',
-  statusActive: 'bg-emerald-50 text-emerald-700',
-  statusInactive: 'bg-gray-200 text-gray-600',
-  toggle:
-    'inline-flex h-6 w-11 items-center rounded-full p-0.5 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2',
-  toggleActive: 'bg-teal-600',
-  toggleInactive: 'bg-gray-300',
-  thumb: 'h-5 w-5 rounded-full bg-white shadow-sm transition-transform',
-  thumbActive: 'translate-x-5',
-  empty: 'rounded-lg border border-dashed border-gray-300 bg-white p-8 text-center',
-  emptyTitle: 'text-base font-semibold text-gray-900',
-  emptyText: 'mt-1 text-sm text-gray-500',
-};
-
+import '@/styles/pages/seller/Products.css';
 interface Product {
   id: number;
   name: string;
@@ -108,51 +61,51 @@ function ProductCard({
   const editPath = `/products/${product.id}/edit`;
 
   return (
-    <article className={`${styles.card} ${product.active ? '' : styles.cardInactive}`}>
-      <Link to={editPath} className={styles.cardLink}>
-        <div className={styles.image}>
-          <Package className={styles.imageIcon} />
+    <article className={`${'sellerProducts__card'} ${product.active ? '' : 'sellerProducts__cardInactive'}`}>
+      <Link to={editPath} className="sellerProducts__cardLink">
+        <div className="sellerProducts__image">
+          <Package className="sellerProducts__imageIcon" />
         </div>
       </Link>
 
-      <div className={styles.body}>
-        <div className={styles.top}>
-          <Link to={editPath} className={styles.cardLink}>
-            <h3 className={styles.name}>{product.name}</h3>
-            <p className={styles.category}>{product.category}</p>
+      <div className="sellerProducts__body">
+        <div className="sellerProducts__top">
+          <Link to={editPath} className="sellerProducts__cardLink">
+            <h3 className="sellerProducts__name">{product.name}</h3>
+            <p className="sellerProducts__category">{product.category}</p>
           </Link>
 
-          <p className={styles.price}>{product.price}</p>
+          <p className="sellerProducts__price">{product.price}</p>
         </div>
 
-        <div className={styles.meta}>
+        <div className="sellerProducts__meta">
           <div>
-            <p className={styles.metaLabel}>Stock</p>
-            <p className={styles.metaValue}>{product.stock}</p>
+            <p className="sellerProducts__metaLabel">Stock</p>
+            <p className="sellerProducts__metaValue">{product.stock}</p>
           </div>
           <div>
-            <p className={styles.metaLabel}>Sold</p>
-            <p className={styles.metaValue}>{product.sold}</p>
+            <p className="sellerProducts__metaLabel">Sold</p>
+            <p className="sellerProducts__metaValue">{product.sold}</p>
           </div>
         </div>
 
-        <div className={styles.actions}>
-          <Link to={editPath} className={styles.editButton}>
-            <Edit3 className={styles.editIcon} />
+        <div className="sellerProducts__actions">
+          <Link to={editPath} className="sellerProducts__editButton">
+            <Edit3 className="sellerProducts__editIcon" />
             Edit
           </Link>
 
-          <span className={`${styles.status} ${product.active ? styles.statusActive : styles.statusInactive}`}>
+          <span className={`${'sellerProducts__status'} ${product.active ? 'sellerProducts__statusActive' : 'sellerProducts__statusInactive'}`}>
             {product.active ? 'Online' : 'Deactivated'}
           </span>
 
           <button
             type="button"
             onClick={() => onToggle(product.id)}
-            className={`${styles.toggle} ${product.active ? styles.toggleActive : styles.toggleInactive}`}
+            className={`${'sellerProducts__toggle'} ${product.active ? 'sellerProducts__toggleActive' : 'sellerProducts__toggleInactive'}`}
             aria-label={product.active ? 'Deactivate product' : 'Activate product'}
           >
-            <span className={`${styles.thumb} ${product.active ? styles.thumbActive : ''}`} />
+            <span className={`${'sellerProducts__thumb'} ${product.active ? 'sellerProducts__thumbActive' : ''}`} />
           </button>
         </div>
       </div>
@@ -175,62 +128,62 @@ export default function SellerProducts() {
   };
 
   return (
-    <div className={styles.page}>
-      <header className={styles.header}>
+    <div className="sellerProducts__page">
+      <header className="sellerProducts__header">
         <div>
-          <p className={styles.eyebrow}>Seller Products</p>
-          <h1 className={styles.title}>Product management</h1>
-          {/* <p className={styles.subtitle}>Control product listings, stock, and online status.</p> */}
+          <p className="sellerProducts__eyebrow">Seller Products</p>
+          <h1 className="sellerProducts__title">Product management</h1>
+          
         </div>
 
-        <Link to="/add-product" className={styles.addButton}>
-          <PlusCircle className={styles.addButtonIcon} />
+        <Link to="/add-product" className="sellerProducts__addButton">
+          <PlusCircle className="sellerProducts__addButtonIcon" />
           Add Product
         </Link>
       </header>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleWrap}>
-            <Package className={styles.sectionIcon} />
-            <h2 className={styles.sectionTitle}>Active Products</h2>
+      <section className="sellerProducts__section">
+        <div className="sellerProducts__sectionHeader">
+          <div className="sellerProducts__sectionTitleWrap">
+            <Package className="sellerProducts__sectionIcon" />
+            <h2 className="sellerProducts__sectionTitle">Active Products</h2>
           </div>
-          <span className={styles.count}>{activeProducts.length}</span>
+          <span className="sellerProducts__count">{activeProducts.length}</span>
         </div>
 
         {activeProducts.length > 0 ? (
-          <div className={styles.grid}>
+          <div className="sellerProducts__grid">
             {activeProducts.map((product) => (
               <ProductCard key={product.id} product={product} onToggle={toggleProduct} />
             ))}
           </div>
         ) : (
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>No active products</p>
-            <p className={styles.emptyText}>Activate a product or add a new one to start selling.</p>
+          <div className="sellerProducts__empty">
+            <p className="sellerProducts__emptyTitle">No active products</p>
+            <p className="sellerProducts__emptyText">Activate a product or add a new one to start selling.</p>
           </div>
         )}
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleWrap}>
-            <Package className={styles.sectionIcon} />
-            <h2 className={styles.sectionTitle}>Deactivated Products</h2>
+      <section className="sellerProducts__section">
+        <div className="sellerProducts__sectionHeader">
+          <div className="sellerProducts__sectionTitleWrap">
+            <Package className="sellerProducts__sectionIcon" />
+            <h2 className="sellerProducts__sectionTitle">Deactivated Products</h2>
           </div>
-          <span className={styles.count}>{deactivatedProducts.length}</span>
+          <span className="sellerProducts__count">{deactivatedProducts.length}</span>
         </div>
 
         {deactivatedProducts.length > 0 ? (
-          <div className={styles.grid}>
+          <div className="sellerProducts__grid">
             {deactivatedProducts.map((product) => (
               <ProductCard key={product.id} product={product} onToggle={toggleProduct} />
             ))}
           </div>
         ) : (
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>No deactivated products</p>
-            <p className={styles.emptyText}>Products you turn off will appear here.</p>
+          <div className="sellerProducts__empty">
+            <p className="sellerProducts__emptyTitle">No deactivated products</p>
+            <p className="sellerProducts__emptyText">Products you turn off will appear here.</p>
           </div>
         )}
       </section>
