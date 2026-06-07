@@ -1,0 +1,158 @@
+:where(.sellerOrders__page>:not(:last-child)) {
+  --tw-space-y-reverse:0;
+  margin-block-start:calc(calc(var(--spacing,.25rem) * 6) * var(--tw-space-y-reverse));
+  margin-block-end:calc(calc(var(--spacing,.25rem) * 6) * calc(1 - var(--tw-space-y-reverse)))
+}
+.sellerOrders__header {
+  gap:calc(var(--spacing,.25rem) * 4);
+  flex-direction:column;
+  display:flex
+}
+@media (width>=40rem) {
+  .sellerOrders__header {
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:flex-start
+}
+
+}
+.sellerOrders__eyebrow {
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  --tw-font-weight:var(--font-weight-medium,500);
+  font-weight:var(--font-weight-medium,500);
+  color:var(--color-teal-700,oklch(51.1% .096 186.391))
+}
+.sellerOrders__title {
+  margin-top:calc(var(--spacing,.25rem) * 1);
+  font-size:var(--text-2xl,1.5rem);
+  line-height:var(--tw-leading,var(--text-2xl--line-height,calc(2 / 1.5)));
+  --tw-font-weight:var(--font-weight-bold,700);
+  font-weight:var(--font-weight-bold,700);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerOrders__subtitle {
+  margin-top:calc(var(--spacing,.25rem) * 1);
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  color:var(--color-gray-500,oklch(55.1% .027 264.364))
+}
+:where(.sellerOrders__filterField>:not(:last-child)) {
+  --tw-space-y-reverse:0;
+  margin-block-start:calc(calc(var(--spacing,.25rem) * 1.5) * var(--tw-space-y-reverse));
+  margin-block-end:calc(calc(var(--spacing,.25rem) * 1.5) * calc(1 - var(--tw-space-y-reverse)))
+}
+@media (width>=40rem) {
+  .sellerOrders__filterField {
+    min-width:calc(var(--spacing,.25rem) * 56)
+}
+
+}
+.sellerOrders__filterLabel {
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  --tw-font-weight:var(--font-weight-medium,500);
+  font-weight:var(--font-weight-medium,500);
+  color:var(--color-gray-700,oklch(37.3% .034 259.733))
+}
+.sellerOrders__select {
+  height:calc(var(--spacing,.25rem) * 10);
+  border-radius:var(--radius-lg,.5rem);
+  border-style:var(--tw-border-style);
+  border-width:1px;
+  border-color:var(--color-gray-300,oklch(87.2% .01 258.338));
+  background-color:var(--color-white,#fff);
+  width:100%;
+  padding-inline:calc(var(--spacing,.25rem) * 3);
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerOrders__select:focus {
+  border-color:var(--color-teal-500,oklch(70.4% .14 182.503));
+  --tw-ring-shadow:var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color,currentcolor);
+  box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  --tw-ring-color:var(--color-teal-500,oklch(70.4% .14 182.503));
+  --tw-outline-style:none;
+  outline-style:none
+}
+.sellerOrders__list {
+  gap:calc(var(--spacing,.25rem) * 3);
+  display:grid
+}
+.sellerOrders__orderCard {
+  border-radius:var(--radius-lg,.5rem);
+  border-style:var(--tw-border-style);
+  border-width:1px;
+  border-color:var(--color-gray-200,oklch(92.8% .006 264.531));
+  background-color:var(--color-white,#fff);
+  padding:calc(var(--spacing,.25rem) * 4);
+  --tw-shadow:0 1px 3px 0 var(--tw-shadow-color,#0000001a), 0 1px 2px -1px var(--tw-shadow-color,#0000001a);
+  box-shadow:var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  transition-property:color,background-color,border-color,outline-color,text-decoration-color,fill,stroke,--tw-gradient-from,--tw-gradient-via,--tw-gradient-to;
+  transition-timing-function:var(--tw-ease,var(--default-transition-timing-function,cubic-bezier(.4, 0, .2, 1)));
+  transition-duration:var(--tw-duration,var(--default-transition-duration,.15s));
+  display:block
+}
+@media (hover:hover) {
+  .sellerOrders__orderCard:hover {
+    border-color:var(--color-teal-300,oklch(85.5% .138 181.071));
+    background-color:var(--color-teal-50,oklch(98.4% .014 180.72))
+}
+
+}
+.sellerOrders__orderTop {
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:calc(var(--spacing,.25rem) * 4);
+  display:flex
+}
+.sellerOrders__orderId {
+  --tw-font-weight:var(--font-weight-semibold,600);
+  font-weight:var(--font-weight-semibold,600);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerOrders__orderMeta {
+  margin-top:calc(var(--spacing,.25rem) * 1);
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  color:var(--color-gray-500,oklch(55.1% .027 264.364))
+}
+.sellerOrders__orderFooter {
+  margin-top:calc(var(--spacing,.25rem) * 4);
+  justify-content:space-between;
+  align-items:center;
+  gap:calc(var(--spacing,.25rem) * 3);
+  flex-wrap:wrap;
+  display:flex
+}
+.sellerOrders__total {
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  --tw-font-weight:var(--font-weight-semibold,600);
+  font-weight:var(--font-weight-semibold,600);
+  color:var(--color-gray-900,oklch(21% .034 264.665))
+}
+.sellerOrders__status {
+  padding-inline:calc(var(--spacing,.25rem) * 2.5);
+  padding-block:calc(var(--spacing,.25rem) * 1);
+  font-size:var(--text-xs,.75rem);
+  line-height:var(--tw-leading,var(--text-xs--line-height,calc(1 / .75)));
+  --tw-font-weight:var(--font-weight-medium,500);
+  font-weight:var(--font-weight-medium,500);
+  border-radius:3.40282e38px
+}
+.sellerOrders__empty {
+  border-radius:var(--radius-lg,.5rem);
+  border-style:var(--tw-border-style);
+  --tw-border-style:dashed;
+  border-style:dashed;
+  border-width:1px;
+  border-color:var(--color-gray-300,oklch(87.2% .01 258.338));
+  background-color:var(--color-white,#fff);
+  padding:calc(var(--spacing,.25rem) * 8);
+  text-align:center;
+  font-size:var(--text-sm,.875rem);
+  line-height:var(--tw-leading,var(--text-sm--line-height,calc(1.25 / .875)));
+  color:var(--color-gray-500,oklch(55.1% .027 264.364))
+}
