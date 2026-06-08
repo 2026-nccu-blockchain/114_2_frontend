@@ -65,7 +65,7 @@ function AppRoutes() {
             )
           }   
         />
-        <Route path="products/:id" element={<ProductDetail />} />
+        <Route path="products/:pid" element={<ProductDetail />} />
       </Route>
 
       <Route element={<AuthGuard />}>

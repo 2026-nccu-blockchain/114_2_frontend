@@ -34,17 +34,18 @@ export const useUpload = () => {
     setUploading(true);
     try {
       const res = await uploadService.uploadImage(file, email, token);
-      const code = res?.data?.status_code;
-
-      if (code === '00000' && res.data.url) {
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
+      if (code === '00000' && responsePayload?.url) {
         toast.success('圖片上傳成功！');
-        return res.data.url;
+        return responsePayload.url;
       } else {
         const errorMsg = handleUploadStatusCode(code, res?.data?.message || '');
         toast.error(errorMsg || '上傳失敗');
         return null;
       }
     } catch (err) {
+      console.error(err);
       toast.error('網路連線失敗，無法連接上傳伺服器');
       return null;
     } finally {

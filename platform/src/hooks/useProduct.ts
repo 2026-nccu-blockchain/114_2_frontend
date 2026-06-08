@@ -47,16 +47,18 @@ export const useProduct = () => {
     setSuccess(false);
     try {
       const res = await productService.addProduct(data, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         setSuccess(true);
         toast.success('商品上架成功！');
         return res.data;
       } else {
-        setError(handleProductStatusCode(code, res?.data?.message || ''));
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
       }
     } catch (err) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return null;
     } finally {
@@ -71,15 +73,17 @@ export const useProduct = () => {
     setError(null);
     try {
       const res = await productService.addProductType(productId, data, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品種類新增成功！');
         return res.data;
       } else {
-        setError(handleProductStatusCode(code, res?.data?.message || ''));
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
       }
     } catch (err) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return null;
     } finally {
@@ -94,15 +98,17 @@ export const useProduct = () => {
     setError(null);
     try {
       const res = await productService.editProductBase(productId, name, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品名稱更新成功！');
         return true;
       } else {
-        setError(handleProductStatusCode(code, res?.data?.message || ''));
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return false;
       }
     } catch (err) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return false;
     } finally {
@@ -117,15 +123,17 @@ export const useProduct = () => {
     setError(null);
     try {
       const res = await productService.updateProductType(uuid, data, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品類型更新成功！');
         return res.data;
       } else {
-        setError(handleProductStatusCode(code, res?.data?.message || ''));
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
       }
     } catch (err) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return null;
     } finally {
@@ -140,15 +148,17 @@ export const useProduct = () => {
     setLoading(true);
     try {
       const res = await productService.deleteProduct(productId, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品已成功刪除！');
         return true;
       } else {
-        toast.error(handleProductStatusCode(code, res?.data?.message || '') || '刪除失敗');
+        toast.error(handleProductStatusCode(code, responsePayload?.message || '') || '刪除失敗');
         return false;
       }
     } catch (err) {
+      console.error(err);
       toast.error('網路連線失敗，請檢查網路連線後再試');
       return false;
     } finally {
@@ -163,15 +173,17 @@ export const useProduct = () => {
     setLoading(true);
     try {
       const res = await productService.deleteProductType(uuid, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('款式類型已成功刪除！');
         return true;
       } else {
-        toast.error(handleProductStatusCode(code, res?.data?.message || '') || '刪除失敗');
+        toast.error(handleProductStatusCode(code, responsePayload?.message || '') || '刪除失敗');
         return false;
       }
     } catch (err) {
+      console.error(err);
       toast.error('網路連線失敗，請檢查網路連線後再試');
       return false;
     } finally {
@@ -186,14 +198,16 @@ export const useProduct = () => {
     setError(null);
     try {
       const res = await productService.getProduct(productId, token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
         return res.data.product;
       } else {
-        setError(handleProductStatusCode(code, res?.data?.message || ''));
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
       }
     } catch (err) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return null;
     } finally {
@@ -208,14 +222,16 @@ export const useProduct = () => {
     setError(null);
     try {
       const res = await productService.getMyProducts(token);
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
         return res.data.product;
       } else {
-        setError(handleProductStatusCode(code, res?.data?.message || ''));
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
       }
     } catch (err) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return null;
     } finally {

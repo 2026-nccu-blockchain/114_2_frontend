@@ -1,10 +1,11 @@
 import { ArrowLeft, ImagePlus, Save, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState, useEffect, type SyntheticEvent } from 'react';
+import { useMemo, useState, useEffect, type SyntheticEvent, type ChangeEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useProduct } from '@/hooks/useProduct';
 import { useUpload } from '@/hooks/useUpload';
 import { useProfile } from '@/hooks/useProfile';
 import '@/styles/pages/seller/AddProduct.css';
+import toast from 'react-hot-toast';
 
 const NEW_CATEGORY_VALUE = '__new_category__';
 const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
@@ -30,7 +31,7 @@ const saveCategory = (categoryName: string) => {
 };
 
 interface Variant {
-  id: string;
+  pid: string;
   type: string;
   price: string;
   stock: string;
@@ -51,43 +52,45 @@ export default function SellerAddProduct() {
   const [customCategory, setCustomCategory] = useState('');
 
   const [variants, setVariants] = useState<Variant[]>([
-    { id: crypto.randomUUID(), type: '', price: '', stock: '' }
+    { pid: crypto.randomUUID(), type: '', price: '', stock: '' }
   ]);
 
   useEffect(() => {
     const getEmail = async () => {
       const profile = await fetchProfile();
-      if (profile) setEmail(profile.email);
+      if (!profile) return;
+      setEmail(profile.email);
     };
     getEmail();
-  }, []);
+  }, [fetchProfile]);
 
   const createdAt = useMemo(
     () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
     [],
   );
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (!file) return;
     
     setPhotoName(file.name);
     const url = await upload(file, email);
-    if (url) setProductUrl(url);
+    if (!url)  return;
+    setProductUrl(url);
   };
 
   const handleAddVariant = () => {
-    setVariants([...variants, { id: crypto.randomUUID(), type: '', price: '', stock: '' }]);
+    setVariants([...variants, { pid: crypto.randomUUID(), type: '', price: '', stock: '' }]);
   };
 
-  const handleRemoveVariant = (id: string) => {
+  const handleRemoveVariant = (pid: string) => {
     if (variants.length > 1) {
-      setVariants(variants.filter(v => v.id !== id));
+      setVariants(variants.filter(v => v.pid !== pid));
     }
   };
 
-  const handleVariantChange = (id: string, field: keyof Variant, value: string) => {
-    setVariants(variants.map(v => (v.id === id ? { ...v, [field]: value } : v)));
+  const handleVariantChange = (pid: string, field: keyof Variant, value: string) => {
+    setVariants(variants.map(v => (v.pid === pid ? { ...v, [field]: value } : v)));
   };
 
   const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
@@ -113,11 +116,13 @@ export default function SellerAddProduct() {
     };
 
     const result = await addProduct(mainPayload);
-    
     const productId = result?.pid || result?.uuid;
-    
-    if (productId) {
-      const additionalVariants = variants.slice(1);
+
+    if (!productId) {
+      toast.error('新增商品失敗，請檢查網路或稍後再試');
+      return; 
+    }
+    const additionalVariants = variants.slice(1);
       
       for (const v of additionalVariants) {
         await addProductType(productId, {
@@ -129,9 +134,8 @@ export default function SellerAddProduct() {
           product_url: productUrl
         });
       }
-      
+      toast.success('商品新增成功！');
       navigate('/products');
-    }
   };
 
   return (
@@ -209,7 +213,7 @@ export default function SellerAddProduct() {
             </div>
 
             {variants.map((v, index) => (
-              <div key={v.id} style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'flex-start' }}>
+              <div key={v.pid} style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'flex-start' }}>
                 <div style={{ flex: 2 }}>
                   {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Variant Name (e.g. Red, Large)</label>}
                   <input 
@@ -217,7 +221,7 @@ export default function SellerAddProduct() {
                     placeholder="e.g. Red / Large" 
                     required 
                     value={v.type}
-                    onChange={(e) => handleVariantChange(v.id, 'type', e.target.value)}
+                    onChange={(e) => handleVariantChange(v.pid, 'type', e.target.value)}
                   />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -226,7 +230,7 @@ export default function SellerAddProduct() {
                     className="sellerAddProduct__input" 
                     type="number" min="0" step="0.01" placeholder="0.00" required 
                     value={v.price}
-                    onChange={(e) => handleVariantChange(v.id, 'price', e.target.value)}
+                    onChange={(e) => handleVariantChange(v.pid, 'price', e.target.value)}
                   />
                 </div>
                 <div style={{ flex: 1 }}>
@@ -235,13 +239,13 @@ export default function SellerAddProduct() {
                     className="sellerAddProduct__input" 
                     type="number" min="0" placeholder="0" required 
                     value={v.stock}
-                    onChange={(e) => handleVariantChange(v.id, 'stock', e.target.value)}
+                    onChange={(e) => handleVariantChange(v.pid, 'stock', e.target.value)}
                   />
                 </div>
                 {variants.length > 1 ? (
                   <button
                     type="button"
-                    onClick={() => handleRemoveVariant(v.id)}
+                    onClick={() => handleRemoveVariant(v.pid)}
                     style={{ 
                       marginTop: index === 0 ? '24px' : '0',
                       padding: '10px', color: '#ef4444', backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', cursor: 'pointer' 

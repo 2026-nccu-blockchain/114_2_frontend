@@ -1,5 +1,5 @@
 import { ArrowLeft, ImagePlus, Save, Loader2, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState, useEffect, type SyntheticEvent } from 'react';
+import { useMemo, useState, useEffect, type SyntheticEvent, type ChangeEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useProduct } from '@/hooks/useProduct';
 import { useUpload } from '@/hooks/useUpload';
@@ -60,47 +60,49 @@ export default function SellerEditProduct() {
 
   useEffect(() => {
     const initData = async () => {
+      if(!productId) return;
       setIsLoadingProduct(true);
       
       const profile = await fetchProfile();
       if (profile) setEmail(profile.email);
-
-      if (productId) {
-        const data = await getProduct(productId);
-        if (data && data.length > 0) {
-          const mainProduct = data[0];
-          setName(mainProduct.name);
-          setCategory(mainProduct.desc || ''); 
-          setProductUrl(mainProduct.product_url || '');
-          setCategories((prev) => prev.includes(mainProduct.desc || '') ? prev : [...prev, mainProduct.desc || '']);
-          
-          const loadedVariants = data.map(p => ({
-            uuid: p.uuid,
-            localId: p.uuid,
-            type: p.type,
-            price: p.price.toString(),
-            stock: p.stock.toString(),
-            status: p.status
-          }));
-          setVariants(loadedVariants);
-        }
+      const data = await getProduct(productId);
+      if (!data || data.length === 0) {
+        setIsLoadingProduct(false); 
+        return; 
       }
+      const mainProduct = data[0];
+      setName(mainProduct.name);
+      setCategory(mainProduct.desc || ''); 
+      setProductUrl(mainProduct.product_url || '');
+      setCategories((prev) => prev.includes(mainProduct.desc || '') ? prev : [...prev, mainProduct.desc || '']);
+          
+      const loadedVariants = data.map(p => ({
+        uuid: p.uuid,
+        localId: p.uuid,
+        type: p.type,
+        price: p.price.toString(),
+        stock: p.stock.toString(),
+        status: p.status
+      }));
+      setVariants(loadedVariants);
+        
       setIsLoadingProduct(false);
     };
     initData();
-  }, [productId]);
+  }, [productId, fetchProfile, getProduct]);
 
   const createdAt = useMemo(
     () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
     []
   );
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
     setPhotoName(file.name);
     const url = await upload(file, email);
-    if (url) setProductUrl(url);
+    if (!url) return;
+    setProductUrl(url);
   };
 
   const handleAddVariant = () => {
@@ -139,31 +141,35 @@ export default function SellerEditProduct() {
 
     const baseSuccess = await editProductBase(productId, name);
     
-    if (baseSuccess) {
-      let allSuccess = true;
-      for (const v of variants) {
-        const payload = {
-          price: Number(v.price),
-          stock: Number(v.stock),
-          type: v.type || 'Default',
-          desc: finalCategory,
-          status: v.status,
-          product_url: productUrl
-        };
+    if (!baseSuccess) {
+      toast.error('商品基本資料更新失敗，請稍後再試');
+      return;
+    }
+    let allSuccess = true;
+    for (const v of variants) {
+      const payload = {
+        price: Number(v.price),
+        stock: Number(v.stock),
+        type: v.type || 'Default',
+        desc: finalCategory,
+        status: v.status,
+        product_url: productUrl
+      };
 
-        if (v.uuid) {
-          const success = await updateProductType(v.uuid, payload);
-          if (!success) allSuccess = false;
-        } else {
-          const success = await addProductType(productId, payload);
-          if (!success) allSuccess = false;
-        }
+      if (v.uuid) {
+        const success = await updateProductType(v.uuid, payload);
+        if (!success) allSuccess = false;
+      } else {
+        const success = await addProductType(productId, payload);
+        if (!success) allSuccess = false;
       }
+    }
 
-      if (allSuccess) {
-        toast.success('商品更新完成！');
-        navigate('/products');
-      }
+    if (allSuccess) {
+      toast.success('商品更新完成！');
+       navigate('/products');
+    } else {
+      toast.error('部分款式更新失敗，請檢查網路或稍後再試');
     }
   };
 

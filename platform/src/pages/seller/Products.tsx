@@ -93,15 +93,19 @@ export default function SellerProducts() {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-
-  const fetchProducts = async () => {
-    const data = await getMyProducts();
-    if (data) setProducts(data);
-  };
-
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    const load = async() => {
+      try{
+        const data = await getMyProducts();
+        if(data){
+          setProducts(data);
+        }
+      }catch (e){
+        console.error(e);
+      }
+    };
+    load();
+  }, [getMyProducts]);
 
   const activeProducts = useMemo(() => products.filter((p) => p.status), [products]);
   const deactivatedProducts = useMemo(() => products.filter((p) => !p.status), [products]);
@@ -117,21 +121,30 @@ export default function SellerProducts() {
       product_url: product.product_url
     });
 
-    if (success) {
-      toast.success(`商品已${!product.status ? '上架' : '下架'}`);
-      setProducts(current => current.map(p => 
-        p.uuid === product.uuid ? { ...p, status: !p.status } : p
-      ));
+    if (!success){
+      toast.error('狀態更新失敗，請稍後再試');
+      setTogglingId(null);
+      return;
     }
+
+    toast.success(`商品已${!product.status ? '上架' : '下架'}`);
+    setProducts(current => current.map(p => 
+       p.uuid === product.uuid ? { ...p, status: !p.status } : p
+    ));
+    
     setTogglingId(null);
   };
 
   const handleDeleteProduct = async (pid: string) => {
     setDeletingId(pid);
     const success = await deleteProduct(pid); 
-    if (success) {
-      setProducts(current => current.filter(p => p.pid !== pid));
-    }
+    if (!success){
+      toast.error('刪除失敗，請稍後再試');
+      setDeletingId(null);
+      return; 
+    } 
+    setProducts(current => current.filter(p => p.pid !== pid));
+    toast.success('商品刪除成功！');
     setDeletingId(null);
   };
 

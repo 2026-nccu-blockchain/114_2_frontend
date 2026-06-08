@@ -1,4 +1,4 @@
-import { useState, useEffect, type SyntheticEvent, useRef } from 'react';
+import { useState, useEffect, type SyntheticEvent, useRef, type ChangeEvent} from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useProfile, type UpdateProfileData } from '@/hooks/useProfile';
 import { useUpload } from '@/hooks/useUpload';
@@ -22,38 +22,38 @@ export default function Profile() {
   useEffect(() => {
     const loadData = async () => {
       const data = await fetchProfile();
-      if (data) {
-        setUserId(data.uuid || data.id || '');
-        setFullName(data.name || '');
-        setEmail(data.email || '');
-        setAvatarUrl(data.avatar_url || '');
+      if (!data) return;
+      setUserId(data.uuid || data.id || '');
+      setFullName(data.name || '');
+      setEmail(data.email || '');
+      setAvatarUrl(data.avatar_url || '');
         
-        if (role !== 'admin') {
-          setPhone(data.phone || '');
-        }
-        if (role === 'buyer') {
-          setAddress(data.address || '');
-        }
-        if (role === 'seller') {
-          setCompanyAddress(data.company_address || '');
-          setCompanyPhone(data.company_phone || '');
-          setCompanyName(data.company_name || '');
-        }
+      if (role !== 'admin') {
+       setPhone(data.phone || '');
       }
+      if (role === 'buyer') {
+        setAddress(data.address || '');
+      }
+      if (role === 'seller') {
+        setCompanyAddress(data.company_address || '');
+        setCompanyPhone(data.company_phone || '');
+        setCompanyName(data.company_name || '');
+      }
+      
     };
     loadData();
-  }, [role]);
+  }, [role, fetchProfile]);
   
-   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+   const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     const selectedFile = files[0];
     const uploadedUrl = await upload(selectedFile, email);
     
-    if (uploadedUrl) {
-      setAvatarUrl(uploadedUrl);
-    }
+    if (!uploadedUrl) return;
+    setAvatarUrl(uploadedUrl);
+    
   };
 
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {

@@ -9,7 +9,7 @@ import type { ProductItem } from '@/services/productService';
 import '@/styles/pages/buyer/ProductDetail.css';
 
 export default function ProductDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem); 
   const { role } = useAuthStore();
@@ -21,8 +21,8 @@ export default function ProductDetail() {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      if (!id) return;
-      const data = await getProduct(id);
+      if (!pid) return;
+      const data = await getProduct(pid);
       
       if (data && data.length > 0) {
         const activeVariants = data.filter(v => v.status);
@@ -37,7 +37,7 @@ export default function ProductDetail() {
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [pid, getProduct]);
 
   if (loading) {
     return (

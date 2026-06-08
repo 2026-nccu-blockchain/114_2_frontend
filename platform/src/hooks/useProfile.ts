@@ -64,15 +64,17 @@ export const useProfile = () => {
       else if (role === 'seller') res = await userService.getSeller(token);
       else if (role === 'driver') res = await userService.getDriver(token);
 
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
-        return res.data;
+        return responsePayload;
       } else {
-        const errorMessage = handleStatusCode(code, res?.data?.message);
+        const errorMessage = handleStatusCode(code, responsePayload?.message);
         setError(errorMessage);
         return null;
       }
     } catch (err: any) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
       return null;
     } finally {
@@ -104,16 +106,17 @@ export const useProfile = () => {
       else if (role === 'buyer') res = await userService.updateBuyer(data, token);
       else if (role === 'seller') res = await userService.updateSeller(data, token);
       else if (role === 'driver') res = await userService.updateDriver(data, token);
-
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         setSuccess(true);
         toast.success('資料更新成功！');
       } else {
-        const errorMessage = handleStatusCode(code, res?.data?.message);
+        const errorMessage = handleStatusCode(code, responsePayload?.message);
         setError(errorMessage);
       }
     } catch (err: any) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
     } finally {
       setLoading(false);
@@ -131,17 +134,18 @@ export const useProfile = () => {
       if (role === 'buyer') res = await userService.deleteBuyer(targetId, token);
       else if (role === 'seller') res = await userService.deleteSeller(targetId, token);
       else if (role === 'driver') res = await userService.deleteDriver(targetId, token);
-
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('帳號註銷成功！');
         logout(); 
         navigate('/login'); 
       } else {
-        const errorMessage = handleStatusCode(code, res?.data?.message);
+        const errorMessage = handleStatusCode(code, responsePayload?.message);
         toast.error(errorMessage || '帳號註銷失敗');
       }
     } catch (err: any) {
+      console.error(err);
       toast.error('網路連線失敗，請檢查網路連線後再試');
     } finally {
       setLoading(false);

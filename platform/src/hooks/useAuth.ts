@@ -56,19 +56,20 @@ export const useAuth = () => {
       else if (role === 'buyer') res = await authService.buyerLogin({ email, password });
       else if (role === 'seller') res = await authService.sellerLogin({ email, password });
       else if (role === 'driver') res = await authService.driverLogin({ email, password });
-
-      const code = res?.data?.status_code;
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
       if (code === '00000') {
-        const token = res.data.token || 'mock_jwt_token_example';
+        const token = responsePayload?.token || 'mock_jwt_token_example';
         
         setAuth(token, role);
         toast.success('登入成功！');
         navigate(`/${role}`);
       } else {
-        const errorMessage = handleStatusCode(code, res?.data?.message);
+        const errorMessage = handleStatusCode(code, responsePayload?.message);
         setError(errorMessage);
       }
     } catch (err: any) {
+      console.error(err);
       setError('網路連線失敗，請檢查網路連線後再試');
     } finally {
       setLoading(false)
@@ -81,15 +82,17 @@ export const useAuth = () => {
 
     try {
      const response = await authService.buyerRegister(data)
-
-      if (response.data.status_code === '00000') {
+     const responsePayload = response?.data ?? response;
+     const code = responsePayload?.status_code;
+      if (code === '00000') {
         toast.success('帳號註冊成功！請重新登入。')
         navigate('/login') 
       } else {
-        const errorMessage = handleStatusCode(response.data.status_code, response?.data?.message)
+        const errorMessage = handleStatusCode(code, responsePayload?.message)
         setError(errorMessage)
       }
     } catch (err: any) {
+      console.error(err);
       setError('網路連線失敗，請稍後再試')
     } finally {
       setLoading(false)
@@ -101,15 +104,18 @@ export const useAuth = () => {
 
     try {
       const response = await authService.adminRegister(data)
+      const responsePayload = response?.data ?? response;
+      const code = responsePayload?.status_code;
 
-      if (response.data.status_code === '00000') {
+      if (code === '00000') {
         toast.success('管理員帳號建立成功！請重新登入。')
         navigate('/login') 
       } else {
-        const errorMessage = handleStatusCode(response.data.status_code, response?.data?.message)
+        const errorMessage = handleStatusCode(code, responsePayload?.message)
         setError(errorMessage)
       }
     } catch (err: any) {
+      console.error(err);
       setError('網路連線失敗，請稍後再試')
     } finally {
       setLoading(false)
