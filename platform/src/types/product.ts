@@ -1,15 +1,15 @@
 export interface Product {
-  id: string;
+  uuid: string;
+  pid: string;
   name: string;
-  description: string;
   price: number;
   stock: number;
-  category: string;
-  sellerId: string;
-  sellerName: string;
-  imageUrl?: string;
+  status: boolean;
+  seller_id: string;
+  desc: string;
+  type: string; 
+  product_url?: string;
 }
-
 export interface CartItem extends Product {
   quantity: number;
 }
