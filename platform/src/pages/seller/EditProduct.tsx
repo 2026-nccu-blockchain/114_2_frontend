@@ -143,7 +143,7 @@ export default function SellerEditProduct() {
 
   if (isLoadingProduct) {
     return (
-      <div className="sellerEditProduct__page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <div className="sellerEditProduct__page sellerEditProduct__loading">
         <Loader2 className="animate-spin text-teal-600" size={32} />
       </div>
     );
@@ -189,25 +189,24 @@ export default function SellerEditProduct() {
               onChange={(event) => setDescription(event.target.value)}
             />
           </div>
-          <div className="sellerEditProduct__wideField" style={{ marginTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <label className="sellerEditProduct__label" style={{ margin: 0 }}>
+          <div className="sellerEditProduct__wideField sellerEditProduct__variantSection">
+            <div className="sellerEditProduct__variantHeader">
+              <label className="sellerEditProduct__label sellerEditProduct__variantHeaderLabel">
                 Product Variants <span className="sellerEditProduct__required">*</span>
               </label>
               <button 
                 type="button" 
                 onClick={handleAddVariant} 
-                className="sellerEditProduct__secondaryButton"
-                style={{ padding: '6px 12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
+                className="sellerEditProduct__secondaryButton sellerEditProduct__variantAddButton"
               >
                 <Plus size={16} /> Add Variant
               </button>
             </div>
 
             {variants.map((v, index) => (
-              <div key={v.localId} style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'flex-start' }}>
-                <div style={{ flex: 2 }}>
-                  {index === 0 && <label className="sellerEditProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Variant Name</label>}
+              <div key={v.localId} className="sellerEditProduct__variantRow">
+                <div className="sellerEditProduct__variantNameField">
+                  {index === 0 && <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">Variant Name</label>}
                   <input 
                     className="sellerEditProduct__input" 
                     placeholder="e.g. Red / Large" 
@@ -216,8 +215,8 @@ export default function SellerEditProduct() {
                     onChange={(e) => handleVariantChange(v.localId, 'type', e.target.value)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  {index === 0 && <label className="sellerEditProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Price</label>}
+                <div className="sellerEditProduct__variantNumberField">
+                  {index === 0 && <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">Price</label>}
                   <input 
                     className="sellerEditProduct__input" 
                     type="number" min="0" step="0.01" placeholder="0.00" required 
@@ -225,8 +224,8 @@ export default function SellerEditProduct() {
                     onChange={(e) => handleVariantChange(v.localId, 'price', e.target.value)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  {index === 0 && <label className="sellerEditProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Stock</label>}
+                <div className="sellerEditProduct__variantNumberField">
+                  {index === 0 && <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">Stock</label>}
                   <input 
                     className="sellerEditProduct__input" 
                     type="number" min="0" placeholder="0" required 
@@ -238,11 +237,7 @@ export default function SellerEditProduct() {
                 <button
                   type="button"
                   onClick={() => handleRemoveVariant(v.localId, v.uuid)}
-                  style={{ 
-                    marginTop: index === 0 ? '24px' : '0', 
-                    padding: '10px', color: '#ef4444', backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', cursor: 'pointer',
-                    opacity: variants.length <= 1 ? 0.5 : 1
-                  }}
+                  className={`sellerEditProduct__removeVariantButton ${index === 0 ? 'sellerEditProduct__removeVariantButtonTopAligned' : ''}`}
                   disabled={variants.length <= 1}
                 >
                   <Trash2 size={18} />
@@ -263,14 +258,13 @@ export default function SellerEditProduct() {
               Product photo
             </label>
             {productUrl && !uploading && !photoName && (
-               <div style={{ marginBottom: '10px' }}>
-                 <img src={productUrl} alt="Current product" style={{ height: '80px', borderRadius: '8px', objectFit: 'cover' }} />
+               <div className="sellerEditProduct__currentImageWrap">
+                 <img src={productUrl} alt="Current product" className="sellerEditProduct__currentImage" />
                </div>
             )}
             <label 
-              className="sellerEditProduct__uploadBox" 
+              className={`sellerEditProduct__uploadBox ${uploading ? 'sellerEditProduct__uploadBoxBusy' : ''}`}
               htmlFor="product-photo"
-              style={{ cursor: uploading ? 'wait' : 'pointer', opacity: uploading ? 0.7 : 1 }}
             >
               <ImagePlus className="sellerEditProduct__uploadIcon" />
               <span className="sellerEditProduct__uploadTitle">

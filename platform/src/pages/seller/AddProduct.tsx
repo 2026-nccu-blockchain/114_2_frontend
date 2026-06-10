@@ -150,25 +150,24 @@ export default function SellerAddProduct() {
             />
           </div>
 
-          <div className="sellerAddProduct__wideField" style={{ marginTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <label className="sellerAddProduct__label" style={{ margin: 0 }}>
+          <div className="sellerAddProduct__wideField sellerAddProduct__variantSection">
+            <div className="sellerAddProduct__variantHeader">
+              <label className="sellerAddProduct__label sellerAddProduct__variantHeaderLabel">
                 Product Variants (Sizes, Colors, etc.) <span className="sellerAddProduct__required">*</span>
               </label>
               <button 
                 type="button" 
                 onClick={handleAddVariant} 
-                className="sellerAddProduct__secondaryButton"
-                style={{ padding: '6px 12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
+                className="sellerAddProduct__secondaryButton sellerAddProduct__variantAddButton"
               >
                 <Plus size={16} /> Add Variant
               </button>
             </div>
 
             {variants.map((v, index) => (
-              <div key={v.pid} style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'flex-start' }}>
-                <div style={{ flex: 2 }}>
-                  {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Variant Name (e.g. Red, Large)</label>}
+              <div key={v.pid} className="sellerAddProduct__variantRow">
+                <div className="sellerAddProduct__variantNameField">
+                  {index === 0 && <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">Variant Name (e.g. Red, Large)</label>}
                   <input 
                     className="sellerAddProduct__input" 
                     placeholder="e.g. Red / Large" 
@@ -177,8 +176,8 @@ export default function SellerAddProduct() {
                     onChange={(e) => handleVariantChange(v.pid, 'type', e.target.value)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Price</label>}
+                <div className="sellerAddProduct__variantNumberField">
+                  {index === 0 && <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">Price</label>}
                   <input 
                     className="sellerAddProduct__input" 
                     type="number" min="0" step="0.01" placeholder="0.00" required 
@@ -186,8 +185,8 @@ export default function SellerAddProduct() {
                     onChange={(e) => handleVariantChange(v.pid, 'price', e.target.value)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Stock</label>}
+                <div className="sellerAddProduct__variantNumberField">
+                  {index === 0 && <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">Stock</label>}
                   <input 
                     className="sellerAddProduct__input" 
                     type="number" min="0" placeholder="0" required 
@@ -199,15 +198,12 @@ export default function SellerAddProduct() {
                   <button
                     type="button"
                     onClick={() => handleRemoveVariant(v.pid)}
-                    style={{ 
-                      marginTop: index === 0 ? '24px' : '0',
-                      padding: '10px', color: '#ef4444', backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', cursor: 'pointer' 
-                    }}
+                    className={`sellerAddProduct__removeVariantButton ${index === 0 ? 'sellerAddProduct__removeVariantButtonTopAligned' : ''}`}
                   >
                     <Trash2 size={18} />
                   </button>
                 ) : (
-                  <div style={{ width: '40px' }} /> 
+                  <div className="sellerAddProduct__variantRemoveSpacer" /> 
                 )}
               </div>
             ))}
@@ -225,9 +221,8 @@ export default function SellerAddProduct() {
               Product photo
             </label>
             <label 
-              className="sellerAddProduct__uploadBox" 
+              className={`sellerAddProduct__uploadBox ${uploading ? 'sellerAddProduct__uploadBoxBusy' : ''}`}
               htmlFor="product-photo"
-              style={{ cursor: uploading ? 'wait' : 'pointer', opacity: uploading ? 0.7 : 1 }}
             >
               <ImagePlus className="sellerAddProduct__uploadIcon" />
               <span className="sellerAddProduct__uploadTitle">

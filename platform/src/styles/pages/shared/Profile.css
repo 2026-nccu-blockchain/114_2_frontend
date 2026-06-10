@@ -170,3 +170,6 @@
 .sharedProfile__primaryButton:disabled {
   opacity:.6
 }
+.sharedProfile__hiddenInput {
+  display:none
+}

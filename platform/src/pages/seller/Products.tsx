@@ -24,9 +24,9 @@ function ProductCard({
   return (
     <article className={`${'sellerProducts__card'} ${product.status ? '' : 'sellerProducts__cardInactive'}`}>
       <Link to={editPath} className="sellerProducts__cardLink">
-        <div className="sellerProducts__image" style={{ padding: product.product_url ? 0 : undefined, overflow: 'hidden' }}>
+        <div className={`sellerProducts__image ${product.product_url ? 'sellerProducts__imageWithPhoto' : ''}`}>
           {product.product_url ? (
-            <img src={product.product_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={product.product_url} alt={product.name} className="sellerProducts__productImage" />
           ) : (
              <Package className="sellerProducts__imageIcon" />
           )}
@@ -49,11 +49,11 @@ function ProductCard({
           </div>
           <div>
             <p className="sellerProducts__metaLabel">Product ID</p>
-            <p className="sellerProducts__metaValue" style={{ fontSize: '0.7rem' }}>{product.pid}</p>
+            <p className="sellerProducts__metaValue sellerProducts__pidValue">{product.pid}</p>
           </div>
         </div>
 
-        <div className="sellerProducts__actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="sellerProducts__actions">
           <Link to={editPath} className="sellerProducts__editButton">
             <Edit3 className="sellerProducts__editIcon" /> Edit
           </Link>
@@ -61,14 +61,13 @@ function ProductCard({
           <button
             onClick={() => onDelete(product.pid)}
             disabled={isDeleting || isToggling}
-            className="sellerProducts__editButton"
-            style={{ color: '#ef4444', borderColor: '#fee2e2', backgroundColor: '#fef2f2' }}
+            className="sellerProducts__editButton sellerProducts__deleteButton"
           >
             {isDeleting ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
             Delete
           </button>
 
-          <div style={{ flex: 1 }} />
+          <div className="sellerProducts__actionSpacer" />
 
           <span className={`${'sellerProducts__status'} ${product.status ? 'sellerProducts__statusActive' : 'sellerProducts__statusInactive'}`}>
             {product.status ? 'Online' : 'Deactivated'}
@@ -150,7 +149,7 @@ export default function SellerProducts() {
 
   if (loading && products.length === 0) {
     return (
-      <div className="sellerProducts__page" style={{ display: 'flex', justifyContent: 'center', paddingTop: '10vh' }}>
+      <div className="sellerProducts__page sellerProducts__loadingPage">
         <Loader2 className="animate-spin text-teal-600" size={40} />
       </div>
     );
