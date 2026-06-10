@@ -8,11 +8,11 @@ export default function BuyerProducts() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', ...new Set(mockProducts.map(p => p.category))];
+  const categories = ['All', ...new Set(mockProducts.map(p => p.type))];
 
   const filteredProducts = mockProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'All' || product.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'All' || product.type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -65,8 +65,8 @@ export default function BuyerProducts() {
             <div className="buyerProducts__style10">
               {filteredProducts.map((product) => (
                 <Link
-                  key={product.id}
-                  to={`/products/${product.id}`} 
+                  key={product.pid}
+                  to={`/products/${product.pid}`} 
                   className="group buyerProducts__panel2"
                 >
                   {/* 商品圖片 */}
@@ -78,7 +78,7 @@ export default function BuyerProducts() {
 
                   {/* 商品資訊 */}
                   <div className="buyerProducts__style13">
-                    <div className="buyerProducts__style14">{product.category}</div>
+                    <div className="buyerProducts__style14">{product.type}</div>
                     <h3 className="buyerProducts__style15">{product.name}</h3>
                     
                     <div className="buyerProducts__style16">

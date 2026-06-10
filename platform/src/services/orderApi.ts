@@ -22,17 +22,17 @@ export const createOrder = async (toAddress: string): Promise<Order> => {
 };
 
 export const getMyOrders = async (): Promise<Order[]> => {
-  const { data } = await apiRequest<OrderResponse>('/order/me');
+  const { data } = await apiRequest<OrderResponse>('/orders/me');
   return (data.order ?? []).map((order) => mapOrderDtoToOrder(order, data.response_datetime));
 };
 
 export const getOrder = async (orderId: string): Promise<Order> => {
-  const { data } = await apiRequest<OrderDetailResponse>(`/order/${orderId}`);
+  const { data } = await apiRequest<OrderDetailResponse>(`/orders/order/${orderId}`);
   return mapOrderDetailResponseToOrder(data);
 };
 
 export const updateOrderStatus = async (orderId: string, status: OrderStatus): Promise<Order> => {
-  const { data } = await apiRequest<OrderDetailResponse>(`/order/${orderId}`, {
+  const { data } = await apiRequest<OrderDetailResponse>(`/orders/order/${orderId}`, {
     method: 'PUT',
     body: { status } satisfies UpdateOrderStatusRequest,
   });
