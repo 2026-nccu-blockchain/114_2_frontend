@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useProfile } from '@/hooks/useProfile';
+import '@/styles/pages/shared/Profile.css';
 
 export default function Profile() {
   const { role } = useAuthStore();
@@ -15,7 +16,7 @@ export default function Profile() {
 
   const { updateProfile, loading, error, success } = useProfile();
 
-  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await updateProfile({
       fullName: fullName,
@@ -25,68 +26,68 @@ export default function Profile() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Profile</h1>
+    <div className="sharedProfile__page">
+      <h1 className="sharedProfile__title">Profile</h1>
 
-      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
-        <div className="flex items-center gap-4 mb-8 pb-6 border-b border-gray-100">
-          <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 font-bold text-xl">
+      <div className="sharedProfile__panel">
+        <div className="sharedProfile__style">
+          <div className="sharedProfile__style2">
             {fullName.charAt(0)}
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{fullName}</h2>
-            <p className="text-sm text-gray-500">{role}@demo.local</p>
-            <span className="inline-block mt-1 px-2.5 py-0.5 bg-teal-50 text-teal-600 text-xs font-medium rounded">
+            <h2 className="sharedProfile__sectionTitle">{fullName}</h2>
+            <p className="sharedProfile__mutedText">{role}@demo.local</p>
+            <span className="sharedProfile__style3">
               {role ? role.charAt(0).toUpperCase() + role.slice(1) : ''}
             </span>
           </div>
         </div>
 
-        {error && <div className="mb-4 text-sm text-red-600 bg-red-50 p-2.5 rounded-lg">{error}</div>}
+        {error && <div className="sharedProfile__style4">{error}</div>}
         {success && (
-          <div className="mb-4 text-sm text-green-600 bg-green-50 p-2.5 rounded-lg">
+          <div className="sharedProfile__style5">
             儲存成功
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="sharedProfile__page2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name <span className="text-red-500">*</span>
+            <label className="sharedProfile__style6">
+              Full Name <span className="sharedProfile__required">*</span>
             </label>
             <input
               type="text"
               required
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+              className="sharedProfile__input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <label className="sharedProfile__style6">Phone</label>
             <input
               type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm"
+              className="sharedProfile__input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Avatar URL</label>
+            <label className="sharedProfile__style6">Avatar URL</label>
             <input
               type="text"
               value={avatarUrl}
               onChange={(e) => setAvatarUrl(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500 text-sm font-mono text-xs truncate"
+              className="sharedProfile__input2"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg text-sm transition-colors disabled:opacity-60"
+            className="sharedProfile__primaryButton"
           >
             {loading ? 'Saving...' : 'Save Changes'}
           </button>
