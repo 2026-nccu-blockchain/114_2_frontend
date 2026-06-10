@@ -13,6 +13,19 @@ export interface ProductItem {
   product_url?: string;
 }
 
+export interface ProductDto {
+  product_id: string;
+  pid: string;
+  name: string;
+  price: number;
+  stock: number;
+  status: boolean;
+  seller_id: string;
+  desc: string;
+  type: string;
+  product_url?: string;
+}
+
 export interface ProductBaseResponse {
   status_code: string;
   message: string;
@@ -38,14 +51,27 @@ export interface AddTypePayload {
   product_url?: string;
 }
 
-export interface ProductActionResponse extends ProductBaseResponse, Partial<ProductItem> {}
+export interface ProductActionResponse extends ProductBaseResponse, Partial<ProductDto> {}
 
 export interface ProductSingleResponse extends ProductBaseResponse {
-  product?: ProductItem[];
+  product?: ProductDto[];
 }
 export interface ProductListResponse extends ProductBaseResponse {
-  product?: ProductItem[];
+  product?: ProductDto[];
 }
+
+export const mapProductDtoToProductItem = (product: ProductDto): ProductItem => ({
+  uuid: product.product_id,
+  pid: product.pid,
+  name: product.name,
+  price: product.price,
+  stock: product.stock,
+  status: product.status,
+  seller_id: product.seller_id,
+  desc: product.desc,
+  type: product.type,
+  product_url: product.product_url,
+});
 
 export const productService = {
   //賣家上架商品
@@ -95,10 +121,11 @@ export const productService = {
     });
   },
   //查看商品
-  getProduct: (productId: string, token: string) => {
+  getProduct: (productId: string, token?: string) => {
     return apiRequest<ProductSingleResponse>(`/products/product/${productId}`, {
       method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` },
+      auth: Boolean(token),
+      headers: token ? { 'Authorization': `Bearer ${token}` } : undefined,
     });
   },
   //列出使用者所有商品

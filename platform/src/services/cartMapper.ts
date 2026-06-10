@@ -2,7 +2,7 @@ import type { CartDto, CartItemModel } from '@/types';
 
 export const mapCartDtoToCartItem = (item: CartDto): CartItemModel => ({
   uuid: item.product_id,
-  pid: item.product_id,
+  pid: item.pid ?? '',
   cartId: item.cart_id,
   name: item.name,
   price: item.price,

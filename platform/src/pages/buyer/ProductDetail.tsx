@@ -6,13 +6,14 @@ import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import type { ProductItem } from '@/services/productService';
+import { mockProducts } from '@/mock/products';
 import '@/styles/pages/buyer/ProductDetail.css';
 
 export default function ProductDetail() {
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem); 
-  const { role } = useAuthStore();
+  const { role, token } = useAuthStore();
   const { getProduct, loading } = useProduct();
   const [quantity, setQuantity] = useState(1);
   
@@ -23,21 +24,27 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       if (!pid) return;
       const data = await getProduct(pid);
+      const fallbackProduct = mockProducts.find(product => product.pid === pid);
+      const productData = data && data.length > 0
+        ? data
+        : fallbackProduct
+          ? [fallbackProduct]
+          : [];
       
-      if (data && data.length > 0) {
-        const activeVariants = data.filter(v => v.status);
+      if (productData.length > 0) {
+        const activeVariants = productData.filter(v => v.status);
         
         if (activeVariants.length > 0) {
           setVariants(activeVariants);
           setSelectedVariant(activeVariants[0]);
         } else {
-          setVariants(data);
-          setSelectedVariant(data[0]);
+          setVariants(productData);
+          setSelectedVariant(productData[0]);
         }
       }
     };
     fetchProduct();
-  }, [pid, getProduct]);
+  }, [getProduct, pid]);
 
   if (loading) {
     return (
@@ -71,17 +78,18 @@ export default function ProductDetail() {
     setQuantity(1);
   };
 
-  const handleAddToCart = () => {
-    if (!role) {
+  const handleAddToCart = async () => {
+    if (!role || !token) {
       toast.error('Please sign in to add items to your cart.', {
         className: 'buyerProductDetail__errorToast',
         iconTheme: { primary: '#ef4444', secondary: '#fff' },
       });
-      setTimeout(() => navigate('/login'), 2000);
+      navigate('/login');
       return;
     }
     
-    addItem({
+    try {
+      await addItem({
         uuid: selectedVariant.uuid,
         pid: selectedVariant.pid,
         name: selectedVariant.name,
@@ -94,10 +102,13 @@ export default function ProductDetail() {
         product_url: selectedVariant.product_url
       }, quantity);
 
-    toast.success(`${selectedVariant.name} (${selectedVariant.type}) added to cart`, {
-      className: 'buyerProductDetail__successToast',
-      iconTheme: { primary: '#14b8a6', secondary: '#fff' },
-    });
+      toast.success(`${selectedVariant.name} (${selectedVariant.type}) added to cart`, {
+        className: 'buyerProductDetail__successToast',
+        iconTheme: { primary: '#14b8a6', secondary: '#fff' },
+      });
+    } catch {
+      toast.error('Failed to add item to cart.');
+    }
   };
 
   return (

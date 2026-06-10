@@ -105,7 +105,7 @@ export default function BuyerCart() {
       <div className="buyerCart__panel">
         <ul className="buyerCart__style5">
           {items.map((item) => (
-            <li key={item.pid} className="buyerCart__style6">
+            <li key={item.cartId ?? item.uuid} className="buyerCart__style6">
               {/* 商品圖片 */}
               <div className="buyerCart__style7">
                 <span className="buyerCart__style8">Product</span>
@@ -113,9 +113,13 @@ export default function BuyerCart() {
 
               {/* 商品名稱與資訊 */}
               <div className="buyerCart__style9">
-                <Link to={`/products/${item.pid}`} className="buyerCart__style10">
-                  {item.name}
-                </Link>
+                {item.pid ? (
+                  <Link to={`/products/${item.pid}`} className="buyerCart__style10">
+                    {item.name}
+                  </Link>
+                ) : (
+                  <span className="buyerCart__style10">{item.name}</span>
+                )}
                 <p className="buyerCart__mutedText2">${item.price.toFixed(2)} each</p>
               </div>
 

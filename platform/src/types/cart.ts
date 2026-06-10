@@ -3,6 +3,7 @@ import type { CartItem } from '@/types/product';
 export interface CartDto {
   cart_id: string;
   product_id: string;
+  pid?: string;
   name: string;
   type: string;
   price: number;
