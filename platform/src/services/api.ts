@@ -16,7 +16,7 @@ type ApiEnvelope = {
   message?: string;
 };
 
-const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || '/api/v2';
+const API_BASE_URL = import.meta.env['VITE_API_URL'] || '/api/v2';
 
 const buildUrl = (url: string) => {
   if (/^https?:\/\//.test(url)) return url;
