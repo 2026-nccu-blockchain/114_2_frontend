@@ -61,7 +61,7 @@ export default function BuyerCheckout() {
           <h2 className="buyerCheckout__sectionTitle">Order Summary</h2>
           <ul className="buyerCheckout__page2">
             {items.map((item) => (
-              <li key={item.id} className="buyerCheckout__style2">
+              <li key={item.pid} className="buyerCheckout__style2">
                 <span>{item.name} x {item.quantity}</span>
                 <span className="buyerCheckout__style3">${(item.price * item.quantity).toFixed(2)}</span>
               </li>
