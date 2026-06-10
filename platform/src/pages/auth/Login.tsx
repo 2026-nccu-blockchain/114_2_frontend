@@ -1,9 +1,20 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuth, type LoginRole } from '@/hooks/useAuth';
 import '@/styles/pages/auth/Login.css';
 
-export default function Login() {
+const loginTitles: Record<LoginRole, string> = {
+  buyer: 'Sign in to your account',
+  seller: 'Seller sign in',
+  driver: 'Driver sign in',
+  admin: 'Admin sign in',
+};
+
+interface LoginProps {
+  role?: LoginRole;
+}
+
+export default function Login({ role = 'buyer' }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
@@ -11,20 +22,26 @@ export default function Login() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!email || !password) return;
-    await login(email, password);
+    await login(email, password, role);
   };
 
   return (
     <div className="authLogin__page">
       <div className="authLogin__panel">
         <div className="authLogin__style">
-          <h2 className="authLogin__title">Sign in to your account</h2>
-          <p className="authLogin__mutedText">
-            Don&apos;t have an account?{' '}
-            <Link to="/register" className="authLogin__primaryButton">
-              Sign up
-            </Link>
-          </p>
+          <h2 className="authLogin__title">{loginTitles[role]}</h2>
+          {role === 'buyer' ? (
+            <p className="authLogin__mutedText">
+              Don&apos;t have an account?{' '}
+              <Link to="/register" className="authLogin__primaryButton">
+                Sign up
+              </Link>
+            </p>
+          ) : (
+            <p className="authLogin__mutedText">
+              {role === 'admin' ? 'Use your administrator credentials.' : 'Use the account assigned by an administrator.'}
+            </p>
+          )}
         </div>
 
         {error && <div className="authLogin__style2">{error}</div>}

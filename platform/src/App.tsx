@@ -46,7 +46,13 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login role="buyer" />} />
+      <Route path="/admin" element={<Login role="admin" />} />
+      {/* <Route path="/admin/login" element={<Login role="admin" />} /> */}
+      <Route path="/seller" element={<Login role="seller" />} />
+      {/* <Route path="/seller/login" element={<Login role="seller" />} /> */}
+      <Route path="/driver" element={<Login role="driver" />} />
+      {/* <Route path="/driver/login" element={<Login role="driver" />} /> */}
       <Route path="/register" element={<Register />} />
       <Route path="/admin/register" element={<AdminRegister />} />
 
