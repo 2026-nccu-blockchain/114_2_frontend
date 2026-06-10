@@ -32,11 +32,11 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const item = await cartApi.addCartItem(product.id, quantity);
+      const item = await cartApi.addCartItem(product.uuid, quantity);
       set((state) => ({
         items: state.items.some((currentItem) => currentItem.cartId === item.cartId)
           ? state.items.map((currentItem) => (currentItem.cartId === item.cartId ? item : currentItem))
-          : [...state.items.filter((currentItem) => currentItem.id !== item.id), item],
+          : [...state.items.filter((currentItem) => currentItem.uuid !== item.uuid), item],
         isLoading: false,
       }));
       return item;

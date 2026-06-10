@@ -22,25 +22,29 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       notes: 'Leave at the front desk.',
       items: [
         {
-          id: 'prod_001',
+          uuid: 'mock-uuid-1',
+          pid: 'prod_001',        
           name: 'COD Starter Kit',
-          description: '',
           price: 890,
           stock: 25,
-          category: 'Starter',
-          sellerId: 's1',
-          sellerName: 'Demo Seller',
+          status: true,      
+          type: 'Starter',    
+          desc: '',                  
+          seller_id: 's1',           
+          product_url: '',           
           quantity: 1
         },
         {
-          id: 'prod_002',
+          uuid: 'mock-uuid-2',
+          pid: 'prod_002',
           name: 'Delivery Box M',
-          description: '',
           price: 120,
           stock: 120,
-          category: 'Packaging',
-          sellerId: 's1',
-          sellerName: 'Demo Seller',
+          status: true,
+          type: 'Packaging',
+          desc: '',
+          seller_id: 's1',
+          product_url: '',
           quantity: 1
         }
       ]

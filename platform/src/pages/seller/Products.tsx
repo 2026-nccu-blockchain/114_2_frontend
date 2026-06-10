@@ -1,70 +1,35 @@
-import { Edit3, Package, PlusCircle } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { Edit3, Package, PlusCircle, Loader2, Trash2 } from 'lucide-react';
+import { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useProduct } from '@/hooks/useProduct';
+import type { ProductItem } from '@/services/productService';
+import toast from 'react-hot-toast';
 import '@/styles/pages/seller/Products.css';
-interface Product {
-  id: number;
-  name: string;
-  category: string;
-  price: string;
-  stock: number;
-  sold: number;
-  active: boolean;
-}
-
-const initialProducts: Product[] = [
-  {
-    id: 1,
-    name: 'Organic Apple Box',
-    category: 'Fresh Fruit',
-    price: '$24.00',
-    stock: 18,
-    sold: 94,
-    active: true,
-  },
-  {
-    id: 2,
-    name: 'Honey Oat Granola',
-    category: 'Pantry',
-    price: '$12.50',
-    stock: 42,
-    sold: 128,
-    active: true,
-  },
-  {
-    id: 3,
-    name: 'Cold Brew Pack',
-    category: 'Beverage',
-    price: '$18.00',
-    stock: 9,
-    sold: 67,
-    active: true,
-  },
-  {
-    id: 4,
-    name: 'Seasonal Jam Set',
-    category: 'Gift Set',
-    price: '$32.00',
-    stock: 0,
-    sold: 53,
-    active: false,
-  },
-];
 
 function ProductCard({
   product,
   onToggle,
+  onDelete,
+  isToggling,
+  isDeleting
 }: {
-  product: Product;
-  onToggle: (id: number) => void;
+  product: ProductItem;
+  onToggle: (product: ProductItem) => void;
+  onDelete: (pid: string) => void;
+  isToggling: boolean;
+  isDeleting: boolean;
 }) {
-  const editPath = `/products/${product.id}/edit`;
+  const editPath = `/products/${product.pid}/edit`;
 
   return (
-    <article className={`${'sellerProducts__card'} ${product.active ? '' : 'sellerProducts__cardInactive'}`}>
+    <article className={`${'sellerProducts__card'} ${product.status ? '' : 'sellerProducts__cardInactive'}`}>
       <Link to={editPath} className="sellerProducts__cardLink">
-        <div className="sellerProducts__image">
-          <Package className="sellerProducts__imageIcon" />
+        <div className="sellerProducts__image" style={{ padding: product.product_url ? 0 : undefined, overflow: 'hidden' }}>
+          {product.product_url ? (
+            <img src={product.product_url} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : (
+             <Package className="sellerProducts__imageIcon" />
+          )}
         </div>
       </Link>
 
@@ -72,10 +37,9 @@ function ProductCard({
         <div className="sellerProducts__top">
           <Link to={editPath} className="sellerProducts__cardLink">
             <h3 className="sellerProducts__name">{product.name}</h3>
-            <p className="sellerProducts__category">{product.category}</p>
+            <p className="sellerProducts__category">{product.type}</p>
           </Link>
-
-          <p className="sellerProducts__price">{product.price}</p>
+          <p className="sellerProducts__price">${Number(product.price).toFixed(2)}</p>
         </div>
 
         <div className="sellerProducts__meta">
@@ -84,28 +48,39 @@ function ProductCard({
             <p className="sellerProducts__metaValue">{product.stock}</p>
           </div>
           <div>
-            <p className="sellerProducts__metaLabel">Sold</p>
-            <p className="sellerProducts__metaValue">{product.sold}</p>
+            <p className="sellerProducts__metaLabel">Product ID</p>
+            <p className="sellerProducts__metaValue" style={{ fontSize: '0.7rem' }}>{product.pid}</p>
           </div>
         </div>
 
-        <div className="sellerProducts__actions">
+        <div className="sellerProducts__actions" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <Link to={editPath} className="sellerProducts__editButton">
-            <Edit3 className="sellerProducts__editIcon" />
-            Edit
+            <Edit3 className="sellerProducts__editIcon" /> Edit
           </Link>
 
-          <span className={`${'sellerProducts__status'} ${product.active ? 'sellerProducts__statusActive' : 'sellerProducts__statusInactive'}`}>
-            {product.active ? 'Online' : 'Deactivated'}
+          <button
+            onClick={() => onDelete(product.pid)}
+            disabled={isDeleting || isToggling}
+            className="sellerProducts__editButton"
+            style={{ color: '#ef4444', borderColor: '#fee2e2', backgroundColor: '#fef2f2' }}
+          >
+            {isDeleting ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
+            Delete
+          </button>
+
+          <div style={{ flex: 1 }} />
+
+          <span className={`${'sellerProducts__status'} ${product.status ? 'sellerProducts__statusActive' : 'sellerProducts__statusInactive'}`}>
+            {product.status ? 'Online' : 'Deactivated'}
           </span>
 
           <button
             type="button"
-            onClick={() => onToggle(product.id)}
-            className={`${'sellerProducts__toggle'} ${product.active ? 'sellerProducts__toggleActive' : 'sellerProducts__toggleInactive'}`}
-            aria-label={product.active ? 'Deactivate product' : 'Activate product'}
+            onClick={() => onToggle(product)}
+            disabled={isToggling || isDeleting}
+            className={`${'sellerProducts__toggle'} ${product.status ? 'sellerProducts__toggleActive' : 'sellerProducts__toggleInactive'}`}
           >
-            <span className={`${'sellerProducts__thumb'} ${product.active ? 'sellerProducts__thumbActive' : ''}`} />
+            <span className={`${'sellerProducts__thumb'} ${product.status ? 'sellerProducts__thumbActive' : ''}`} />
           </button>
         </div>
       </div>
@@ -114,18 +89,72 @@ function ProductCard({
 }
 
 export default function SellerProducts() {
-  const [products, setProducts] = useState(initialProducts);
+  const { getMyProducts, updateProductType, deleteProduct, loading } = useProduct(); 
+  const [products, setProducts] = useState<ProductItem[]>([]);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  useEffect(() => {
+    const load = async() => {
+      try{
+        const data = await getMyProducts();
+        if(data){
+          setProducts(data);
+        }
+      }catch (e){
+        console.error(e);
+      }
+    };
+    load();
+  }, [getMyProducts]);
 
-  const activeProducts = useMemo(() => products.filter((product) => product.active), [products]);
-  const deactivatedProducts = useMemo(() => products.filter((product) => !product.active), [products]);
+  const activeProducts = useMemo(() => products.filter((p) => p.status), [products]);
+  const deactivatedProducts = useMemo(() => products.filter((p) => !p.status), [products]);
 
-  const toggleProduct = (id: number) => {
-    setProducts((currentProducts) =>
-      currentProducts.map((product) =>
-        product.id === id ? { ...product, active: !product.active } : product,
-      ),
-    );
+  const toggleProduct = async (product: ProductItem) => {
+    setTogglingId(product.uuid);
+    const success = await updateProductType(product.uuid, {
+      price: product.price,
+      stock: product.stock,
+      type: product.type,
+      desc: product.desc || '',
+      status: !product.status,
+      product_url: product.product_url
+    });
+
+    if (!success){
+      toast.error('狀態更新失敗，請稍後再試');
+      setTogglingId(null);
+      return;
+    }
+
+    toast.success(`商品已${!product.status ? '上架' : '下架'}`);
+    setProducts(current => current.map(p => 
+       p.uuid === product.uuid ? { ...p, status: !p.status } : p
+    ));
+    
+    setTogglingId(null);
   };
+
+  const handleDeleteProduct = async (pid: string) => {
+    setDeletingId(pid);
+    const success = await deleteProduct(pid); 
+    if (!success){
+      toast.error('刪除失敗，請稍後再試');
+      setDeletingId(null);
+      return; 
+    } 
+    setProducts(current => current.filter(p => p.pid !== pid));
+    toast.success('商品刪除成功！');
+    setDeletingId(null);
+  };
+
+  if (loading && products.length === 0) {
+    return (
+      <div className="sellerProducts__page" style={{ display: 'flex', justifyContent: 'center', paddingTop: '10vh' }}>
+        <Loader2 className="animate-spin text-teal-600" size={40} />
+      </div>
+    );
+  }
 
   return (
     <div className="sellerProducts__page">
@@ -133,9 +162,7 @@ export default function SellerProducts() {
         <div>
           <p className="sellerProducts__eyebrow">Seller Products</p>
           <h1 className="sellerProducts__title">Product management</h1>
-          
         </div>
-
         <Link to="/add-product" className="sellerProducts__addButton">
           <PlusCircle className="sellerProducts__addButtonIcon" />
           Add Product
@@ -154,7 +181,14 @@ export default function SellerProducts() {
         {activeProducts.length > 0 ? (
           <div className="sellerProducts__grid">
             {activeProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onToggle={toggleProduct} />
+              <ProductCard 
+                key={product.uuid} 
+                product={product} 
+                onToggle={toggleProduct} 
+                onDelete={handleDeleteProduct} 
+                isToggling={togglingId === product.uuid}
+                isDeleting={deletingId === product.pid}
+              />
             ))}
           </div>
         ) : (
@@ -177,7 +211,14 @@ export default function SellerProducts() {
         {deactivatedProducts.length > 0 ? (
           <div className="sellerProducts__grid">
             {deactivatedProducts.map((product) => (
-              <ProductCard key={product.id} product={product} onToggle={toggleProduct} />
+              <ProductCard 
+                key={product.uuid} 
+                product={product} 
+                onToggle={toggleProduct}
+                onDelete={handleDeleteProduct} 
+                isToggling={togglingId === product.uuid}
+                isDeleting={deletingId === product.pid}
+              />
             ))}
           </div>
         ) : (

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import '@/styles/pages/auth/Register.css';
@@ -10,8 +10,10 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [validationError, setValidationError] = useState('');
   const { register, loading, error } = useAuth();
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setValidationError('');
 
@@ -24,7 +26,13 @@ export default function Register() {
       return;
     }
 
-    await register(fullName, email, password);
+    await register({
+      name: fullName,
+      email: email,
+      password: password,
+      phone: phone,
+      address: address
+    });
   };
 
   return (
@@ -103,6 +111,34 @@ export default function Register() {
             />
           </div>
 
+          <div>
+            <label className="authRegister__style3">
+              Phone <span className="authRegister__required">*</span>
+            </label>
+            <input
+              type="tel"
+              required
+              placeholder="0912345678"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="authRegister__input"
+            />
+          </div>
+
+          <div>
+            <label className="authRegister__style3">
+              Address <span className="authRegister__required">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="Taipei City..."
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="authRegister__input"
+            />
+          </div>
+          
           <p className="authRegister__style4">
             Seller and driver accounts are created by administrators. If you need a seller or driver
             account, please contact the admin.

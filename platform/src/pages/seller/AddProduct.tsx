@@ -1,62 +1,110 @@
-import { ArrowLeft, ImagePlus, Save } from 'lucide-react';
-import Cookies from 'js-cookie';
-import { useMemo, useState, type FormEvent } from 'react';
+import { ArrowLeft, ImagePlus, Plus, Save, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useProduct } from '@/hooks/useProduct';
+import { useUpload } from '@/hooks/useUpload';
+import { useProfile } from '@/hooks/useProfile';
 import '@/styles/pages/seller/AddProduct.css';
-const NEW_CATEGORY_VALUE = '__new_category__';
-const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
-const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
-const cookieOptions: Cookies.CookieAttributes = {
-  expires: 30,
-  sameSite: 'strict',
-};
+import toast from 'react-hot-toast';
 
-const getStoredCategories = () => {
-  const storedCategories = Cookies.get(CATEGORY_STORAGE_KEY);
-  if (!storedCategories) return defaultCategories;
-
-  try {
-    const parsedCategories = JSON.parse(storedCategories);
-    return Array.isArray(parsedCategories) ? parsedCategories : defaultCategories;
-  } catch {
-    return defaultCategories;
-  }
-};
-
-const saveCategory = (categoryName: string) => {
-  const nextCategory = categoryName.trim();
-  if (!nextCategory) return;
-
-  const categories = getStoredCategories();
-  if (categories.some((category) => category.toLowerCase() === nextCategory.toLowerCase())) return;
-
-  Cookies.set(CATEGORY_STORAGE_KEY, JSON.stringify([...categories, nextCategory]), cookieOptions);
-};
+interface Variant {
+  pid: string;
+  type: string;
+  price: string;
+  stock: string;
+}
 
 export default function SellerAddProduct() {
   const navigate = useNavigate();
+  const { addProduct, addProductType, loading: submitting } = useProduct();
+  const { upload, uploading } = useUpload();
+  const { fetchProfile } = useProfile();
+
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [productUrl, setProductUrl] = useState('');
   const [photoName, setPhotoName] = useState('');
-  const [categories, setCategories] = useState(getStoredCategories);
-  const [category, setCategory] = useState('');
-  const [customCategory, setCustomCategory] = useState('');
+
+  const [variants, setVariants] = useState<Variant[]>([
+    { pid: crypto.randomUUID(), type: '', price: '', stock: '' }
+  ]);
+
+  useEffect(() => {
+    const getEmail = async () => {
+      const profile = await fetchProfile();
+      if (!profile) return;
+      setEmail(profile.email);
+    };
+    getEmail();
+  }, [fetchProfile]);
+
   const createdAt = useMemo(
-    () =>
-      new Intl.DateTimeFormat('en-US', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-      }).format(new Date()),
+    () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
     [],
   );
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setPhotoName(file.name);
+    const url = await upload(file, email);
+    if (!url)  return;
+    setProductUrl(url);
+  };
 
-    if (category === NEW_CATEGORY_VALUE) {
-      saveCategory(customCategory);
-      setCategories(getStoredCategories());
+  const handleAddVariant = () => {
+    setVariants([...variants, { pid: crypto.randomUUID(), type: '', price: '', stock: '' }]);
+  };
+
+  const handleRemoveVariant = (pid: string) => {
+    if (variants.length > 1) {
+      setVariants(variants.filter(v => v.pid !== pid));
     }
+  };
 
-    navigate('/products');
+  const handleVariantChange = (pid: string, field: keyof Variant, value: string) => {
+    setVariants(variants.map(v => (v.pid === pid ? { ...v, [field]: value } : v)));
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (variants.length === 0) return;
+
+    const mainVariant = variants[0];
+    const descriptionText = description.trim();
+    const mainPayload = {
+      name: name.trim(),
+      price: Number(mainVariant.price),
+      stock: Number(mainVariant.stock),
+      type: mainVariant.type.trim() || 'Default',
+      desc: descriptionText,
+      status: true,
+      product_url: productUrl || undefined,
+    };
+
+    const result = await addProduct(mainPayload);
+    const productId = result?.pid;
+
+    if (!productId) {
+      toast.error('新增商品失敗，請檢查網路或稍後再試');
+      return; 
+    }
+    const additionalVariants = variants.slice(1);
+      
+      for (const v of additionalVariants) {
+        await addProductType(productId, {
+          price: Number(v.price),
+          stock: Number(v.stock),
+          type: v.type.trim() || 'Default',
+          desc: descriptionText,
+          status: true,
+          product_url: productUrl || undefined,
+        });
+      }
+      toast.success('商品新增成功！');
+      navigate('/products');
   };
 
   return (
@@ -69,63 +117,100 @@ export default function SellerAddProduct() {
       <section className="sellerAddProduct__panel">
         <p className="sellerAddProduct__eyebrow">Add Product</p>
         <h1 className="sellerAddProduct__title">Create a new product</h1>
-        <p className="sellerAddProduct__subtitle">Add product information, stock, category, and product photo.</p>
+        <p className="sellerAddProduct__subtitle">Add product information, variants, and photo.</p>
 
         <form id="add-product-form" className="sellerAddProduct__form" onSubmit={handleSubmit}>
+          
           <div className="sellerAddProduct__field">
             <label className="sellerAddProduct__label" htmlFor="product-name">
               Product name <span className="sellerAddProduct__required">*</span>
             </label>
-            <input id="product-name" className="sellerAddProduct__input" placeholder="Product name" required />
+            <input 
+              id="product-name" 
+              className="sellerAddProduct__input" 
+              placeholder="Product name" 
+              required 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
 
-          <div className="sellerAddProduct__field">
-            <label className="sellerAddProduct__label" htmlFor="category">
-              Category <span className="sellerAddProduct__required">*</span>
+          <div className="sellerAddProduct__wideField">
+            <label className="sellerAddProduct__label" htmlFor="product-description">
+              Description <span className="sellerAddProduct__required">*</span>
             </label>
-            <div className="sellerAddProduct__categoryFields">
-              <select
-                id="category"
-                className="sellerAddProduct__select"
-                required
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
+            <textarea
+              id="product-description"
+              className="sellerAddProduct__input"
+              placeholder="Describe this product"
+              required
+              rows={3}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
+          </div>
+
+          <div className="sellerAddProduct__wideField" style={{ marginTop: '1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <label className="sellerAddProduct__label" style={{ margin: 0 }}>
+                Product Variants (Sizes, Colors, etc.) <span className="sellerAddProduct__required">*</span>
+              </label>
+              <button 
+                type="button" 
+                onClick={handleAddVariant} 
+                className="sellerAddProduct__secondaryButton"
+                style={{ padding: '6px 12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                <option value="" disabled>
-                  Select category
-                </option>
-                {categories.map((categoryName) => (
-                  <option key={categoryName} value={categoryName}>
-                    {categoryName}
-                  </option>
-                ))}
-                <option value={NEW_CATEGORY_VALUE}>Add new category</option>
-              </select>
-
-              {category === NEW_CATEGORY_VALUE && (
-                <input
-                  className="sellerAddProduct__input"
-                  placeholder="New category name"
-                  required
-                  value={customCategory}
-                  onChange={(event) => setCustomCategory(event.target.value)}
-                />
-              )}
+                <Plus size={16} /> Add Variant
+              </button>
             </div>
-          </div>
 
-          <div className="sellerAddProduct__field">
-            <label className="sellerAddProduct__label" htmlFor="price">
-              Price <span className="sellerAddProduct__required">*</span>
-            </label>
-            <input id="price" className="sellerAddProduct__input" inputMode="decimal" placeholder="0" required type="text" />
-          </div>
-
-          <div className="sellerAddProduct__field">
-            <label className="sellerAddProduct__label" htmlFor="stock">
-              Stock <span className="sellerAddProduct__required">*</span>
-            </label>
-            <input id="stock" className="sellerAddProduct__input" min="0" placeholder="0" required type="number" />
+            {variants.map((v, index) => (
+              <div key={v.pid} style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'flex-start' }}>
+                <div style={{ flex: 2 }}>
+                  {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Variant Name (e.g. Red, Large)</label>}
+                  <input 
+                    className="sellerAddProduct__input" 
+                    placeholder="e.g. Red / Large" 
+                    required 
+                    value={v.type}
+                    onChange={(e) => handleVariantChange(v.pid, 'type', e.target.value)}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Price</label>}
+                  <input 
+                    className="sellerAddProduct__input" 
+                    type="number" min="0" step="0.01" placeholder="0.00" required 
+                    value={v.price}
+                    onChange={(e) => handleVariantChange(v.pid, 'price', e.target.value)}
+                  />
+                </div>
+                <div style={{ flex: 1 }}>
+                  {index === 0 && <label className="sellerAddProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Stock</label>}
+                  <input 
+                    className="sellerAddProduct__input" 
+                    type="number" min="0" placeholder="0" required 
+                    value={v.stock}
+                    onChange={(e) => handleVariantChange(v.pid, 'stock', e.target.value)}
+                  />
+                </div>
+                {variants.length > 1 ? (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveVariant(v.pid)}
+                    style={{ 
+                      marginTop: index === 0 ? '24px' : '0',
+                      padding: '10px', color: '#ef4444', backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', cursor: 'pointer' 
+                    }}
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                ) : (
+                  <div style={{ width: '40px' }} /> 
+                )}
+              </div>
+            ))}
           </div>
 
           <div className="sellerAddProduct__field">
@@ -137,20 +222,26 @@ export default function SellerAddProduct() {
 
           <div className="sellerAddProduct__wideField">
             <label className="sellerAddProduct__label" htmlFor="product-photo">
-              Product photo <span className="sellerAddProduct__required">*</span>
+              Product photo
             </label>
-            <label className="sellerAddProduct__uploadBox" htmlFor="product-photo">
+            <label 
+              className="sellerAddProduct__uploadBox" 
+              htmlFor="product-photo"
+              style={{ cursor: uploading ? 'wait' : 'pointer', opacity: uploading ? 0.7 : 1 }}
+            >
               <ImagePlus className="sellerAddProduct__uploadIcon" />
-              <span className="sellerAddProduct__uploadTitle">{photoName || 'Upload product photo'}</span>
-              <span className="sellerAddProduct__uploadText">PNG, JPG, or WebP up to 10MB</span>
+              <span className="sellerAddProduct__uploadTitle">
+                {uploading ? 'Uploading...' : (photoName || 'Upload product photo')}
+              </span>
+              <span className="sellerAddProduct__uploadText">PNG, JPG, or WebP up to 5MB</span>
             </label>
             <input
               id="product-photo"
               accept="image/png,image/jpeg,image/webp"
               className="sellerAddProduct__hiddenInput"
-              required
               type="file"
-              onChange={(event) => setPhotoName(event.target.files?.[0]?.name ?? '')}
+              disabled={uploading}
+              onChange={handleFileChange}
             />
           </div>
         </form>
@@ -159,9 +250,14 @@ export default function SellerAddProduct() {
           <Link to="/products" className="sellerAddProduct__secondaryButton">
             Cancel
           </Link>
-          <button type="submit" form="add-product-form" className="sellerAddProduct__primaryButton">
+          <button 
+            type="submit" 
+            form="add-product-form" 
+            disabled={submitting || uploading}
+            className="sellerAddProduct__primaryButton"
+          >
             <Save className="sellerAddProduct__buttonIcon" />
-            Create Product
+            {submitting ? 'Creating...' : 'Create Product'}
           </button>
         </div>
       </section>
