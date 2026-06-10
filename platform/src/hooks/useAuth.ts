@@ -20,11 +20,35 @@ export interface AdminRegisterData {
   email: string;
   password: string;
 }
+export interface SellerRegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  company_address: string;
+  company_phone: string;
+  company_name: string;
+}
+export interface DriverRegisterData {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+}
+
+export const getPasswordValidationError = (password: string) => {
+  if (password.length < 8) return 'Password must be at least 8 characters.';
+  if (!/[A-Z]/.test(password)) return 'Password must include an uppercase letter.';
+  if (!/[a-z]/.test(password)) return 'Password must include a lowercase letter.';
+  if (!/\d/.test(password)) return 'Password must include a number.';
+  return '';
+};
 
 export const useAuth = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const setAuth = useAuthStore((state) => state.setAuth)
+  const token = useAuthStore((state) => state.token)
   const navigate = useNavigate()
 
   const handleStatusCode = (statusCode: string, defaultMessage: string) => {
@@ -155,5 +179,65 @@ export const useAuth = () => {
     }
   }
 
-  return { login, register, adminRegister, loading, error }
+  const sellerRegister = async (data: SellerRegisterData) => {
+    setLoading(true)
+    setError(null)
+
+    if (!token) {
+      setError('請先以管理員身分登入')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const response = await authService.sellerRegister(data, token)
+      const responsePayload = response?.data ?? response
+      const code = responsePayload?.status_code
+
+      if (code === '00000') {
+        toast.success('賣家帳號建立成功！')
+        navigate('/users')
+      } else {
+        const errorMessage = handleStatusCode(code, responsePayload?.message)
+        setError(errorMessage)
+      }
+    } catch (err) {
+      console.error(err)
+      setError(getErrorMessage(err, '網路連線失敗，請稍後再試'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const driverRegister = async (data: DriverRegisterData) => {
+    setLoading(true)
+    setError(null)
+
+    if (!token) {
+      setError('請先以管理員身分登入')
+      setLoading(false)
+      return
+    }
+
+    try {
+      const response = await authService.driverRegister(data, token)
+      const responsePayload = response?.data ?? response
+      const code = responsePayload?.status_code
+
+      if (code === '00000') {
+        toast.success('司機帳號建立成功！')
+        navigate('/users')
+      } else {
+        const errorMessage = handleStatusCode(code, responsePayload?.message)
+        setError(errorMessage)
+      }
+    } catch (err) {
+      console.error(err)
+      setError(getErrorMessage(err, '網路連線失敗，請稍後再試'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { login, register, adminRegister, sellerRegister, driverRegister, loading, error }
 }
