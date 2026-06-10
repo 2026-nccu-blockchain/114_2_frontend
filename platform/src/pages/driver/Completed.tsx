@@ -1,8 +1,17 @@
-import { driverTasks, getCompletedTaskIds } from '@/pages/driver/driverData';
+import { useEffect } from 'react';
+import { getCompletedTaskIds, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/Completed.css';
 export default function DriverCompleted() {
+  const { orders, fetchMyOrders, isLoading, error } = useOrderStore();
   const completedTaskIds = getCompletedTaskIds();
-  const completedTasks = driverTasks.filter((task) => completedTaskIds.includes(task.id));
+  const completedTasks = orders
+    .map(mapOrderToDriverTask)
+    .filter((task) => completedTaskIds.includes(task.id) || task.distance === 'arrived');
+
+  useEffect(() => {
+    void fetchMyOrders();
+  }, [fetchMyOrders]);
 
   return (
     <div className="driverCompleted__page">
@@ -11,7 +20,11 @@ export default function DriverCompleted() {
         <h1 className="driverCompleted__title">Completed tasks</h1>
       </header>
 
-      {completedTasks.length > 0 ? (
+      {isLoading ? (
+        <div className="driverCompleted__empty">Loading completed tasks...</div>
+      ) : error ? (
+        <div className="driverCompleted__empty">{error}</div>
+      ) : completedTasks.length > 0 ? (
         <section className="driverCompleted__list">
           {completedTasks.map((task) => (
             <article key={task.id} className="driverCompleted__card">
