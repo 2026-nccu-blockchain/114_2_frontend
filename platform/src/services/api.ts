@@ -11,19 +11,16 @@ type RequestOptions = {
   auth?: boolean;
 };
 
-type ApiEnvelope = {
-  status_code?: string;
-  message?: string;
-};
-
 const API_BASE_URL = import.meta.env['VITE_API_URL'] || '/api/v2';
 
 const buildUrl = (url: string) => {
   if (/^https?:\/\//.test(url)) return url;
-  if (url.startsWith('/api/')) return url;
 
   const normalizedBase = API_BASE_URL.replace(/\/$/, '');
-  const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+  const normalizedPath = url
+    .replace(/^\/api\/v\d+/, '')
+    .replace(/^\/*/, '/');
+
   return `${normalizedBase}${normalizedPath}`;
 };
 
@@ -43,15 +40,16 @@ const buildError = async (response: Response): Promise<ApiError> => {
 export const apiRequest = async <T>(url: string, options: RequestOptions = {}): Promise<ApiResponse<T>> => {
   const { method = 'GET', headers, body, auth = true } = options;
   const token = auth ? Cookies.get('token') : null;
+  const isFormData = body instanceof FormData;
 
   const response = await fetch(buildUrl(url), {
     method,
     headers: {
-      'Content-Type': 'application/json',
+      ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...headers,
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
   });
 
   if (!response.ok) {
@@ -59,14 +57,5 @@ export const apiRequest = async <T>(url: string, options: RequestOptions = {}): 
   }
 
   const data = (await response.json()) as T;
-  const envelope = data as ApiEnvelope;
-
-  if (envelope.status_code && envelope.status_code !== '00000') {
-    throw {
-      message: getApiStatusMessage(envelope.status_code, envelope.message || 'Request failed'),
-      statusCode: envelope.status_code,
-    } satisfies ApiError;
-  }
-
   return { data };
 };

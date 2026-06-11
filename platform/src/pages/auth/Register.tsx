@@ -1,6 +1,6 @@
 import { useState, type SyntheticEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '@/hooks/useAuth';
+import { getPasswordValidationError, useAuth } from '@/hooks/useAuth';
 import '@/styles/pages/auth/Register.css';
 
 export default function Register() {
@@ -17,8 +17,9 @@ export default function Register() {
     e.preventDefault();
     setValidationError('');
 
-    if (password.length < 6) {
-      setValidationError('Password must be at least 6 characters.');
+    const passwordError = getPasswordValidationError(password);
+    if (passwordError) {
+      setValidationError(passwordError);
       return;
     }
     if (password !== confirmPassword) {
@@ -90,7 +91,7 @@ export default function Register() {
             <input
               type="password"
               required
-              placeholder="At least 6 characters"
+              placeholder="At least 8 chars, uppercase, lowercase, number"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="authRegister__input"

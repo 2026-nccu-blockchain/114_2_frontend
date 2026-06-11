@@ -3,16 +3,20 @@ import { Link } from 'react-router-dom';
 import { useAuth, type LoginRole } from '@/hooks/useAuth';
 import '@/styles/pages/auth/Login.css';
 
-const roleOptions: Array<{ value: LoginRole; label: string }> = [
-  { value: 'buyer', label: 'Buyer' },
-  { value: 'seller', label: 'Seller' },
-  { value: 'driver', label: 'Driver' },
-];
+const loginTitles: Record<LoginRole, string> = {
+  buyer: 'Sign in to your account',
+  seller: 'Seller sign in',
+  driver: 'Driver sign in',
+  admin: 'Admin sign in',
+};
 
-export default function Login() {
+interface LoginProps {
+  role?: LoginRole;
+}
+
+export default function Login({ role = 'buyer' }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<LoginRole>('buyer');
   const { login, loading, error } = useAuth();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -25,13 +29,28 @@ export default function Login() {
     <div className="authLogin__page">
       <div className="authLogin__panel">
         <div className="authLogin__style">
-          <h2 className="authLogin__title">Sign in to your account</h2>
-          <p className="authLogin__mutedText">
-            Don&apos;t have an account?{' '}
-            <Link to="/register" className="authLogin__primaryButton">
-              Sign up
-            </Link>
-          </p>
+          <h2 className="authLogin__title">{loginTitles[role]}</h2>
+          {role === 'buyer' ? (
+            <p className="authLogin__mutedText">
+              Don&apos;t have an account?{' '}
+              <Link to="/register" className="authLogin__primaryButton">
+                Sign up
+              </Link>
+            </p>
+          ) : (
+            <p className="authLogin__mutedText">
+              {role === 'admin' ? (
+                <>
+                  Use your administrator credentials.{' '}
+                  <Link to="/admin/register" className="authLogin__primaryButton">
+                    Create admin account
+                  </Link>
+                </>
+              ) : (
+                'Use the account assigned by an administrator.'
+              )}
+            </p>
+          )}
         </div>
 
         {error && <div className="authLogin__style2">{error}</div>}
@@ -65,25 +84,10 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               className="authLogin__input"
             />
-          </div>
-
-          <div>
-            {/* <label className="authLogin__style3">
-              Account type <span className="authLogin__required">*</span>
-            </label> */}
-            <div className="authLogin__style4">
-              {roleOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setRole(option.value)}
-                  className={`${'authLogin__roleButton'} ${
-                    role === option.value ? 'authLogin__roleButtonActive' : 'authLogin__roleButtonInactive'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+            <div className="authLogin__helperRow">
+              <Link to="/forgot-password" className="authLogin__primaryButton">
+                Forgot password?
+              </Link>
             </div>
           </div>
 
