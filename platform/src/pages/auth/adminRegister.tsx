@@ -37,9 +37,9 @@ export default function AdminRegister() {
       <div className="max-w-md w-full bg-white p-8 border border-gray-200 rounded-xl shadow-lg">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Admin Portal Setup</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          {/* <p className="text-sm text-gray-500 mt-1">
             Create an administrator account
-          </p>
+          </p> */}
         </div>
 
         {(error || validationError) && (

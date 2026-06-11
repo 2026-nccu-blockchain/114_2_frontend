@@ -39,7 +39,16 @@ export default function Login({ role = 'buyer' }: LoginProps) {
             </p>
           ) : (
             <p className="authLogin__mutedText">
-              {role === 'admin' ? 'Use your administrator credentials.' : 'Use the account assigned by an administrator.'}
+              {role === 'admin' ? (
+                <>
+                  Use your administrator credentials.{' '}
+                  <Link to="/admin/register" className="authLogin__primaryButton">
+                    Create admin account
+                  </Link>
+                </>
+              ) : (
+                'Use the account assigned by an administrator.'
+              )}
             </p>
           )}
         </div>
