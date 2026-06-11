@@ -11,5 +11,6 @@ export interface Product {
   product_url?: string;
 }
 export interface CartItem extends Product {
+  cartId?: string;
   quantity: number;
 }

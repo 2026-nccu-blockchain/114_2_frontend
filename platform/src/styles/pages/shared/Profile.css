@@ -170,6 +170,7 @@
 .sharedProfile__primaryButton:disabled {
   opacity:.6
 }
+
 .sharedProfile__formGrid {
   gap:calc(var(--spacing,.25rem) * 4);
   display:grid
@@ -238,4 +239,9 @@
   .sharedProfile__formGrid--2cols {
     grid-template-columns:1fr
   }
+}
+
+.sharedProfile__hiddenInput {
+  display:none
+
 }

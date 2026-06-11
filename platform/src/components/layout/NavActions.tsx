@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, User as UserIcon, ShoppingCart } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
@@ -8,7 +9,14 @@ export default function NavActions() {
   const navigate = useNavigate();
 
   const cartItems = useCartStore((state) => state.items);
+  const fetchCart = useCartStore((state) => state.fetchCart);
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  useEffect(() => {
+    if (role === 'buyer') {
+      void fetchCart();
+    }
+  }, [fetchCart, role]);
 
   const handleLogout = () => {
     logout();

@@ -6,13 +6,14 @@ import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import type { ProductItem } from '@/services/productService';
+import { mockProducts } from '@/mock/products';
 import '@/styles/pages/buyer/ProductDetail.css';
 
 export default function ProductDetail() {
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem); 
-  const { role } = useAuthStore();
+  const { role, token } = useAuthStore();
   const { getProduct, loading } = useProduct();
   const [quantity, setQuantity] = useState(1);
   
@@ -23,25 +24,31 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       if (!pid) return;
       const data = await getProduct(pid);
+      const fallbackProduct = mockProducts.find(product => product.pid === pid);
+      const productData = data && data.length > 0
+        ? data
+        : fallbackProduct
+          ? [fallbackProduct]
+          : [];
       
-      if (data && data.length > 0) {
-        const activeVariants = data.filter(v => v.status);
+      if (productData.length > 0) {
+        const activeVariants = productData.filter(v => v.status);
         
         if (activeVariants.length > 0) {
           setVariants(activeVariants);
           setSelectedVariant(activeVariants[0]);
         } else {
-          setVariants(data);
-          setSelectedVariant(data[0]);
+          setVariants(productData);
+          setSelectedVariant(productData[0]);
         }
       }
     };
     fetchProduct();
-  }, [pid, getProduct]);
+  }, [getProduct, pid]);
 
   if (loading) {
     return (
-      <div className="buyerProductDetail__page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh' }}>
+      <div className="buyerProductDetail__page buyerProductDetail__loading">
         <Loader2 className="animate-spin text-teal-600" size={32} />
       </div>
     );
@@ -71,17 +78,18 @@ export default function ProductDetail() {
     setQuantity(1);
   };
 
-  const handleAddToCart = () => {
-    if (!role) {
+  const handleAddToCart = async () => {
+    if (!role || !token) {
       toast.error('Please sign in to add items to your cart.', {
         className: 'buyerProductDetail__errorToast',
         iconTheme: { primary: '#ef4444', secondary: '#fff' },
       });
-      setTimeout(() => navigate('/login'), 2000);
+      navigate('/login');
       return;
     }
     
-    addItem({
+    try {
+      await addItem({
         uuid: selectedVariant.uuid,
         pid: selectedVariant.pid,
         name: selectedVariant.name,
@@ -94,10 +102,13 @@ export default function ProductDetail() {
         product_url: selectedVariant.product_url
       }, quantity);
 
-    toast.success(`${selectedVariant.name} (${selectedVariant.type}) added to cart`, {
-      className: 'buyerProductDetail__successToast',
-      iconTheme: { primary: '#14b8a6', secondary: '#fff' },
-    });
+      toast.success(`${selectedVariant.name} (${selectedVariant.type}) added to cart`, {
+        className: 'buyerProductDetail__successToast',
+        iconTheme: { primary: '#14b8a6', secondary: '#fff' },
+      });
+    } catch {
+      toast.error('Failed to add item to cart.');
+    }
   };
 
   return (
@@ -107,9 +118,9 @@ export default function ProductDetail() {
       </button>
 
       <div className="buyerProductDetail__panel">
-        <div className="buyerProductDetail__style3" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="buyerProductDetail__style3 buyerProductDetail__imageFrame">
           {selectedVariant.product_url ? (
-            <img src={selectedVariant.product_url} alt={selectedVariant.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <img src={selectedVariant.product_url} alt={selectedVariant.name} className="buyerProductDetail__productImage" />
           ) : (
             <span className="buyerProductDetail__style4">Product Image</span>
           )}
@@ -129,25 +140,15 @@ export default function ProductDetail() {
             </div>
           </div>
           {variants.length > 1 && (
-            <div style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
-              <h3 className="buyerProductDetail__style10" style={{ marginBottom: '0.75rem', fontSize: '0.875rem' }}>Select Variant</h3>
-              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <div className="buyerProductDetail__variantSection">
+              <h3 className="buyerProductDetail__style10 buyerProductDetail__variantTitle">Select Variant</h3>
+              <div className="buyerProductDetail__variantList">
                 {variants.map(variant => (
                   <button
                     key={variant.uuid}
                     onClick={() => handleVariantSelect(variant)}
                     disabled={!variant.status}
-                    style={{
-                      padding: '0.5rem 1rem',
-                      borderRadius: '0.375rem',
-                      border: variant.uuid === selectedVariant.uuid ? '2px solid #0d9488' : '1px solid #d1d5db',
-                      backgroundColor: variant.uuid === selectedVariant.uuid ? '#f0fdfa' : '#fff',
-                      color: variant.uuid === selectedVariant.uuid ? '#0f766e' : '#374151',
-                      fontWeight: variant.uuid === selectedVariant.uuid ? '600' : 'normal',
-                      opacity: variant.status ? 1 : 0.5,
-                      cursor: variant.status ? 'pointer' : 'not-allowed',
-                      transition: 'all 0.2s ease-in-out'
-                    }}
+                    className={`buyerProductDetail__variantButton ${variant.uuid === selectedVariant.uuid ? 'buyerProductDetail__variantButtonActive' : ''}`}
                   >
                     {variant.type}
                   </button>
@@ -183,7 +184,6 @@ export default function ProductDetail() {
                 onClick={handleAddToCart} 
                 disabled={selectedVariant.stock === 0 || !selectedVariant.status} 
                 className="buyerProductDetail__primaryButton2"
-                style={{ opacity: (selectedVariant.stock === 0 || !selectedVariant.status) ? 0.5 : 1 }}
               >
                 {!selectedVariant.status ? 'Unavailable' : (selectedVariant.stock === 0 ? 'Out of Stock' : 'Add to Cart')}
               </button>

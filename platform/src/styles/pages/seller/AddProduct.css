@@ -275,3 +275,55 @@
   height:calc(var(--spacing,.25rem) * 4);
   width:calc(var(--spacing,.25rem) * 4)
 }
+.sellerAddProduct__variantSection {
+  margin-top:1rem
+}
+.sellerAddProduct__variantHeader {
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:12px;
+  display:flex
+}
+.sellerAddProduct__variantHeaderLabel {
+  margin:0
+}
+.sellerAddProduct__variantAddButton {
+  height:auto;
+  gap:6px;
+  padding:6px 12px
+}
+.sellerAddProduct__variantRow {
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:16px;
+  display:flex
+}
+.sellerAddProduct__variantNameField {
+  flex:2
+}
+.sellerAddProduct__variantNumberField {
+  flex:1
+}
+.sellerAddProduct__variantSubLabel {
+  font-size:12px;
+  color:#6b7280
+}
+.sellerAddProduct__removeVariantButton {
+  cursor:pointer;
+  border:1px solid #fee2e2;
+  border-radius:8px;
+  background-color:#fef2f2;
+  padding:10px;
+  color:#ef4444
+}
+.sellerAddProduct__removeVariantButtonTopAligned {
+  margin-top:24px
+}
+.sellerAddProduct__variantRemoveSpacer {
+  width:40px
+}
+.sellerAddProduct__uploadBoxBusy {
+  cursor:wait;
+  opacity:.7
+}
