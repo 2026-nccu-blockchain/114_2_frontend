@@ -1,18 +1,53 @@
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { CalendarClock, MapPin, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { completeTask, driverTasks, getActiveTaskIds } from '@/pages/driver/driverData';
+import { completeTask, getActiveTaskIds, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/Active.css';
 export default function DriverActive() {
   const navigate = useNavigate();
+  const { orders, fetchMyOrders, isLoading, error, updateOrderStatus } = useOrderStore();
   const activeTaskIds = getActiveTaskIds();
-  const activeTasks = driverTasks.filter((task) => activeTaskIds.includes(task.id));
+  const activeTasks = orders.map(mapOrderToDriverTask).filter((task) => activeTaskIds.includes(task.id));
 
-  const markArrived = (taskId: string) => {
-    completeTask(taskId);
-    if (getActiveTaskIds().length === 0) {
-      navigate('/completed');
+  useEffect(() => {
+    void fetchMyOrders();
+  }, [fetchMyOrders]);
+
+  const markArrived = async (taskId: string) => {
+    try {
+      await updateOrderStatus(taskId, 'arrived');
+      completeTask(taskId);
+      if (getActiveTaskIds().length === 0) {
+        navigate('/completed');
+      }
+    } catch {
+      toast.error('Failed to complete task.');
     }
   };
+
+  if (isLoading && activeTasks.length === 0) {
+    return (
+      <div className="driverActive__page">
+        <header>
+          <p className="driverActive__eyebrow">Active Delivery</p>
+          <h1 className="driverActive__title">Loading active tasks...</h1>
+        </header>
+      </div>
+    );
+  }
+
+  if (error && activeTasks.length === 0) {
+    return (
+      <div className="driverActive__page">
+        <header>
+          <p className="driverActive__eyebrow">Active Delivery</p>
+          <h1 className="driverActive__title">{error}</h1>
+        </header>
+      </div>
+    );
+  }
 
   if (activeTasks.length === 0) {
     return (
@@ -86,7 +121,12 @@ export default function DriverActive() {
           </section>
 
           <div className="driverActive__actions">
-            <button type="button" className="driverActive__primaryButton" onClick={() => markArrived(task.id)}>
+            <button
+              type="button"
+              className="driverActive__primaryButton"
+              disabled={isLoading}
+              onClick={() => void markArrived(task.id)}
+            >
               Arrived
             </button>
           </div>

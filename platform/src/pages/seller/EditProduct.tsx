@@ -1,77 +1,101 @@
 import { ArrowLeft, ImagePlus, Loader2, Plus, Save, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useProduct } from '@/hooks/useProduct';
-import { useUpload } from '@/hooks/useUpload';
-import { useProfile } from '@/hooks/useProfile';
 import toast from 'react-hot-toast';
+import { useProduct } from '@/hooks/useProduct';
+import { useProfile } from '@/hooks/useProfile';
+import { useUpload } from '@/hooks/useUpload';
+import type { ProductItem } from '@/services/productService';
 import '@/styles/pages/seller/EditProduct.css';
+
+type ProductVariant = ProductItem & { product_id?: string };
 
 interface EditableVariant {
   uuid?: string;
-  localId: string; 
+  localId: string;
   type: string;
   price: string;
   stock: string;
   status: boolean;
 }
 
+const createEmptyVariant = (): EditableVariant => ({
+  localId: crypto.randomUUID(),
+  type: '',
+  price: '',
+  stock: '',
+  status: true,
+});
+
+const getVariantUuid = (product: ProductVariant) => product.uuid || product.product_id;
+
 export default function SellerEditProduct() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { getProduct, editProductBase, updateProductType, addProductType, deleteProductType, loading: isSubmitting } = useProduct();
-  const { upload, uploading } = useUpload();
+  const {
+    addProductType,
+    deleteProductType,
+    editProductBase,
+    getProduct,
+    loading: isSubmitting,
+    updateProductType,
+  } = useProduct();
   const { fetchProfile } = useProfile();
-  
+  const { upload, uploading } = useUpload();
+
   const [isLoadingProduct, setIsLoadingProduct] = useState(true);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [productUrl, setProductUrl] = useState('');
   const [photoName, setPhotoName] = useState('');
-
   const [variants, setVariants] = useState<EditableVariant[]>([]);
 
   useEffect(() => {
-    const initData = async () => {
-      if(!productId) return;
+    const loadProduct = async () => {
+      if (!productId) return;
+
       setIsLoadingProduct(true);
-      
       const profile = await fetchProfile();
       if (profile) setEmail(profile.email);
+
       const data = await getProduct(productId);
       if (!data || data.length === 0) {
-        setIsLoadingProduct(false); 
-        return; 
+        setIsLoadingProduct(false);
+        return;
       }
+
       const mainProduct = data[0];
       setName(mainProduct.name);
       setDescription(mainProduct.desc || '');
       setProductUrl(mainProduct.product_url || '');
-          
-      const loadedVariants = data.map(p => ({
-        uuid: p.uuid,
-        localId: p.uuid,
-        type: p.type,
-        price: p.price.toString(),
-        stock: p.stock.toString(),
-        status: p.status
+      setVariants(data.map((product) => {
+        const uuid = getVariantUuid(product);
+
+        return {
+          uuid,
+          localId: uuid || crypto.randomUUID(),
+          type: product.type,
+          price: String(product.price),
+          stock: String(product.stock),
+          status: product.status,
+        };
       }));
-      setVariants(loadedVariants);
-        
       setIsLoadingProduct(false);
     };
-    initData();
-  }, [productId, fetchProfile, getProduct]);
 
-  const createdAt = useMemo(
+    void loadProduct();
+  }, [fetchProfile, getProduct, productId]);
+
+  const accessedAt = useMemo(
     () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
-    []
+    [],
   );
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
     setPhotoName(file.name);
     const url = await upload(file, email);
     if (!url) return;
@@ -79,7 +103,7 @@ export default function SellerEditProduct() {
   };
 
   const handleAddVariant = () => {
-    setVariants([...variants, { localId: crypto.randomUUID(), type: '', price: '', stock: '', status: true }]);
+    setVariants((current) => [...current, createEmptyVariant()]);
   };
 
   const handleRemoveVariant = async (localId: string, uuid?: string) => {
@@ -93,52 +117,53 @@ export default function SellerEditProduct() {
       const success = await deleteProductType(uuid);
       if (!success) return;
     }
-    
-    setVariants(variants.filter(v => v.localId !== localId));
+
+    setVariants((current) => current.filter((variant) => variant.localId !== localId));
   };
 
   const handleVariantChange = (localId: string, field: keyof EditableVariant, value: string) => {
-    setVariants(variants.map(v => (v.localId === localId ? { ...v, [field]: value } : v)));
+    setVariants((current) => current.map((variant) => (
+      variant.localId === localId ? { ...variant, [field]: value } : variant
+    )));
   };
+
+  const buildVariantPayload = (variant: EditableVariant, desc: string) => ({
+    price: Number(variant.price),
+    stock: Number(variant.stock),
+    status: variant.status,
+    desc,
+    type: variant.type.trim() || 'Default',
+    product_url: productUrl || undefined,
+  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!productId || variants.length === 0) return;
 
-    const descriptionText = description.trim();
-
     const baseSuccess = await editProductBase(productId, name.trim());
-    
     if (!baseSuccess) {
       toast.error('商品基本資料更新失敗，請稍後再試');
       return;
     }
+
+    const descriptionText = description.trim();
     let allSuccess = true;
-    for (const v of variants) {
-      const payload = {
-        price: Number(v.price),
-        stock: Number(v.stock),
-        type: v.type.trim() || 'Default',
-        desc: descriptionText,
-        status: v.status,
-        product_url: productUrl || undefined,
-      };
 
-      if (v.uuid) {
-        const success = await updateProductType(v.uuid, payload);
-        if (!success) allSuccess = false;
-      } else {
-        const success = await addProductType(productId, payload);
-        if (!success) allSuccess = false;
-      }
+    for (const variant of variants) {
+      const result = variant.uuid
+        ? await updateProductType(variant.uuid, buildVariantPayload(variant, descriptionText))
+        : await addProductType(productId, buildVariantPayload(variant, descriptionText));
+
+      if (!result) allSuccess = false;
     }
 
-    if (allSuccess) {
-      toast.success('商品更新完成！');
-       navigate('/products');
-    } else {
+    if (!allSuccess) {
       toast.error('部分款式更新失敗，請檢查網路或稍後再試');
+      return;
     }
+
+    toast.success('商品更新完成！');
+    navigate('/products');
   };
 
   if (isLoadingProduct) {
@@ -165,13 +190,13 @@ export default function SellerEditProduct() {
             <label className="sellerEditProduct__label" htmlFor="product-name">
               Product name <span className="sellerEditProduct__required">*</span>
             </label>
-            <input 
-              id="product-name" 
-              className="sellerEditProduct__input" 
-              placeholder="Product name" 
-              required 
+            <input
+              id="product-name"
+              className="sellerEditProduct__input"
+              placeholder="Product name"
+              required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
             />
           </div>
 
@@ -189,56 +214,79 @@ export default function SellerEditProduct() {
               onChange={(event) => setDescription(event.target.value)}
             />
           </div>
+
           <div className="sellerEditProduct__wideField sellerEditProduct__variantSection">
             <div className="sellerEditProduct__variantHeader">
               <label className="sellerEditProduct__label sellerEditProduct__variantHeaderLabel">
                 Product Variants <span className="sellerEditProduct__required">*</span>
               </label>
-              <button 
-                type="button" 
-                onClick={handleAddVariant} 
+              <button
+                type="button"
+                onClick={handleAddVariant}
                 className="sellerEditProduct__secondaryButton sellerEditProduct__variantAddButton"
               >
                 <Plus size={16} /> Add Variant
               </button>
             </div>
 
-            {variants.map((v, index) => (
-              <div key={v.localId} className="sellerEditProduct__variantRow">
+            {variants.map((variant, index) => (
+              <div key={variant.localId} className="sellerEditProduct__variantRow">
                 <div className="sellerEditProduct__variantNameField">
-                  {index === 0 && <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">Variant Name</label>}
-                  <input 
-                    className="sellerEditProduct__input" 
-                    placeholder="e.g. Red / Large" 
-                    required 
-                    value={v.type}
-                    onChange={(e) => handleVariantChange(v.localId, 'type', e.target.value)}
+                  {index === 0 && (
+                    <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">
+                      Variant Name
+                    </label>
+                  )}
+                  <input
+                    className="sellerEditProduct__input"
+                    placeholder="e.g. Red / Large"
+                    required
+                    value={variant.type}
+                    onChange={(event) => handleVariantChange(variant.localId, 'type', event.target.value)}
                   />
                 </div>
+
                 <div className="sellerEditProduct__variantNumberField">
-                  {index === 0 && <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">Price</label>}
-                  <input 
-                    className="sellerEditProduct__input" 
-                    type="number" min="0" step="0.01" placeholder="0.00" required 
-                    value={v.price}
-                    onChange={(e) => handleVariantChange(v.localId, 'price', e.target.value)}
+                  {index === 0 && (
+                    <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">
+                      Price
+                    </label>
+                  )}
+                  <input
+                    className="sellerEditProduct__input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    required
+                    value={variant.price}
+                    onChange={(event) => handleVariantChange(variant.localId, 'price', event.target.value)}
                   />
                 </div>
+
                 <div className="sellerEditProduct__variantNumberField">
-                  {index === 0 && <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">Stock</label>}
-                  <input 
-                    className="sellerEditProduct__input" 
-                    type="number" min="0" placeholder="0" required 
-                    value={v.stock}
-                    onChange={(e) => handleVariantChange(v.localId, 'stock', e.target.value)}
+                  {index === 0 && (
+                    <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">
+                      Stock
+                    </label>
+                  )}
+                  <input
+                    className="sellerEditProduct__input"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    required
+                    value={variant.stock}
+                    onChange={(event) => handleVariantChange(variant.localId, 'stock', event.target.value)}
                   />
                 </div>
-                
+
                 <button
                   type="button"
-                  onClick={() => handleRemoveVariant(v.localId, v.uuid)}
+                  onClick={() => void handleRemoveVariant(variant.localId, variant.uuid)}
                   className={`sellerEditProduct__removeVariantButton ${index === 0 ? 'sellerEditProduct__removeVariantButtonTopAligned' : ''}`}
                   disabled={variants.length <= 1}
+                  aria-label="Remove variant"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -247,10 +295,10 @@ export default function SellerEditProduct() {
           </div>
 
           <div className="sellerEditProduct__field">
-            <label className="sellerEditProduct__label" htmlFor="created-at">
+            <label className="sellerEditProduct__label" htmlFor="accessed-at">
               Last accessed time
             </label>
-            <input id="created-at" className="sellerEditProduct__readonlyInput" readOnly value={createdAt} />
+            <input id="accessed-at" className="sellerEditProduct__readonlyInput" readOnly value={accessedAt} />
           </div>
 
           <div className="sellerEditProduct__wideField">
@@ -258,11 +306,11 @@ export default function SellerEditProduct() {
               Product photo
             </label>
             {productUrl && !uploading && !photoName && (
-               <div className="sellerEditProduct__currentImageWrap">
-                 <img src={productUrl} alt="Current product" className="sellerEditProduct__currentImage" />
-               </div>
+              <div className="sellerEditProduct__currentImageWrap">
+                <img src={productUrl} alt="Current product" className="sellerEditProduct__currentImage" />
+              </div>
             )}
-            <label 
+            <label
               className={`sellerEditProduct__uploadBox ${uploading ? 'sellerEditProduct__uploadBoxBusy' : ''}`}
               htmlFor="product-photo"
             >
@@ -287,9 +335,9 @@ export default function SellerEditProduct() {
           <Link to="/products" className="sellerEditProduct__secondaryButton">
             Cancel
           </Link>
-          <button 
-            type="submit" 
-            form="edit-product-form" 
+          <button
+            type="submit"
+            form="edit-product-form"
             disabled={isSubmitting || uploading}
             className="sellerEditProduct__primaryButton"
           >

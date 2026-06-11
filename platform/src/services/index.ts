@@ -4,6 +4,9 @@
  */
 
 export { apiRequest } from '@/services/api';
+export * as orderApi from '@/services/orderApi';
+
+
 export { adminService } from '@/services/adminService';
 export type { AdminUserRecord } from '@/services/adminService';
 export { authService } from '@/services/authService';

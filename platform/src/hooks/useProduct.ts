@@ -1,7 +1,13 @@
 import { useCallback, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
-import { mapProductDtoToProductItem, productService, type AddProductPayload, type AddTypePayload } from '@/services/productService';
+import {
+  mapProductActionToProductItem,
+  mapProductDtoToProductItem,
+  productService,
+  type AddProductPayload,
+  type AddTypePayload,
+} from '@/services/productService';
 import toast from 'react-hot-toast';
 
 export const useProduct = () => {
@@ -52,7 +58,7 @@ export const useProduct = () => {
       if (code === '00000') {
         setSuccess(true);
         toast.success('商品上架成功！');
-        return res.data;
+        return mapProductActionToProductItem(res.data);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -77,7 +83,7 @@ export const useProduct = () => {
       const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品種類新增成功！');
-        return res.data;
+        return mapProductActionToProductItem(res.data);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -127,7 +133,7 @@ export const useProduct = () => {
       const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品類型更新成功！');
-        return res.data;
+        return mapProductActionToProductItem(res.data);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;

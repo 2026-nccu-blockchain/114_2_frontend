@@ -1,10 +1,19 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { driverTasks, getActiveTaskIds, getCompletedTaskIds } from '@/pages/driver/driverData';
+import { getActiveTaskIds, getCompletedTaskIds, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/Tasks.css';
 export default function DriverTasks() {
+  const { orders, fetchMyOrders, isLoading, error } = useOrderStore();
   const activeTaskIds = getActiveTaskIds();
   const completedTaskIds = getCompletedTaskIds();
-  const availableTasks = driverTasks.filter((task) => !activeTaskIds.includes(task.id) && !completedTaskIds.includes(task.id));
+  const availableTasks = orders
+    .map(mapOrderToDriverTask)
+    .filter((task) => !activeTaskIds.includes(task.id) && !completedTaskIds.includes(task.id));
+
+  useEffect(() => {
+    void fetchMyOrders();
+  }, [fetchMyOrders]);
 
   return (
     <div className="driverTasks__page">
@@ -16,7 +25,11 @@ export default function DriverTasks() {
         </div>
       </header>
 
-      {availableTasks.length > 0 ? (
+      {isLoading ? (
+        <div className="driverTasks__empty">Loading tasks...</div>
+      ) : error ? (
+        <div className="driverTasks__empty">{error}</div>
+      ) : availableTasks.length > 0 ? (
         <section className="driverTasks__list">
           {availableTasks.map((task) => (
             <Link key={task.id} to={`/tasks/${task.id}`} className="driverTasks__card">

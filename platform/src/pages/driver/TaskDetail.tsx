@@ -1,17 +1,46 @@
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { ArrowLeft, CalendarClock, MapPin, PackageCheck, Route, Truck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { acceptTask as saveAcceptedTask, driverTasks } from '@/pages/driver/driverData';
+import { acceptTask as saveAcceptedTask, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/TaskDetail.css';
 export default function DriverTaskDetail() {
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const task = driverTasks.find((currentTask) => currentTask.id === taskId);
+  const { selectedOrder, isLoading, error, fetchOrderById, getOrderById, updateOrderStatus } = useOrderStore();
+  const cachedOrder = getOrderById(taskId || '');
+  const order = selectedOrder?.id === taskId ? selectedOrder : cachedOrder;
+  const task = order ? mapOrderToDriverTask(order) : null;
 
-  const handleAcceptTask = () => {
-    if (!task) return;
+  useEffect(() => {
+    if (taskId) {
+      void fetchOrderById(taskId);
+    }
+  }, [fetchOrderById, taskId]);
 
-    saveAcceptedTask(task.id);
-    navigate('/active');
+  const handleAcceptTask = async () => {
+    if (!task || !taskId) return;
+
+    try {
+      await updateOrderStatus(taskId, 'deliever');
+      saveAcceptedTask(task.id);
+      navigate('/active');
+    } catch {
+      toast.error('Failed to accept task.');
+    }
+  }
+
+  if (isLoading && !task) {
+    return (
+      <div className="driverTaskDetail__page">
+        <Link to="/" className="driverTaskDetail__backLink">
+          <ArrowLeft className="driverTaskDetail__icon" />
+          Back to tasks
+        </Link>
+        <div className="driverTaskDetail__empty">Loading task...</div>
+      </div>
+    );
   };
 
   if (!task) {
@@ -21,7 +50,7 @@ export default function DriverTaskDetail() {
           <ArrowLeft className="driverTaskDetail__icon" />
           Back to tasks
         </Link>
-        <div className="driverTaskDetail__empty">Task not found.</div>
+        <div className="driverTaskDetail__empty">{error || 'Task not found.'}</div>
       </div>
     );
   }
@@ -81,7 +110,12 @@ export default function DriverTaskDetail() {
         </section>
 
         <div className="driverTaskDetail__actions">
-          <button type="button" className="driverTaskDetail__primaryButton" onClick={handleAcceptTask}>
+          <button
+            type="button"
+            className="driverTaskDetail__primaryButton"
+            disabled={isLoading}
+            onClick={() => void handleAcceptTask()}
+          >
             <Truck className="driverTaskDetail__icon" />
             Accept Task
           </button>

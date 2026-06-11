@@ -1,42 +1,47 @@
 import { ArrowLeft, ImagePlus, Plus, Save, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useProduct } from '@/hooks/useProduct';
-import { useUpload } from '@/hooks/useUpload';
-import { useProfile } from '@/hooks/useProfile';
-import '@/styles/pages/seller/AddProduct.css';
 import toast from 'react-hot-toast';
+import { useProduct } from '@/hooks/useProduct';
+import { useProfile } from '@/hooks/useProfile';
+import { useUpload } from '@/hooks/useUpload';
+import '@/styles/pages/seller/AddProduct.css';
 
 interface Variant {
-  pid: string;
+  id: string;
   type: string;
   price: string;
   stock: string;
 }
 
+const createEmptyVariant = (): Variant => ({
+  id: crypto.randomUUID(),
+  type: '',
+  price: '',
+  stock: '',
+});
+
 export default function SellerAddProduct() {
   const navigate = useNavigate();
   const { addProduct, addProductType, loading: submitting } = useProduct();
-  const { upload, uploading } = useUpload();
   const { fetchProfile } = useProfile();
+  const { upload, uploading } = useUpload();
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [productUrl, setProductUrl] = useState('');
   const [photoName, setPhotoName] = useState('');
-
-  const [variants, setVariants] = useState<Variant[]>([
-    { pid: crypto.randomUUID(), type: '', price: '', stock: '' }
-  ]);
+  const [variants, setVariants] = useState<Variant[]>([createEmptyVariant()]);
 
   useEffect(() => {
-    const getEmail = async () => {
+    const loadProfile = async () => {
       const profile = await fetchProfile();
       if (!profile) return;
       setEmail(profile.email);
     };
-    getEmail();
+
+    void loadProfile();
   }, [fetchProfile]);
 
   const createdAt = useMemo(
@@ -44,67 +49,66 @@ export default function SellerAddProduct() {
     [],
   );
 
-  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
-    
+
     setPhotoName(file.name);
     const url = await upload(file, email);
-    if (!url)  return;
+    if (!url) return;
     setProductUrl(url);
   };
 
   const handleAddVariant = () => {
-    setVariants([...variants, { pid: crypto.randomUUID(), type: '', price: '', stock: '' }]);
+    setVariants((current) => [...current, createEmptyVariant()]);
   };
 
-  const handleRemoveVariant = (pid: string) => {
-    if (variants.length > 1) {
-      setVariants(variants.filter(v => v.pid !== pid));
-    }
+  const handleRemoveVariant = (id: string) => {
+    setVariants((current) => current.length > 1 ? current.filter((variant) => variant.id !== id) : current);
   };
 
-  const handleVariantChange = (pid: string, field: keyof Variant, value: string) => {
-    setVariants(variants.map(v => (v.pid === pid ? { ...v, [field]: value } : v)));
+  const handleVariantChange = (id: string, field: keyof Variant, value: string) => {
+    setVariants((current) => current.map((variant) => (
+      variant.id === id ? { ...variant, [field]: value } : variant
+    )));
   };
+
+  const buildVariantPayload = (variant: Variant, desc: string) => ({
+    price: Number(variant.price),
+    stock: Number(variant.stock),
+    status: true,
+    desc,
+    type: variant.type.trim() || 'Default',
+    product_url: productUrl || undefined,
+  });
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (variants.length === 0) return;
 
-    const mainVariant = variants[0];
     const descriptionText = description.trim();
-    const mainPayload = {
+    const mainVariant = variants[0];
+    const mainProduct = await addProduct({
       name: name.trim(),
-      price: Number(mainVariant.price),
-      stock: Number(mainVariant.stock),
-      type: mainVariant.type.trim() || 'Default',
-      desc: descriptionText,
-      status: true,
-      product_url: productUrl || undefined,
-    };
+      ...buildVariantPayload(mainVariant, descriptionText),
+    });
 
-    const result = await addProduct(mainPayload);
-    const productId = result?.pid;
-
+    const productId = mainProduct?.pid;
     if (!productId) {
       toast.error('新增商品失敗，請檢查網路或稍後再試');
-      return; 
+      return;
     }
-    const additionalVariants = variants.slice(1);
-      
-      for (const v of additionalVariants) {
-        await addProductType(productId, {
-          price: Number(v.price),
-          stock: Number(v.stock),
-          type: v.type.trim() || 'Default',
-          desc: descriptionText,
-          status: true,
-          product_url: productUrl || undefined,
-        });
-      }
-      toast.success('商品新增成功！');
-      navigate('/products');
+
+    const variantResults = await Promise.all(
+      variants.slice(1).map((variant) => addProductType(productId, buildVariantPayload(variant, descriptionText))),
+    );
+
+    if (variantResults.some((result) => !result)) {
+      toast.error('商品已新增，但部分款式新增失敗');
+      return;
+    }
+
+    toast.success('商品新增成功！');
+    navigate('/products');
   };
 
   return (
@@ -120,18 +124,17 @@ export default function SellerAddProduct() {
         <p className="sellerAddProduct__subtitle">Add product information, variants, and photo.</p>
 
         <form id="add-product-form" className="sellerAddProduct__form" onSubmit={handleSubmit}>
-          
           <div className="sellerAddProduct__field">
             <label className="sellerAddProduct__label" htmlFor="product-name">
               Product name <span className="sellerAddProduct__required">*</span>
             </label>
-            <input 
-              id="product-name" 
-              className="sellerAddProduct__input" 
-              placeholder="Product name" 
-              required 
+            <input
+              id="product-name"
+              className="sellerAddProduct__input"
+              placeholder="Product name"
+              required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
             />
           </div>
 
@@ -153,57 +156,80 @@ export default function SellerAddProduct() {
           <div className="sellerAddProduct__wideField sellerAddProduct__variantSection">
             <div className="sellerAddProduct__variantHeader">
               <label className="sellerAddProduct__label sellerAddProduct__variantHeaderLabel">
-                Product Variants (Sizes, Colors, etc.) <span className="sellerAddProduct__required">*</span>
+                Product Variants <span className="sellerAddProduct__required">*</span>
               </label>
-              <button 
-                type="button" 
-                onClick={handleAddVariant} 
+              <button
+                type="button"
+                onClick={handleAddVariant}
                 className="sellerAddProduct__secondaryButton sellerAddProduct__variantAddButton"
               >
                 <Plus size={16} /> Add Variant
               </button>
             </div>
 
-            {variants.map((v, index) => (
-              <div key={v.pid} className="sellerAddProduct__variantRow">
+            {variants.map((variant, index) => (
+              <div key={variant.id} className="sellerAddProduct__variantRow">
                 <div className="sellerAddProduct__variantNameField">
-                  {index === 0 && <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">Variant Name (e.g. Red, Large)</label>}
-                  <input 
-                    className="sellerAddProduct__input" 
-                    placeholder="e.g. Red / Large" 
-                    required 
-                    value={v.type}
-                    onChange={(e) => handleVariantChange(v.pid, 'type', e.target.value)}
+                  {index === 0 && (
+                    <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">
+                      Variant Name
+                    </label>
+                  )}
+                  <input
+                    className="sellerAddProduct__input"
+                    placeholder="e.g. Red / Large"
+                    required
+                    value={variant.type}
+                    onChange={(event) => handleVariantChange(variant.id, 'type', event.target.value)}
                   />
                 </div>
+
                 <div className="sellerAddProduct__variantNumberField">
-                  {index === 0 && <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">Price</label>}
-                  <input 
-                    className="sellerAddProduct__input" 
-                    type="number" min="0" step="0.01" placeholder="0.00" required 
-                    value={v.price}
-                    onChange={(e) => handleVariantChange(v.pid, 'price', e.target.value)}
+                  {index === 0 && (
+                    <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">
+                      Price
+                    </label>
+                  )}
+                  <input
+                    className="sellerAddProduct__input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    required
+                    value={variant.price}
+                    onChange={(event) => handleVariantChange(variant.id, 'price', event.target.value)}
                   />
                 </div>
+
                 <div className="sellerAddProduct__variantNumberField">
-                  {index === 0 && <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">Stock</label>}
-                  <input 
-                    className="sellerAddProduct__input" 
-                    type="number" min="0" placeholder="0" required 
-                    value={v.stock}
-                    onChange={(e) => handleVariantChange(v.pid, 'stock', e.target.value)}
+                  {index === 0 && (
+                    <label className="sellerAddProduct__label sellerAddProduct__variantSubLabel">
+                      Stock
+                    </label>
+                  )}
+                  <input
+                    className="sellerAddProduct__input"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    required
+                    value={variant.stock}
+                    onChange={(event) => handleVariantChange(variant.id, 'stock', event.target.value)}
                   />
                 </div>
+
                 {variants.length > 1 ? (
                   <button
                     type="button"
-                    onClick={() => handleRemoveVariant(v.pid)}
+                    onClick={() => handleRemoveVariant(variant.id)}
                     className={`sellerAddProduct__removeVariantButton ${index === 0 ? 'sellerAddProduct__removeVariantButtonTopAligned' : ''}`}
+                    aria-label="Remove variant"
                   >
                     <Trash2 size={18} />
                   </button>
                 ) : (
-                  <div className="sellerAddProduct__variantRemoveSpacer" /> 
+                  <div className="sellerAddProduct__variantRemoveSpacer" />
                 )}
               </div>
             ))}
@@ -220,7 +246,7 @@ export default function SellerAddProduct() {
             <label className="sellerAddProduct__label" htmlFor="product-photo">
               Product photo
             </label>
-            <label 
+            <label
               className={`sellerAddProduct__uploadBox ${uploading ? 'sellerAddProduct__uploadBoxBusy' : ''}`}
               htmlFor="product-photo"
             >
@@ -245,9 +271,9 @@ export default function SellerAddProduct() {
           <Link to="/products" className="sellerAddProduct__secondaryButton">
             Cancel
           </Link>
-          <button 
-            type="submit" 
-            form="add-product-form" 
+          <button
+            type="submit"
+            form="add-product-form"
             disabled={submitting || uploading}
             className="sellerAddProduct__primaryButton"
           >

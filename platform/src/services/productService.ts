@@ -73,6 +73,23 @@ export const mapProductDtoToProductItem = (product: ProductDto): ProductItem => 
   product_url: product.product_url,
 });
 
+export const mapProductActionToProductItem = (product: ProductActionResponse): ProductItem | null => {
+  if (!product.product_id || !product.pid || !product.name) return null;
+
+  return mapProductDtoToProductItem({
+    product_id: product.product_id,
+    pid: product.pid,
+    name: product.name,
+    price: product.price ?? 0,
+    stock: product.stock ?? 0,
+    status: product.status ?? true,
+    seller_id: product.seller_id ?? '',
+    desc: product.desc ?? '',
+    type: product.type ?? '',
+    product_url: product.product_url,
+  });
+};
+
 export const productService = {
   //賣家上架商品
   addProduct: (data: AddProductPayload, token: string) => {
