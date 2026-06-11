@@ -111,8 +111,10 @@ export default function SellerProducts() {
   const deactivatedProducts = useMemo(() => products.filter((p) => !p.status), [products]);
 
   const toggleProduct = async (product: ProductItem) => {
-    setTogglingId(product.uuid);
-    const success = await updateProductType(product.uuid, {
+    const targetUuid = product.product_id || product.uuid;
+    if (!targetUuid) return;
+    setTogglingId(targetUuid);
+    const success = await updateProductType(targetUuid, {
       price: product.price,
       stock: product.stock,
       type: product.type,
@@ -129,7 +131,7 @@ export default function SellerProducts() {
 
     toast.success(`商品已${!product.status ? '上架' : '下架'}`);
     setProducts(current => current.map(p => 
-       p.uuid === product.uuid ? { ...p, status: !p.status } : p
+       (p.product_id || p.uuid) === targetUuid ? { ...p, status: !p.status } : p
     ));
     
     setTogglingId(null);
@@ -180,16 +182,18 @@ export default function SellerProducts() {
 
         {activeProducts.length > 0 ? (
           <div className="sellerProducts__grid">
-            {activeProducts.map((product) => (
+            {activeProducts.map((product) => {
+              const currentUuid = product.product_id || product.uuid;
+              return(
               <ProductCard 
-                key={product.uuid} 
+                key={currentUuid} 
                 product={product} 
                 onToggle={toggleProduct} 
                 onDelete={handleDeleteProduct} 
-                isToggling={togglingId === product.uuid}
+                isToggling={togglingId === currentUuid}
                 isDeleting={deletingId === product.pid}
               />
-            ))}
+            )})}
           </div>
         ) : (
           <div className="sellerProducts__empty">
@@ -210,16 +214,18 @@ export default function SellerProducts() {
 
         {deactivatedProducts.length > 0 ? (
           <div className="sellerProducts__grid">
-            {deactivatedProducts.map((product) => (
+            {deactivatedProducts.map((product) => {
+              const currentUuid = product.product_id || product.uuid;
+              return(
               <ProductCard 
-                key={product.uuid} 
+                key={currentUuid} 
                 product={product} 
                 onToggle={toggleProduct}
                 onDelete={handleDeleteProduct} 
-                isToggling={togglingId === product.uuid}
+                isToggling={togglingId === currentUuid}
                 isDeleting={deletingId === product.pid}
               />
-            ))}
+            )})}
           </div>
         ) : (
           <div className="sellerProducts__empty">

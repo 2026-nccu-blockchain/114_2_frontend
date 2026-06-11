@@ -1,6 +1,7 @@
 import { apiRequest } from '@/services/api';
 
 export interface ProductItem {
+  product_id?: string;
   uuid: string;
   pid: string;
   name: string;
@@ -57,16 +58,16 @@ export const productService = {
     });
   },
   //賣家增加商品種類
-  addProductType: (productId: string, data: AddTypePayload, token: string) => {
-    return apiRequest<ProductActionResponse>(`/api/v2/products/type/${productId}`, {
+  addProductType: (pid: string, data: AddTypePayload, token: string) => {
+    return apiRequest<ProductActionResponse>(`/api/v2/products/type/${pid}`, {
       method: 'POST',
       body: data,
       headers: { 'Authorization': `Bearer ${token}` },
     });
   },
   //賣家編輯商品
-  editProductBase: (productId: string, name: string, token: string) => {
-    return apiRequest<ProductBaseResponse>(`/api/v2/products/product/${productId}`, {
+  editProductBase: (pid: string, name: string, token: string) => {
+    return apiRequest<ProductBaseResponse>(`/api/v2/products/product/${pid}`, {
       method: 'PUT',
       body: { name },
       headers: { 'Authorization': `Bearer ${token}` },
@@ -81,8 +82,8 @@ export const productService = {
     });
   },
   //賣家刪除商品
-  deleteProduct: (productId: string, token: string) => {
-    return apiRequest<ProductBaseResponse>(`/api/v2/products/product/${productId}`, {
+  deleteProduct: (pid: string, token: string) => {
+    return apiRequest<ProductBaseResponse>(`/api/v2/products/product/${pid}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` },
     });
@@ -95,8 +96,8 @@ export const productService = {
     });
   },
   //查看商品
-  getProduct: (productId: string, token: string) => {
-    return apiRequest<ProductSingleResponse>(`/api/v2/products/product/${productId}`, {
+  getProduct: (pid: string, token: string) => {
+    return apiRequest<ProductSingleResponse>(`/api/v2/products/product/${pid}`, {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
     });

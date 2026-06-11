@@ -32,6 +32,7 @@ const saveCategory = (categoryName: string) => {
 
 interface EditableVariant {
   uuid?: string;
+  pid?: string;
   localId: string; 
   type: string;
   price: string;
@@ -77,8 +78,9 @@ export default function SellerEditProduct() {
       setCategories((prev) => prev.includes(mainProduct.desc || '') ? prev : [...prev, mainProduct.desc || '']);
           
       const loadedVariants = data.map(p => ({
-        uuid: p.uuid,
-        localId: p.uuid,
+        uuid: p.product_id || p.uuid,
+        pid: p.pid,
+        localId: p.product_id || p.uuid,
         type: p.type,
         price: p.price.toString(),
         stock: p.stock.toString(),
@@ -138,8 +140,9 @@ export default function SellerEditProduct() {
       setCategories(getStoredCategories());
       finalCategory = customCategory;
     }
+    const correctPid = variants[0]?.pid || productId;
 
-    const baseSuccess = await editProductBase(productId, name);
+    const baseSuccess = await editProductBase(correctPid, name);
     
     if (!baseSuccess) {
       toast.error('商品基本資料更新失敗，請稍後再試');
@@ -160,7 +163,7 @@ export default function SellerEditProduct() {
         const success = await updateProductType(v.uuid, payload);
         if (!success) allSuccess = false;
       } else {
-        const success = await addProductType(productId, payload);
+        const success = await addProductType(correctPid, payload);
         if (!success) allSuccess = false;
       }
     }

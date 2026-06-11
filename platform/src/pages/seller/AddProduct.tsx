@@ -116,16 +116,16 @@ export default function SellerAddProduct() {
     };
 
     const result = await addProduct(mainPayload);
-    const productId = result?.pid || result?.uuid;
+    const productPid = result?.pid || result?.product_id;
 
-    if (!productId) {
+    if (!productPid) {
       toast.error('新增商品失敗，請檢查網路或稍後再試');
       return; 
     }
     const additionalVariants = variants.slice(1);
       
       for (const v of additionalVariants) {
-        await addProductType(productId, {
+        await addProductType(productPid, {
           price: Number(v.price),
           stock: Number(v.stock),
           type: v.type || 'Default',
