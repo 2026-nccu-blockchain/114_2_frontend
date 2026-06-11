@@ -71,6 +71,7 @@ export default function SellerEditProduct() {
       setProductUrl(mainProduct.product_url || '');
       setVariants(data.map((product) => {
         const uuid = getVariantUuid(product);
+
         return {
           uuid,
           localId: uuid || crypto.randomUUID(),
@@ -126,6 +127,15 @@ export default function SellerEditProduct() {
     )));
   };
 
+  const buildVariantPayload = (variant: EditableVariant, desc: string) => ({
+    price: Number(variant.price),
+    stock: Number(variant.stock),
+    status: variant.status,
+    desc,
+    type: variant.type.trim() || 'Default',
+    product_url: productUrl || undefined,
+  });
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!productId || variants.length === 0) return;
@@ -140,18 +150,9 @@ export default function SellerEditProduct() {
     let allSuccess = true;
 
     for (const variant of variants) {
-      const payload = {
-        price: Number(variant.price),
-        stock: Number(variant.stock),
-        status: variant.status,
-        desc: descriptionText,
-        type: variant.type.trim() || 'Default',
-        product_url: productUrl || undefined,
-      };
-
       const result = variant.uuid
-        ? await updateProductType(variant.uuid, payload)
-        : await addProductType(productId, payload);
+        ? await updateProductType(variant.uuid, buildVariantPayload(variant, descriptionText))
+        : await addProductType(productId, buildVariantPayload(variant, descriptionText));
 
       if (!result) allSuccess = false;
     }

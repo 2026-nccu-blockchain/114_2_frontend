@@ -138,10 +138,11 @@ export const productService = {
     });
   },
   //查看商品
-  getProduct: (productId: string, token: string) => {
+  getProduct: (productId: string, token?: string) => {
     return apiRequest<ProductSingleResponse>(`/products/product/${productId}`, {
       method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` },
+      auth: Boolean(token),
+      headers: token ? { 'Authorization': `Bearer ${token}` } : undefined,
     });
   },
   //列出使用者所有商品

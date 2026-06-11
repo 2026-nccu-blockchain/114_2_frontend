@@ -73,6 +73,15 @@ export default function SellerAddProduct() {
     )));
   };
 
+  const buildVariantPayload = (variant: Variant, desc: string) => ({
+    price: Number(variant.price),
+    stock: Number(variant.stock),
+    status: true,
+    desc,
+    type: variant.type.trim() || 'Default',
+    product_url: productUrl || undefined,
+  });
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -80,12 +89,7 @@ export default function SellerAddProduct() {
     const mainVariant = variants[0];
     const mainProduct = await addProduct({
       name: name.trim(),
-      price: Number(mainVariant.price),
-      stock: Number(mainVariant.stock),
-      status: true,
-      desc: descriptionText,
-      type: mainVariant.type.trim() || 'Default',
-      product_url: productUrl || undefined,
+      ...buildVariantPayload(mainVariant, descriptionText),
     });
 
     const productId = mainProduct?.pid;
@@ -95,14 +99,7 @@ export default function SellerAddProduct() {
     }
 
     const variantResults = await Promise.all(
-      variants.slice(1).map((variant) => addProductType(productId, {
-        price: Number(variant.price),
-        stock: Number(variant.stock),
-        status: true,
-        desc: descriptionText,
-        type: variant.type.trim() || 'Default',
-        product_url: productUrl || undefined,
-      })),
+      variants.slice(1).map((variant) => addProductType(productId, buildVariantPayload(variant, descriptionText))),
     );
 
     if (variantResults.some((result) => !result)) {

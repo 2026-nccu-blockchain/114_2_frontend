@@ -235,6 +235,31 @@
   padding-top:calc(var(--spacing,.25rem) * 4);
   display:flex
 }
+.sellerProducts__imageWithPhoto {
+  padding:0;
+  overflow:hidden
+}
+.sellerProducts__productImage {
+  width:100%;
+  height:100%;
+  object-fit:cover
+}
+.sellerProducts__pidValue {
+  font-size:.7rem
+}
+.sellerProducts__deleteButton {
+  border-color:#fee2e2;
+  background-color:#fef2f2;
+  color:#ef4444
+}
+.sellerProducts__actionSpacer {
+  flex:1
+}
+.sellerProducts__loadingPage {
+  justify-content:center;
+  padding-top:10vh;
+  display:flex
+}
 .sellerProducts__editButton {
   height:calc(var(--spacing,.25rem) * 9);
   justify-content:center;
