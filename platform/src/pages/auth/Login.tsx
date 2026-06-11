@@ -75,6 +75,11 @@ export default function Login({ role = 'buyer' }: LoginProps) {
               onChange={(e) => setPassword(e.target.value)}
               className="authLogin__input"
             />
+            <div className="authLogin__helperRow">
+              <Link to="/forgot-password" className="authLogin__primaryButton">
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           <button

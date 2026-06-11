@@ -13,6 +13,16 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ForgotPasswordRequest {
+  email: string;
+  phone: string;
+  password: string;
+}
+
+export interface ResetPasswordRequest {
+  password: string;
+}
+
 export const authService = {
   //login
   buyerLogin: (data: LoginRequest) => {
@@ -65,5 +75,18 @@ export const authService = {
       body: data,
       headers: { 'Authorization': `Bearer ${token}` }
     });
-  }
+  },
+  forgotPassword: (data: ForgotPasswordRequest) => {
+    return apiRequest<AuthResponse>('/auth/password/forget', {
+      method: 'POST',
+      body: data,
+    });
+  },
+  resetPassword: (data: ResetPasswordRequest, token: string) => {
+    return apiRequest<AuthResponse>('/auth/password/reset/me', {
+      method: 'POST',
+      body: data,
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+  },
 };

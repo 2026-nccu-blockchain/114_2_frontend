@@ -7,6 +7,7 @@ import { Toaster } from 'react-hot-toast';
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
 import AdminRegister from '@/pages/auth/adminRegister';
+import ForgotPassword from '@/pages/auth/ForgotPassword';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Profile from '@/pages/shared/Profile';
 
@@ -55,6 +56,7 @@ function AppRoutes() {
       {/* <Route path="/driver/login" element={<Login role="driver" />} /> */}
       <Route path="/register" element={<Register />} />
       <Route path="/admin/register" element={<AdminRegister />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       <Route path="/" element={<DashboardLayout />}>
         <Route

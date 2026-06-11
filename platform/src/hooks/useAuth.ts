@@ -38,6 +38,12 @@ export interface DriverRegisterData {
   phone: string;
 }
 
+export interface ForgotPasswordData {
+  email: string;
+  phone: string;
+  password: string;
+}
+
 export const getPasswordValidationError = (password: string) => {
   if (password.length < 8) return 'Password must be at least 8 characters.';
   if (!/[A-Z]/.test(password)) return 'Password must include an uppercase letter.';
@@ -228,5 +234,72 @@ export const useAuth = () => {
     }
   };
 
-  return { login, register, adminRegister, sellerRegister, driverRegister, loading, error };
+  const forgotPassword = async (data: ForgotPasswordData) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await authService.forgotPassword(data);
+      const responsePayload = response.data;
+      const errorMessage = handleStatusCode(responsePayload.status_code, responsePayload.message);
+
+      if (errorMessage) {
+        setError(errorMessage);
+        return false;
+      }
+
+      toast.success('密碼更新成功，請重新登入。');
+      navigate('/login');
+      return true;
+    } catch (err) {
+      console.error(err);
+      setError(getErrorMessage(err, '網路連線失敗，請稍後再試'));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetPassword = async (password: string) => {
+    setLoading(true);
+    setError(null);
+
+    if (!token) {
+      setError('請先登入後再重設密碼');
+      setLoading(false);
+      return false;
+    }
+
+    try {
+      const response = await authService.resetPassword({ password }, token);
+      const responsePayload = response.data;
+      const errorMessage = handleStatusCode(responsePayload.status_code, responsePayload.message);
+
+      if (errorMessage) {
+        setError(errorMessage);
+        return false;
+      }
+
+      toast.success('密碼更新成功！');
+      return true;
+    } catch (err) {
+      console.error(err);
+      setError(getErrorMessage(err, '網路連線失敗，請稍後再試'));
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    login,
+    register,
+    adminRegister,
+    sellerRegister,
+    driverRegister,
+    forgotPassword,
+    resetPassword,
+    loading,
+    error,
+  };
 };
