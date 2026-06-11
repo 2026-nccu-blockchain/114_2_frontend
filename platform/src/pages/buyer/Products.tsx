@@ -1,20 +1,47 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Search } from 'lucide-react';
+import { Loader2, Search } from 'lucide-react';
+import { useProduct } from '@/hooks/useProduct';
+import { useAuthStore } from '@/store/authStore';
+import type { ProductItem } from '@/services/productService';
 import { mockProducts } from '@/mock/products';
 import '@/styles/pages/buyer/Products.css';
 
 export default function BuyerProducts() {
+  const { token } = useAuthStore();
+  const { getMyProducts, loading, error } = useProduct();
+  const [products, setProducts] = useState<ProductItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  const categories = ['All', ...new Set(mockProducts.map(p => p.type))];
+  useEffect(() => {
+    if (!token) {
+      return;
+    }
 
-  const filteredProducts = mockProducts.filter(product => {
+    const loadProducts = async () => {
+      const data = await getMyProducts();
+      if (!data) return;
+      setProducts(data.filter((product) => product.status));
+    };
+
+    void loadProducts();
+  }, [getMyProducts, token]);
+//為登入時可以看到商品
+  const visibleProducts = useMemo(
+    () => (token ? products : mockProducts).filter((product) => product.status),
+    [products, token],
+  );
+
+  const categories = useMemo(() => ['All', ...new Set(visibleProducts.map(p => p.type))], [visibleProducts]);
+
+  const filteredProducts = visibleProducts.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || product.type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const getProductPath = (pid: string) => token ? `/products/${pid}` : '/login';
 
   return (
     <div className="buyerProducts__page">
@@ -59,14 +86,20 @@ export default function BuyerProducts() {
 
         {/* 商品卡片網格 */}
         <div className="buyerProducts__style8">
-          {filteredProducts.length === 0 ? (
+          {token && loading && products.length === 0 ? (
+            <div className="buyerProducts__style9">
+              <Loader2 className="animate-spin" size={24} />
+            </div>
+          ) : token && error && products.length === 0 ? (
+            <div className="buyerProducts__style9">{error}</div>
+          ) : filteredProducts.length === 0 ? (
             <div className="buyerProducts__style9">No products found.</div>
           ) : (
             <div className="buyerProducts__style10">
               {filteredProducts.map((product) => (
                 <Link
                   key={product.pid}
-                  to={`/products/${product.pid}`} 
+                  to={getProductPath(product.pid)} 
                   className="group buyerProducts__panel2"
                 >
                   {/* 商品圖片 */}

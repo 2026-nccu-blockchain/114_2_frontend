@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
-import { productService, type AddProductPayload, type AddTypePayload } from '@/services/productService';
+import { mapProductDtoToProductItem, productService, type AddProductPayload, type AddTypePayload } from '@/services/productService';
 import toast from 'react-hot-toast';
 
 export const useProduct = () => {
@@ -11,7 +11,7 @@ export const useProduct = () => {
   const { token, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleProductStatusCode = (statusCode: string, defaultMessage: string) => {
+  const handleProductStatusCode = useCallback((statusCode: string, defaultMessage: string) => {
     switch (statusCode) {
       case '00000': return null;
       case '00001': return '操作失敗';
@@ -37,7 +37,7 @@ export const useProduct = () => {
       default:
         return defaultMessage || `商品操作錯誤 (${statusCode})`;
     }
-  };
+  }, [logout, navigate]);
 
   //賣家上架商品
   const addProduct = async (data: AddProductPayload) => {
@@ -192,16 +192,15 @@ export const useProduct = () => {
   };
 
   //查看單一商品詳情
-  const getProduct = async (productId: string) => {
-    if (!token) return null;
+  const getProduct = useCallback(async (productId: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await productService.getProduct(productId, token);
+      const res = await productService.getProduct(productId, token || undefined);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
-        return res.data.product;
+        return res.data.product.map(mapProductDtoToProductItem);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -213,10 +212,10 @@ export const useProduct = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleProductStatusCode, token]);
 
   //列出目前登入使用者的專屬商品清單
-  const getMyProducts = async () => {
+  const getMyProducts = useCallback(async () => {
     if (!token) return null;
     setLoading(true);
     setError(null);
@@ -225,7 +224,7 @@ export const useProduct = () => {
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
-        return res.data.product;
+        return res.data.product.map(mapProductDtoToProductItem);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -237,7 +236,7 @@ export const useProduct = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleProductStatusCode, token]);
 
   return {
     loading,

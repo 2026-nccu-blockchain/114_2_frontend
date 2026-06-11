@@ -159,7 +159,7 @@ export default function Profile() {
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 accept="image/*"
-                style={{ display: 'none' }}
+                className="sharedProfile__hiddenInput"
               />
               <button
                 type="button"
