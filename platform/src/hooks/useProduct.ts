@@ -198,12 +198,11 @@ export const useProduct = () => {
   };
 
   //查看單一商品詳情
-  const getProduct = async (pid: string) => {
-    if (!token) return null;
+  const getProduct = useCallback(async (pid: string) => {
     setLoading(true);
     setError(null);
     try {
-      const res = await productService.getProduct(pid, token);
+      const res = await productService.getProduct(pid, token || undefined);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {

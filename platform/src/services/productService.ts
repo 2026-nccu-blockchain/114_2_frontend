@@ -139,7 +139,7 @@ export const productService = {
     });
   },
   //查看商品
-  getProduct: (pid: string, token: string) => {
+  getProduct: (pid: string, token?: string) => {
     return apiRequest<ProductSingleResponse>(`/api/v2/products/product/${pid}`, {
       method: 'GET',
       auth: Boolean(token),

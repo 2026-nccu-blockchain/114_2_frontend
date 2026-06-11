@@ -12,8 +12,7 @@ type ProductVariant = ProductItem & { product_id?: string };
 
 interface EditableVariant {
   uuid?: string;
-  pid?: string;
-  localId: string; 
+  localId: string;
   type: string;
   price: string;
   stock: string;
@@ -70,16 +69,17 @@ export default function SellerEditProduct() {
       setName(mainProduct.name);
       setDescription(mainProduct.desc || '');
       setProductUrl(mainProduct.product_url || '');
-      setCategories((prev) => prev.includes(mainProduct.desc || '') ? prev : [...prev, mainProduct.desc || '']);
-          
-      const loadedVariants = data.map(p => ({
-        uuid: p.product_id || p.uuid,
-        pid: p.pid,
-        localId: p.product_id || p.uuid,
-        type: p.type,
-        price: p.price.toString(),
-        stock: p.stock.toString(),
-        status: p.status
+      setVariants(data.map((product) => {
+        const uuid = getVariantUuid(product);
+
+        return {
+          uuid,
+          localId: uuid || crypto.randomUUID(),
+          type: product.type,
+          price: String(product.price),
+          stock: String(product.stock),
+          status: product.status,
+        };
       }));
       setIsLoadingProduct(false);
     };
@@ -140,16 +140,7 @@ export default function SellerEditProduct() {
     event.preventDefault();
     if (!productId || variants.length === 0) return;
 
-    let finalCategory = category;
-    if (category === NEW_CATEGORY_VALUE) {
-      saveCategory(customCategory);
-      setCategories(getStoredCategories());
-      finalCategory = customCategory;
-    }
-    const correctPid = variants[0]?.pid || productId;
-
-    const baseSuccess = await editProductBase(correctPid, name);
-    
+    const baseSuccess = await editProductBase(productId, name.trim());
     if (!baseSuccess) {
       toast.error('商品基本資料更新失敗，請稍後再試');
       return;
@@ -157,23 +148,12 @@ export default function SellerEditProduct() {
 
     const descriptionText = description.trim();
     let allSuccess = true;
-    for (const v of variants) {
-      const payload = {
-        price: Number(v.price),
-        stock: Number(v.stock),
-        type: v.type || 'Default',
-        desc: finalCategory,
-        status: v.status,
-        product_url: productUrl
-      };
+    for (const variant of variants) {
+      const result = variant.uuid
+        ? await updateProductType(variant.uuid, buildVariantPayload(variant, descriptionText))
+        : await addProductType(productId, buildVariantPayload(variant, descriptionText));
 
-      if (v.uuid) {
-        const success = await updateProductType(v.uuid, payload);
-        if (!success) allSuccess = false;
-      } else {
-        const success = await addProductType(correctPid, payload);
-        if (!success) allSuccess = false;
-      }
+      if (!result) allSuccess = false;
     }
 
     if (!allSuccess) {
