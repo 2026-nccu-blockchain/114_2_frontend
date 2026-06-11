@@ -16,8 +16,8 @@ export const uploadService = {
    */
   uploadImage: (file: File, email: string, token: string) => {
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('email', email);
+    formData.append('image', file);
+    //formData.append('email', email);
 
     return apiRequest<UploadResponse>('/api/v2/upload', {
       method: 'POST',

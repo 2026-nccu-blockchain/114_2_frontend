@@ -15,11 +15,12 @@ export default function AdminRegister() {
     e.preventDefault();
     setValidationError('');
 
-    const passwordError = getPasswordValidationError(password);
-    if (passwordError) {
-      setValidationError(passwordError);
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setValidationError('Password must be at least 8 characters long and include uppercase, lowercase, and numbers.');
       return;
     }
+
     if (password !== confirmPassword) {
       setValidationError('Passwords do not match.');
       return;

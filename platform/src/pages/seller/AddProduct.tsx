@@ -87,13 +87,20 @@ export default function SellerAddProduct() {
 
     const descriptionText = description.trim();
     const mainVariant = variants[0];
-    const mainProduct = await addProduct({
-      name: name.trim(),
-      ...buildVariantPayload(mainVariant, descriptionText),
-    });
+    const mainPayload = {
+      name,
+      price: Number(mainVariant.price),
+      stock: Number(mainVariant.stock),
+      type: mainVariant.type || 'Default', 
+      desc: finalCategory,
+      status: true,
+      product_url: productUrl
+    };
 
-    const productId = mainProduct?.pid;
-    if (!productId) {
+    const result = await addProduct(mainPayload);
+    const productPid = result?.pid || result?.product_id;
+
+    if (!productPid) {
       toast.error('新增商品失敗，請檢查網路或稍後再試');
       return;
     }
@@ -106,9 +113,20 @@ export default function SellerAddProduct() {
       toast.error('商品已新增，但部分款式新增失敗');
       return;
     }
-
-    toast.success('商品新增成功！');
-    navigate('/products');
+    const additionalVariants = variants.slice(1);
+      
+      for (const v of additionalVariants) {
+        await addProductType(productPid, {
+          price: Number(v.price),
+          stock: Number(v.stock),
+          type: v.type || 'Default',
+          desc: finalCategory,
+          status: true,
+          product_url: productUrl
+        });
+      }
+      toast.success('商品新增成功！');
+      navigate('/products');
   };
 
   return (

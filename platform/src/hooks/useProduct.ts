@@ -73,12 +73,12 @@ export const useProduct = () => {
   };
 
   //賣家增加商品種類
-  const addProductType = async (productId: string, data: AddTypePayload) => {
+  const addProductType = async (pid: string, data: AddTypePayload) => {
     if (!token) return null;
     setLoading(true);
     setError(null);
     try {
-      const res = await productService.addProductType(productId, data, token);
+      const res = await productService.addProductType(pid, data, token);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000') {
@@ -98,12 +98,12 @@ export const useProduct = () => {
   };
 
   //賣家編輯商品基本名稱
-  const editProductBase = async (productId: string, name: string) => {
+  const editProductBase = async (pid: string, name: string) => {
     if (!token) return false;
     setLoading(true);
     setError(null);
     try {
-      const res = await productService.editProductBase(productId, name, token);
+      const res = await productService.editProductBase(pid, name, token);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000') {
@@ -148,12 +148,12 @@ export const useProduct = () => {
   };
 
   //賣家刪除完整商品
-  const deleteProduct = async (productId: string) => {
+  const deleteProduct = async (pid: string) => {
     if (!token) return false;
     if (!window.confirm('確定要永久刪除此項商品嗎？這將會連帶移除所有種類。')) return false;
     setLoading(true);
     try {
-      const res = await productService.deleteProduct(productId, token);
+      const res = await productService.deleteProduct(pid, token);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000') {
@@ -198,11 +198,12 @@ export const useProduct = () => {
   };
 
   //查看單一商品詳情
-  const getProduct = useCallback(async (productId: string) => {
+  const getProduct = async (pid: string) => {
+    if (!token) return null;
     setLoading(true);
     setError(null);
     try {
-      const res = await productService.getProduct(productId, token || undefined);
+      const res = await productService.getProduct(pid, token);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
