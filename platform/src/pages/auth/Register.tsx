@@ -16,9 +16,9 @@ export default function Register() {
   const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     setValidationError('');
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      setValidationError('Password must be at least 8 characters long and include uppercase, lowercase, and numbers.');
+    const passwordError = getPasswordValidationError(password);
+    if (passwordError) {
+      setValidationError(passwordError);
       return;
     }
     if (password !== confirmPassword) {
