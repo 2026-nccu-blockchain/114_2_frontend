@@ -1,7 +1,6 @@
-import { Car, Store, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Car, Store } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { adminUsers } from '@/pages/admin/adminData';
+import { useAdminUsers } from '@/hooks/useAdminUsers';
 import { styles } from '@/styles/pages/admin/Users.styles';
 
 
@@ -13,11 +12,7 @@ const roleStyles = {
 };
 
 export default function AdminUsers() {
-  const [users, setUsers] = useState(adminUsers);
-
-  const deleteUser = (userId: string) => {
-    setUsers((currentUsers) => currentUsers.filter((user) => user.id !== userId));
-  };
+  const { users, loading, error } = useAdminUsers();
 
   return (
     <div className={styles.page}>
@@ -40,7 +35,11 @@ export default function AdminUsers() {
       </header>
 
       <div className={styles.tableWrap}>
-        {users.length > 0 ? (
+        {loading && users.length === 0 ? (
+          <div className={styles.empty}>Loading users...</div>
+        ) : error && users.length === 0 ? (
+          <div className={styles.empty}>{error}</div>
+        ) : users.length > 0 ? (
           <table className={styles.table}>
             <thead>
               <tr>
@@ -48,7 +47,6 @@ export default function AdminUsers() {
                 <th className={styles.th}>Email</th>
                 <th className={styles.th}>Role</th>
                 <th className={styles.th}>Status</th>
-                <th className={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody className={styles.style}>
@@ -66,16 +64,6 @@ export default function AdminUsers() {
                     <span className={`${styles.badge} ${user.status === 'Active' ? styles.active : styles.pending}`}>
                       {user.status}
                     </span>
-                  </td>
-                  <td className={styles.actionTd}>
-                    <button
-                      type="button"
-                      className={styles.deleteButton}
-                      aria-label={`Delete ${user.name}`}
-                      onClick={() => deleteUser(user.id)}
-                    >
-                      <Trash2 className={styles.buttonIcon} />
-                    </button>
                   </td>
                 </tr>
               ))}

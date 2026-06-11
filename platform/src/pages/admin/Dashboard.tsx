@@ -1,6 +1,6 @@
 import { Car, ShieldCheck, Store, UserPlus, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getAdminUserStats } from '@/pages/admin/adminData';
+import { useAdminUsers } from '@/hooks/useAdminUsers';
 import { styles } from '@/styles/pages/admin/Dashboard.styles';
 
 
@@ -26,7 +26,7 @@ const actionCards = [
 ];
 
 export default function AdminDashboard() {
-  const stats = getAdminUserStats();
+  const { stats, loading, error } = useAdminUsers();
   const statCards = [
     { label: 'Total Users', value: stats.totalUsers, icon: Users, tone: styles.tealTone },
     { label: 'Admins', value: stats.admins, icon: ShieldCheck, tone: styles.purpleTone },
@@ -59,6 +59,9 @@ export default function AdminDashboard() {
           );
         })}
       </section>
+
+      {loading && <p className={styles.subtitle}>Loading user overview...</p>}
+      {error && <p className={styles.subtitle}>{error}</p>}
 
       <section>
         <h2 className={styles.sectionTitle}>Admin actions</h2>
