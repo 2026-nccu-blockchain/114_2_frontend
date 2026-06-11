@@ -1,12 +1,13 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
-import { AuthGuard } from './components/layout/AuthGuard';
+import { AuthGuard } from '@/components/layout/AuthGuard';
 import { useAuthStore } from '@/store/authStore';
 import { Toaster } from 'react-hot-toast';
 
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
 import AdminRegister from '@/pages/auth/adminRegister';
+import ForgotPassword from '@/pages/auth/ForgotPassword';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Profile from '@/pages/shared/Profile';
 
@@ -20,7 +21,7 @@ import AdminAddDriver from '@/pages/admin/AddDriver';
 import BuyerProducts from '@/pages/buyer/Products';
 import BuyerCart from '@/pages/buyer/Cart';
 import BuyerOrders from '@/pages/buyer/MyOrders';
-import ProductDetail from './pages/buyer/ProductDetail';
+import ProductDetail from '@/pages/buyer/ProductDetail';
 import BuyerCheckout from '@/pages/buyer/Checkout';
 import BuyerOrderDetail from '@/pages/buyer/OrderDetail';
 
@@ -46,9 +47,16 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
+      <Route path="/login" element={<Login role="buyer" />} />
+      <Route path="/admin" element={<Login role="admin" />} />
+      {/* <Route path="/admin/login" element={<Login role="admin" />} /> */}
+      <Route path="/seller" element={<Login role="seller" />} />
+      {/* <Route path="/seller/login" element={<Login role="seller" />} /> */}
+      <Route path="/driver" element={<Login role="driver" />} />
+      {/* <Route path="/driver/login" element={<Login role="driver" />} /> */}
       <Route path="/register" element={<Register />} />
       <Route path="/admin/register" element={<AdminRegister />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
 
       <Route path="/" element={<DashboardLayout />}>
         <Route
@@ -83,7 +91,8 @@ function AppRoutes() {
             </>
           )}
 
-          {/* seller */}
+          {/* seller */} 
+          
           {role === 'seller' && (
             <>
               <Route path="products" element={<SellerProducts />} />

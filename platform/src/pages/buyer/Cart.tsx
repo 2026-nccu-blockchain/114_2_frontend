@@ -1,11 +1,69 @@
+import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Trash2, Plus, Minus, Inbox } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useCartStore } from '@/store/cartStore';
 import '@/styles/pages/buyer/Cart.css';
 
 export default function BuyerCart() {
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, clearCart, getTotalPrice } = useCartStore();
+  const { items, removeItem, updateQuantity, clearCart, fetchCart, getTotalPrice, isLoading, error } = useCartStore();
+
+  useEffect(() => {
+    void fetchCart();
+  }, [fetchCart]);
+
+  const handleUpdateQuantity = async (cartId: string | undefined, quantity: number) => {
+    if (!cartId) return;
+
+    try {
+      await updateQuantity(cartId, quantity);
+    } catch {
+      toast.error('Failed to update cart item.');
+    }
+  };
+
+  const handleRemoveItem = async (cartId: string | undefined) => {
+    if (!cartId) return;
+
+    try {
+      await removeItem(cartId);
+      toast.success('Item removed from cart.');
+    } catch {
+      toast.error('Failed to remove item.');
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      await clearCart();
+      toast.success('Cart cleared.');
+    } catch {
+      toast.error('Failed to clear cart.');
+    }
+  };
+
+  if (isLoading && items.length === 0) {
+    return (
+      <div className="buyerCart__page">
+        <h1 className="buyerCart__title">Shopping Cart</h1>
+        <div className="buyerCart__style">
+          <h2 className="buyerCart__sectionTitle">Loading cart...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (error && items.length === 0) {
+    return (
+      <div className="buyerCart__page">
+        <h1 className="buyerCart__title">Shopping Cart</h1>
+        <div className="buyerCart__style">
+          <h2 className="buyerCart__sectionTitle">{error}</h2>
+        </div>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -35,7 +93,8 @@ export default function BuyerCart() {
       <div className="buyerCart__style3">
         <h1 className="buyerCart__title2">Shopping Cart</h1>
         <button
-          onClick={clearCart}
+          onClick={() => void handleClearCart()}
+          disabled={isLoading}
           className="buyerCart__style4"
         >
           Clear all
@@ -46,7 +105,7 @@ export default function BuyerCart() {
       <div className="buyerCart__panel">
         <ul className="buyerCart__style5">
           {items.map((item) => (
-            <li key={item.pid} className="buyerCart__style6">
+            <li key={item.cartId ?? item.uuid} className="buyerCart__style6">
               {/* 商品圖片 */}
               <div className="buyerCart__style7">
                 <span className="buyerCart__style8">Product</span>
@@ -54,9 +113,13 @@ export default function BuyerCart() {
 
               {/* 商品名稱與資訊 */}
               <div className="buyerCart__style9">
-                <Link to={`/products/${item.pid}`} className="buyerCart__style10">
-                  {item.name}
-                </Link>
+                {item.pid ? (
+                  <Link to={`/products/${item.pid}`} className="buyerCart__style10">
+                    {item.name}
+                  </Link>
+                ) : (
+                  <span className="buyerCart__style10">{item.name}</span>
+                )}
                 <p className="buyerCart__mutedText2">${item.price.toFixed(2)} each</p>
               </div>
 
@@ -65,8 +128,8 @@ export default function BuyerCart() {
                 {/* 數量選擇器 */}
                 <div className="buyerCart__icon2">
                   <button
-                    onClick={() => updateQuantity(item.pid, item.quantity - 1)}
-                    disabled={item.quantity <= 1}
+                    onClick={() => void handleUpdateQuantity(item.cartId, item.quantity - 1)}
+                    disabled={isLoading || item.quantity <= 1}
                     className="buyerCart__style12"
                   >
                     <Minus className="buyerCart__icon3" />
@@ -75,8 +138,8 @@ export default function BuyerCart() {
                     {item.quantity}
                   </span>
                   <button
-                    onClick={() => updateQuantity(item.pid, item.quantity + 1)}
-                    disabled={item.quantity >= item.stock}
+                    onClick={() => void handleUpdateQuantity(item.cartId, item.quantity + 1)}
+                    disabled={isLoading || item.quantity >= item.stock}
                     className="buyerCart__style12"
                   >
                     <Plus className="buyerCart__icon3" />
@@ -90,7 +153,8 @@ export default function BuyerCart() {
 
                 {/* 刪除按鈕 */}
                 <button
-                  onClick={() => removeItem(item.pid)}
+                  onClick={() => void handleRemoveItem(item.cartId)}
+                  disabled={isLoading}
                   className="buyerCart__style15"
                   aria-label="Remove item"
                 >

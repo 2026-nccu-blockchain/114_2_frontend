@@ -2,11 +2,13 @@ import { useState, useEffect, type SyntheticEvent, useRef, type ChangeEvent} fro
 import { useAuthStore } from '@/store/authStore';
 import { useProfile, type UpdateProfileData } from '@/hooks/useProfile';
 import { useUpload } from '@/hooks/useUpload';
+import { getPasswordValidationError, useAuth } from '@/hooks/useAuth';
 import '@/styles/pages/shared/Profile.css'; 
 
 export default function Profile() {
   const { role } = useAuthStore();
   const { fetchProfile, updateProfile, deleteAccount, loading, error, success } = useProfile();
+  const { resetPassword, loading: passwordLoading, error: passwordError } = useAuth();
   const { upload, uploading } = useUpload();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [userId, setUserId] = useState('');
@@ -18,6 +20,9 @@ export default function Profile() {
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyPhone, setCompanyPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordLocalError, setPasswordLocalError] = useState('');
 
   useEffect(() => {
     const loadData = async () => {
@@ -80,6 +85,28 @@ export default function Profile() {
     }
 
     await updateProfile(payload);
+  };
+
+  const handlePasswordSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setPasswordLocalError('');
+
+    const validationError = getPasswordValidationError(newPassword);
+    if (validationError) {
+      setPasswordLocalError(validationError);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordLocalError('Passwords do not match.');
+      return;
+    }
+
+    const updated = await resetPassword(newPassword);
+    if (updated) {
+      setNewPassword('');
+      setConfirmPassword('');
+    }
   };
 
   return (
@@ -159,7 +186,7 @@ export default function Profile() {
                 ref={fileInputRef}
                 onChange={handleFileChange}
                 accept="image/*"
-                style={{ display: 'none' }}
+                className="sharedProfile__hiddenInput"
               />
               <button
                 type="button"
@@ -259,6 +286,57 @@ export default function Profile() {
             </button>
           </div>
         </form>
+
+        <section className="sharedProfile__passwordSection">
+          <h3 className="sharedProfile__sectionTitle">Password</h3>
+          <p className="sharedProfile__mutedText">Update your password for this account.</p>
+
+          {(passwordError || passwordLocalError) && (
+            <div className="sharedProfile__style4">{passwordError || passwordLocalError}</div>
+          )}
+
+          <form onSubmit={handlePasswordSubmit} className="sharedProfile__passwordForm">
+            <div className="sharedProfile__formGrid sharedProfile__formGrid--2cols">
+              <div>
+                <label className="sharedProfile__style6">
+                  New Password <span className="sharedProfile__required">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="At least 8 chars, uppercase, lowercase, number"
+                  value={newPassword}
+                  onChange={(event) => setNewPassword(event.target.value)}
+                  className="sharedProfile__input"
+                />
+              </div>
+
+              <div>
+                <label className="sharedProfile__style6">
+                  Confirm Password <span className="sharedProfile__required">*</span>
+                </label>
+                <input
+                  type="password"
+                  required
+                  placeholder="Enter the new password again"
+                  value={confirmPassword}
+                  onChange={(event) => setConfirmPassword(event.target.value)}
+                  className="sharedProfile__input"
+                />
+              </div>
+            </div>
+
+            <p className="sharedProfile__hintText">At least 8 characters, with uppercase, lowercase, and a number.</p>
+
+            <button
+              type="submit"
+              disabled={passwordLoading}
+              className="sharedProfile__primaryButton"
+            >
+              {passwordLoading ? '更新中...' : 'Update Password'}
+            </button>
+          </form>
+        </section>
 
         {role !== 'admin' && (
           <div className="sharedProfile__dangerZone">

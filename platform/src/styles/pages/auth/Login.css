@@ -89,6 +89,13 @@
   border-color:#14b8a6;
   outline:2px solid #0000
 }
+.authLogin__helperRow {
+  justify-content:flex-end;
+  margin-top:.375rem;
+  font-size:.8125rem;
+  line-height:1.125rem;
+  display:flex
+}
 .authLogin__style4 {
   grid-template-columns:repeat(3,minmax(0,1fr));
   gap:.5rem;

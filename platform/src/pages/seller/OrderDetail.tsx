@@ -1,10 +1,51 @@
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { ArrowLeft, CalendarClock, MapPin, PackageCheck, Truck, XCircle } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
-import { initialOrders, statusStyles } from '@/pages/seller/orderData';
+import { statusStyles } from '@/constants/order';
+import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/seller/OrderDetail.css';
 export default function SellerOrderDetail() {
   const { orderId } = useParams();
-  const order = initialOrders.find((currentOrder) => currentOrder.id === orderId);
+  const {
+    selectedOrder,
+    isLoading,
+    error,
+    fetchOrderById,
+    getOrderById,
+    updateOrderStatus,
+  } = useOrderStore();
+  const cachedOrder = getOrderById(orderId || '');
+  const order = selectedOrder?.id === orderId ? selectedOrder : cachedOrder;
+
+  useEffect(() => {
+    if (orderId) {
+      void fetchOrderById(orderId);
+    }
+  }, [fetchOrderById, orderId]);
+
+  const handleUpdateStatus = async (status: 'packed' | 'fail') => {
+    if (!orderId) return;
+
+    try {
+      await updateOrderStatus(orderId, status);
+      toast.success('Order status updated.');
+    } catch {
+      toast.error('Failed to update order status.');
+    }
+  };
+
+  if (isLoading && !order) {
+    return (
+      <div className="sellerOrderDetail__page">
+        <Link to="/orders" className="sellerOrderDetail__backLink">
+          <ArrowLeft className="sellerOrderDetail__backIcon" />
+          Back to orders
+        </Link>
+        <div className="sellerOrderDetail__empty">Loading order...</div>
+      </div>
+    );
+  }
 
   if (!order) {
     return (
@@ -13,7 +54,7 @@ export default function SellerOrderDetail() {
           <ArrowLeft className="sellerOrderDetail__backIcon" />
           Back to orders
         </Link>
-        <div className="sellerOrderDetail__empty">Order not found.</div>
+        <div className="sellerOrderDetail__empty">{error || 'Order not found.'}</div>
       </div>
     );
   }
@@ -29,7 +70,7 @@ export default function SellerOrderDetail() {
         <div className="sellerOrderDetail__detailHeader">
           <div>
             <h1 className="sellerOrderDetail__detailTitle">{order.id}</h1>
-            <p className="sellerOrderDetail__detailMeta">{order.customer}</p>
+            <p className="sellerOrderDetail__detailMeta">Buyer {order.buyerId}</p>
           </div>
           <span className={`${'sellerOrderDetail__status'} ${statusStyles[order.status]}`}>{order.status}</span>
         </div>
@@ -39,7 +80,7 @@ export default function SellerOrderDetail() {
             <CalendarClock className="sellerOrderDetail__sectionIcon" />
             Order time
           </h2>
-          <p className="sellerOrderDetail__infoValue">{order.createdAt}</p>
+          <p className="sellerOrderDetail__infoValue">{order.createdAt || 'Order time unavailable'}</p>
         </section>
 
         <section className="sellerOrderDetail__section">
@@ -48,12 +89,12 @@ export default function SellerOrderDetail() {
             Order items
           </h2>
           {order.items.map((item) => (
-            <div key={item.name} className="sellerOrderDetail__itemRow">
+            <div key={item.id} className="sellerOrderDetail__itemRow">
               <div>
                 <p className="sellerOrderDetail__itemName">{item.name}</p>
                 <p className="sellerOrderDetail__itemDetail">Qty {item.quantity}</p>
               </div>
-              <p className="sellerOrderDetail__total">{item.price}</p>
+              <p className="sellerOrderDetail__total">${(item.price * item.quantity).toFixed(2)}</p>
             </div>
           ))}
         </section>
@@ -65,32 +106,42 @@ export default function SellerOrderDetail() {
           </h2>
           <div className="sellerOrderDetail__infoGrid">
             <div>
-              <p className="sellerOrderDetail__infoLabel">Recipient</p>
-              <p className="sellerOrderDetail__infoValue">{order.delivery.recipient}</p>
+              <p className="sellerOrderDetail__infoLabel">Buyer ID</p>
+              <p className="sellerOrderDetail__infoValue">{order.buyerId}</p>
             </div>
             <div>
-              <p className="sellerOrderDetail__infoLabel">Phone</p>
-              <p className="sellerOrderDetail__infoValue">{order.delivery.phone}</p>
+              <p className="sellerOrderDetail__infoLabel">From</p>
+              <p className="sellerOrderDetail__infoValue">{order.fromAddress || 'Unavailable'}</p>
             </div>
             <div>
               <p className="sellerOrderDetail__infoLabel">Address</p>
-              <p className="sellerOrderDetail__infoValue">{order.delivery.address}</p>
+              <p className="sellerOrderDetail__infoValue">{order.toAddress}</p>
             </div>
             <div>
               <p className="sellerOrderDetail__infoLabel">Driver</p>
-              <p className="sellerOrderDetail__infoValue">{order.delivery.driver}</p>
+              <p className="sellerOrderDetail__infoValue">{order.driverId || 'Unassigned'}</p>
             </div>
           </div>
         </section>
 
         <div className="sellerOrderDetail__actions">
           {order.status === 'ordered' && (
-            <button type="button" className="sellerOrderDetail__assignButton">
+            <button
+              type="button"
+              className="sellerOrderDetail__assignButton"
+              disabled={isLoading}
+              onClick={() => void handleUpdateStatus('packed')}
+            >
               <Truck className="sellerOrderDetail__actionIcon" />
-              Assign
+              Mark packed
             </button>
           )}
-          <button type="button" className="sellerOrderDetail__cancelButton">
+          <button
+            type="button"
+            className="sellerOrderDetail__cancelButton"
+            disabled={isLoading}
+            onClick={() => void handleUpdateStatus('fail')}
+          >
             <XCircle className="sellerOrderDetail__actionIcon" />
             Cancel
           </button>

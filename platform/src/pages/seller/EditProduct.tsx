@@ -1,34 +1,14 @@
-import { ArrowLeft, ImagePlus, Save, Loader2, Plus, Trash2 } from 'lucide-react';
-import { useMemo, useState, useEffect, type SyntheticEvent, type ChangeEvent } from 'react';
+import { ArrowLeft, ImagePlus, Loader2, Plus, Save, Trash2 } from 'lucide-react';
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useProduct } from '@/hooks/useProduct';
-import { useUpload } from '@/hooks/useUpload';
-import { useProfile } from '@/hooks/useProfile';
 import toast from 'react-hot-toast';
+import { useProduct } from '@/hooks/useProduct';
+import { useProfile } from '@/hooks/useProfile';
+import { useUpload } from '@/hooks/useUpload';
+import type { ProductItem } from '@/services/productService';
 import '@/styles/pages/seller/EditProduct.css';
 
-const NEW_CATEGORY_VALUE = '__new_category__';
-const CATEGORY_STORAGE_KEY = 'sellerProductCategories';
-const defaultCategories = ['Fresh Fruit', 'Pantry', 'Beverage', 'Gift Set', 'Bakery'];
-
-const getStoredCategories = () => {
-  const storedCategories = window.localStorage.getItem(CATEGORY_STORAGE_KEY);
-  if (!storedCategories) return defaultCategories;
-  try {
-    const parsedCategories = JSON.parse(storedCategories);
-    return Array.isArray(parsedCategories) ? parsedCategories : defaultCategories;
-  } catch {
-    return defaultCategories;
-  }
-};
-
-const saveCategory = (categoryName: string) => {
-  const nextCategory = categoryName.trim();
-  if (!nextCategory) return;
-  const categories = getStoredCategories();
-  if (categories.some((category) => category.toLowerCase() === nextCategory.toLowerCase())) return;
-  window.localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify([...categories, nextCategory]));
-};
+type ProductVariant = ProductItem & { product_id?: string };
 
 interface EditableVariant {
   uuid?: string;
@@ -40,40 +20,55 @@ interface EditableVariant {
   status: boolean;
 }
 
+const createEmptyVariant = (): EditableVariant => ({
+  localId: crypto.randomUUID(),
+  type: '',
+  price: '',
+  stock: '',
+  status: true,
+});
+
+const getVariantUuid = (product: ProductVariant) => product.uuid || product.product_id;
+
 export default function SellerEditProduct() {
   const { productId } = useParams();
   const navigate = useNavigate();
-  const { getProduct, editProductBase, updateProductType, addProductType, deleteProductType, loading: isSubmitting } = useProduct();
-  const { upload, uploading } = useUpload();
+  const {
+    addProductType,
+    deleteProductType,
+    editProductBase,
+    getProduct,
+    loading: isSubmitting,
+    updateProductType,
+  } = useProduct();
   const { fetchProfile } = useProfile();
-  
+  const { upload, uploading } = useUpload();
+
   const [isLoadingProduct, setIsLoadingProduct] = useState(true);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [productUrl, setProductUrl] = useState('');
   const [photoName, setPhotoName] = useState('');
-  
-  const [categories, setCategories] = useState(getStoredCategories);
-  const [category, setCategory] = useState('');
-  const [customCategory, setCustomCategory] = useState('');
-
   const [variants, setVariants] = useState<EditableVariant[]>([]);
 
   useEffect(() => {
-    const initData = async () => {
-      if(!productId) return;
+    const loadProduct = async () => {
+      if (!productId) return;
+
       setIsLoadingProduct(true);
-      
       const profile = await fetchProfile();
       if (profile) setEmail(profile.email);
+
       const data = await getProduct(productId);
       if (!data || data.length === 0) {
-        setIsLoadingProduct(false); 
-        return; 
+        setIsLoadingProduct(false);
+        return;
       }
+
       const mainProduct = data[0];
       setName(mainProduct.name);
-      setCategory(mainProduct.desc || ''); 
+      setDescription(mainProduct.desc || '');
       setProductUrl(mainProduct.product_url || '');
       setCategories((prev) => prev.includes(mainProduct.desc || '') ? prev : [...prev, mainProduct.desc || '']);
           
@@ -86,21 +81,21 @@ export default function SellerEditProduct() {
         stock: p.stock.toString(),
         status: p.status
       }));
-      setVariants(loadedVariants);
-        
       setIsLoadingProduct(false);
     };
-    initData();
-  }, [productId, fetchProfile, getProduct]);
 
-  const createdAt = useMemo(
+    void loadProduct();
+  }, [fetchProfile, getProduct, productId]);
+
+  const accessedAt = useMemo(
     () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
-    []
+    [],
   );
 
   const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
     setPhotoName(file.name);
     const url = await upload(file, email);
     if (!url) return;
@@ -108,7 +103,7 @@ export default function SellerEditProduct() {
   };
 
   const handleAddVariant = () => {
-    setVariants([...variants, { localId: crypto.randomUUID(), type: '', price: '', stock: '', status: true }]);
+    setVariants((current) => [...current, createEmptyVariant()]);
   };
 
   const handleRemoveVariant = async (localId: string, uuid?: string) => {
@@ -122,15 +117,26 @@ export default function SellerEditProduct() {
       const success = await deleteProductType(uuid);
       if (!success) return;
     }
-    
-    setVariants(variants.filter(v => v.localId !== localId));
+
+    setVariants((current) => current.filter((variant) => variant.localId !== localId));
   };
 
   const handleVariantChange = (localId: string, field: keyof EditableVariant, value: string) => {
-    setVariants(variants.map(v => (v.localId === localId ? { ...v, [field]: value } : v)));
+    setVariants((current) => current.map((variant) => (
+      variant.localId === localId ? { ...variant, [field]: value } : variant
+    )));
   };
 
-  const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
+  const buildVariantPayload = (variant: EditableVariant, desc: string) => ({
+    price: Number(variant.price),
+    stock: Number(variant.stock),
+    status: variant.status,
+    desc,
+    type: variant.type.trim() || 'Default',
+    product_url: productUrl || undefined,
+  });
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!productId || variants.length === 0) return;
 
@@ -148,6 +154,8 @@ export default function SellerEditProduct() {
       toast.error('商品基本資料更新失敗，請稍後再試');
       return;
     }
+
+    const descriptionText = description.trim();
     let allSuccess = true;
     for (const v of variants) {
       const payload = {
@@ -168,17 +176,18 @@ export default function SellerEditProduct() {
       }
     }
 
-    if (allSuccess) {
-      toast.success('商品更新完成！');
-       navigate('/products');
-    } else {
+    if (!allSuccess) {
       toast.error('部分款式更新失敗，請檢查網路或稍後再試');
+      return;
     }
+
+    toast.success('商品更新完成！');
+    navigate('/products');
   };
 
   if (isLoadingProduct) {
     return (
-      <div className="sellerEditProduct__page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+      <div className="sellerEditProduct__page sellerEditProduct__loading">
         <Loader2 className="animate-spin text-teal-600" size={32} />
       </div>
     );
@@ -200,100 +209,103 @@ export default function SellerEditProduct() {
             <label className="sellerEditProduct__label" htmlFor="product-name">
               Product name <span className="sellerEditProduct__required">*</span>
             </label>
-            <input 
-              id="product-name" 
-              className="sellerEditProduct__input" 
-              placeholder="Product name" 
-              required 
+            <input
+              id="product-name"
+              className="sellerEditProduct__input"
+              placeholder="Product name"
+              required
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event) => setName(event.target.value)}
             />
           </div>
 
-          <div className="sellerEditProduct__field">
-            <label className="sellerEditProduct__label" htmlFor="category">
-              Category <span className="sellerEditProduct__required">*</span>
+          <div className="sellerEditProduct__wideField">
+            <label className="sellerEditProduct__label" htmlFor="product-description">
+              Description <span className="sellerEditProduct__required">*</span>
             </label>
-            <div className="sellerEditProduct__categoryFields">
-              <select
-                id="category"
-                className="sellerEditProduct__select"
-                required
-                value={category}
-                onChange={(event) => setCategory(event.target.value)}
-              >
-                {categories.map((categoryName) => (
-                  <option key={categoryName} value={categoryName}>{categoryName}</option>
-                ))}
-                <option value={NEW_CATEGORY_VALUE}>Add new category</option>
-              </select>
-
-              {category === NEW_CATEGORY_VALUE && (
-                <input
-                  className="sellerEditProduct__input"
-                  placeholder="New category name"
-                  required
-                  value={customCategory}
-                  onChange={(event) => setCustomCategory(event.target.value)}
-                />
-              )}
-            </div>
+            <textarea
+              id="product-description"
+              className="sellerEditProduct__input"
+              placeholder="Describe this product"
+              required
+              rows={3}
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+            />
           </div>
-          <div className="sellerEditProduct__wideField" style={{ marginTop: '1rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <label className="sellerEditProduct__label" style={{ margin: 0 }}>
+
+          <div className="sellerEditProduct__wideField sellerEditProduct__variantSection">
+            <div className="sellerEditProduct__variantHeader">
+              <label className="sellerEditProduct__label sellerEditProduct__variantHeaderLabel">
                 Product Variants <span className="sellerEditProduct__required">*</span>
               </label>
-              <button 
-                type="button" 
-                onClick={handleAddVariant} 
-                className="sellerEditProduct__secondaryButton"
-                style={{ padding: '6px 12px', height: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
+              <button
+                type="button"
+                onClick={handleAddVariant}
+                className="sellerEditProduct__secondaryButton sellerEditProduct__variantAddButton"
               >
                 <Plus size={16} /> Add Variant
               </button>
             </div>
 
-            {variants.map((v, index) => (
-              <div key={v.localId} style={{ display: 'flex', gap: '12px', marginBottom: '16px', alignItems: 'flex-start' }}>
-                <div style={{ flex: 2 }}>
-                  {index === 0 && <label className="sellerEditProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Variant Name</label>}
-                  <input 
-                    className="sellerEditProduct__input" 
-                    placeholder="e.g. Red / Large" 
-                    required 
-                    value={v.type}
-                    onChange={(e) => handleVariantChange(v.localId, 'type', e.target.value)}
+            {variants.map((variant, index) => (
+              <div key={variant.localId} className="sellerEditProduct__variantRow">
+                <div className="sellerEditProduct__variantNameField">
+                  {index === 0 && (
+                    <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">
+                      Variant Name
+                    </label>
+                  )}
+                  <input
+                    className="sellerEditProduct__input"
+                    placeholder="e.g. Red / Large"
+                    required
+                    value={variant.type}
+                    onChange={(event) => handleVariantChange(variant.localId, 'type', event.target.value)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  {index === 0 && <label className="sellerEditProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Price</label>}
-                  <input 
-                    className="sellerEditProduct__input" 
-                    type="number" min="0" step="0.01" placeholder="0.00" required 
-                    value={v.price}
-                    onChange={(e) => handleVariantChange(v.localId, 'price', e.target.value)}
+
+                <div className="sellerEditProduct__variantNumberField">
+                  {index === 0 && (
+                    <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">
+                      Price
+                    </label>
+                  )}
+                  <input
+                    className="sellerEditProduct__input"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="0.00"
+                    required
+                    value={variant.price}
+                    onChange={(event) => handleVariantChange(variant.localId, 'price', event.target.value)}
                   />
                 </div>
-                <div style={{ flex: 1 }}>
-                  {index === 0 && <label className="sellerEditProduct__label" style={{ fontSize: '12px', color: '#6b7280' }}>Stock</label>}
-                  <input 
-                    className="sellerEditProduct__input" 
-                    type="number" min="0" placeholder="0" required 
-                    value={v.stock}
-                    onChange={(e) => handleVariantChange(v.localId, 'stock', e.target.value)}
+
+                <div className="sellerEditProduct__variantNumberField">
+                  {index === 0 && (
+                    <label className="sellerEditProduct__label sellerEditProduct__variantSubLabel">
+                      Stock
+                    </label>
+                  )}
+                  <input
+                    className="sellerEditProduct__input"
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    required
+                    value={variant.stock}
+                    onChange={(event) => handleVariantChange(variant.localId, 'stock', event.target.value)}
                   />
                 </div>
-                
+
                 <button
                   type="button"
-                  onClick={() => handleRemoveVariant(v.localId, v.uuid)}
-                  style={{ 
-                    marginTop: index === 0 ? '24px' : '0', 
-                    padding: '10px', color: '#ef4444', backgroundColor: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '8px', cursor: 'pointer',
-                    opacity: variants.length <= 1 ? 0.5 : 1
-                  }}
+                  onClick={() => void handleRemoveVariant(variant.localId, variant.uuid)}
+                  className={`sellerEditProduct__removeVariantButton ${index === 0 ? 'sellerEditProduct__removeVariantButtonTopAligned' : ''}`}
                   disabled={variants.length <= 1}
+                  aria-label="Remove variant"
                 >
                   <Trash2 size={18} />
                 </button>
@@ -302,10 +314,10 @@ export default function SellerEditProduct() {
           </div>
 
           <div className="sellerEditProduct__field">
-            <label className="sellerEditProduct__label" htmlFor="created-at">
+            <label className="sellerEditProduct__label" htmlFor="accessed-at">
               Last accessed time
             </label>
-            <input id="created-at" className="sellerEditProduct__readonlyInput" readOnly value={createdAt} />
+            <input id="accessed-at" className="sellerEditProduct__readonlyInput" readOnly value={accessedAt} />
           </div>
 
           <div className="sellerEditProduct__wideField">
@@ -313,14 +325,13 @@ export default function SellerEditProduct() {
               Product photo
             </label>
             {productUrl && !uploading && !photoName && (
-               <div style={{ marginBottom: '10px' }}>
-                 <img src={productUrl} alt="Current product" style={{ height: '80px', borderRadius: '8px', objectFit: 'cover' }} />
-               </div>
+              <div className="sellerEditProduct__currentImageWrap">
+                <img src={productUrl} alt="Current product" className="sellerEditProduct__currentImage" />
+              </div>
             )}
-            <label 
-              className="sellerEditProduct__uploadBox" 
+            <label
+              className={`sellerEditProduct__uploadBox ${uploading ? 'sellerEditProduct__uploadBoxBusy' : ''}`}
               htmlFor="product-photo"
-              style={{ cursor: uploading ? 'wait' : 'pointer', opacity: uploading ? 0.7 : 1 }}
             >
               <ImagePlus className="sellerEditProduct__uploadIcon" />
               <span className="sellerEditProduct__uploadTitle">
@@ -343,9 +354,9 @@ export default function SellerEditProduct() {
           <Link to="/products" className="sellerEditProduct__secondaryButton">
             Cancel
           </Link>
-          <button 
-            type="submit" 
-            form="edit-product-form" 
+          <button
+            type="submit"
+            form="edit-product-form"
             disabled={isSubmitting || uploading}
             className="sellerEditProduct__primaryButton"
           >

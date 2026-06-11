@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { useNavigate } from 'react-router-dom';
-import { productService, type AddProductPayload, type AddTypePayload } from '@/services/productService';
+import {
+  mapProductActionToProductItem,
+  mapProductDtoToProductItem,
+  productService,
+  type AddProductPayload,
+  type AddTypePayload,
+} from '@/services/productService';
 import toast from 'react-hot-toast';
 
 export const useProduct = () => {
@@ -11,7 +17,7 @@ export const useProduct = () => {
   const { token, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleProductStatusCode = (statusCode: string, defaultMessage: string) => {
+  const handleProductStatusCode = useCallback((statusCode: string, defaultMessage: string) => {
     switch (statusCode) {
       case '00000': return null;
       case '00001': return '操作失敗';
@@ -37,7 +43,7 @@ export const useProduct = () => {
       default:
         return defaultMessage || `商品操作錯誤 (${statusCode})`;
     }
-  };
+  }, [logout, navigate]);
 
   //賣家上架商品
   const addProduct = async (data: AddProductPayload) => {
@@ -52,7 +58,7 @@ export const useProduct = () => {
       if (code === '00000') {
         setSuccess(true);
         toast.success('商品上架成功！');
-        return res.data;
+        return mapProductActionToProductItem(res.data);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -77,7 +83,7 @@ export const useProduct = () => {
       const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品種類新增成功！');
-        return res.data;
+        return mapProductActionToProductItem(res.data);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -127,7 +133,7 @@ export const useProduct = () => {
       const code = responsePayload?.status_code;
       if (code === '00000') {
         toast.success('商品類型更新成功！');
-        return res.data;
+        return mapProductActionToProductItem(res.data);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -201,7 +207,7 @@ export const useProduct = () => {
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
-        return res.data.product;
+        return res.data.product.map(mapProductDtoToProductItem);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -213,10 +219,10 @@ export const useProduct = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleProductStatusCode, token]);
 
   //列出目前登入使用者的專屬商品清單
-  const getMyProducts = async () => {
+  const getMyProducts = useCallback(async () => {
     if (!token) return null;
     setLoading(true);
     setError(null);
@@ -225,7 +231,7 @@ export const useProduct = () => {
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && res.data.product) {
-        return res.data.product;
+        return res.data.product.map(mapProductDtoToProductItem);
       } else {
         setError(handleProductStatusCode(code, responsePayload?.message || ''));
         return null;
@@ -237,7 +243,7 @@ export const useProduct = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleProductStatusCode, token]);
 
   return {
     loading,
