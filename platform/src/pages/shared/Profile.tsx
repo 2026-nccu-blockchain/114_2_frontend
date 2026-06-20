@@ -47,7 +47,7 @@ export default function Profile() {
       
     };
     loadData();
-  }, [role, fetchProfile]);
+  }, [role]);
   
    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
