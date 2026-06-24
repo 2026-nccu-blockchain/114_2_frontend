@@ -20,7 +20,7 @@ export const useUpload = () => {
     }
   };
 
-  const upload = async (file: File, email: string): Promise<string | null> => {
+  const upload = async (file: File): Promise<string | null> => {
     if (!token) {
       toast.error('未登入，無法上傳圖片');
       return null;
@@ -33,7 +33,7 @@ export const useUpload = () => {
 
     setUploading(true);
     try {
-      const res = await uploadService.uploadImage(file, email, token);
+      const res = await uploadService.uploadImage(file, token);
       const responsePayload = res?.data ?? res;
       const code = responsePayload?.status_code;
       if (code === '00000' && responsePayload?.url) {

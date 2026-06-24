@@ -8,7 +8,7 @@ import '@/styles/pages/driver/TaskDetail.css';
 export default function DriverTaskDetail() {
   const { taskId } = useParams();
   const navigate = useNavigate();
-  const { selectedOrder, isLoading, error, fetchOrderById, getOrderById, updateOrderStatus } = useOrderStore();
+  const { selectedOrder, isLoading, error, fetchOrderById, getOrderById, takeOrder } = useOrderStore();
   const cachedOrder = getOrderById(taskId || '');
   const order = selectedOrder?.id === taskId ? selectedOrder : cachedOrder;
   const task = order ? mapOrderToDriverTask(order) : null;
@@ -23,7 +23,7 @@ export default function DriverTaskDetail() {
     if (!task || !taskId) return;
 
     try {
-      await updateOrderStatus(taskId, 'deliever');
+      await takeOrder(taskId);
       saveAcceptedTask(task.id);
       navigate('/active');
     } catch {

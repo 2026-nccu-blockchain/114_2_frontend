@@ -54,7 +54,7 @@ export default function Profile() {
     if (!files || files.length === 0) return;
 
     const selectedFile = files[0];
-    const uploadedUrl = await upload(selectedFile, email);
+    const uploadedUrl = await upload(selectedFile);
     
     if (!uploadedUrl) return;
     setAvatarUrl(uploadedUrl);

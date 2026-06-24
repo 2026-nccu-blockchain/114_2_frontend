@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { orderApi } from '@/services';
+import { driverApi, orderApi } from '@/services';
 import { type Order, type OrderStatus } from '@/types';
 
 interface OrderState {
@@ -9,7 +9,9 @@ interface OrderState {
   error: string | null;
   createOrder: (toAddress: string) => Promise<Order>;
   fetchMyOrders: () => Promise<Order[]>;
+  fetchAvailableOrders: () => Promise<Order[]>;
   fetchOrderById: (id: string) => Promise<Order>;
+  takeOrder: (id: string) => Promise<Order>;
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<Order>;
   getOrderById: (id: string) => Order | undefined;
 }
@@ -59,6 +61,19 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     }
   },
 
+  fetchAvailableOrders: async () => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const orders = await driverApi.getAvailableOrders();
+      set({ orders, isLoading: false });
+      return orders;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to load available orders'), isLoading: false });
+      throw error;
+    }
+  },
+
   fetchOrderById: async (id) => {
     set({ isLoading: true, error: null });
 
@@ -74,6 +89,23 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       return order;
     } catch (error) {
       set({ error: getErrorMessage(error, 'Failed to load order'), isLoading: false });
+      throw error;
+    }
+  },
+
+  takeOrder: async (id) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const order = await driverApi.takeOrder(id);
+      set((state) => ({
+        selectedOrder: order,
+        orders: state.orders.filter((currentOrder) => currentOrder.id !== id),
+        isLoading: false,
+      }));
+      return order;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to take order'), isLoading: false });
       throw error;
     }
   },

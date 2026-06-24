@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { userService } from '@/services/userService';
 import { useNavigate } from 'react-router-dom';
@@ -23,7 +23,7 @@ export const useProfile = () => {
   const { role, token, logout } = useAuthStore();
   const navigate = useNavigate();
 
-  const handleStatusCode = (statusCode: string, defaultMessage: string) => {
+  const handleStatusCode = useCallback((statusCode: string, defaultMessage: string) => {
     switch (statusCode) {
       case '00000': return null;
       case '00001': return '操作失敗，請稍後再試';
@@ -50,9 +50,9 @@ export const useProfile = () => {
       default:
         return defaultMessage || `認證錯誤 (${statusCode})`;
     }
-  };
+  }, [logout, navigate]);
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     if (!token || !role) return null;
     
     setLoading(true);
@@ -80,7 +80,7 @@ export const useProfile = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleStatusCode, role, token]);
 
   const updateProfile = async (data: UpdateProfileData) => {
     if (!token || !role) return;

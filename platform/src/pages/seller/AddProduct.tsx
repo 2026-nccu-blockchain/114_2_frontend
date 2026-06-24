@@ -1,9 +1,8 @@
 import { ArrowLeft, ImagePlus, Plus, Save, Trash2 } from 'lucide-react';
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useProduct } from '@/hooks/useProduct';
-import { useProfile } from '@/hooks/useProfile';
 import { useUpload } from '@/hooks/useUpload';
 import '@/styles/pages/seller/AddProduct.css';
 
@@ -24,25 +23,13 @@ const createEmptyVariant = (): Variant => ({
 export default function SellerAddProduct() {
   const navigate = useNavigate();
   const { addProduct, addProductType, loading: submitting } = useProduct();
-  const { fetchProfile } = useProfile();
   const { upload, uploading } = useUpload();
 
-  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [productUrl, setProductUrl] = useState('');
   const [photoName, setPhotoName] = useState('');
   const [variants, setVariants] = useState<Variant[]>([createEmptyVariant()]);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      const profile = await fetchProfile();
-      if (!profile) return;
-      setEmail(profile.email);
-    };
-
-    void loadProfile();
-  }, [fetchProfile]);
 
   const createdAt = useMemo(
     () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
@@ -54,7 +41,7 @@ export default function SellerAddProduct() {
     if (!file) return;
 
     setPhotoName(file.name);
-    const url = await upload(file, email);
+    const url = await upload(file);
     if (!url) return;
     setProductUrl(url);
   };

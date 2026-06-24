@@ -61,6 +61,7 @@ function AppRoutes() {
       <Route path="/" element={<DashboardLayout />}>
         <Route
           index
+          //用token判斷role
           element={
             role === 'seller' ? (
               <SellerDashboard />

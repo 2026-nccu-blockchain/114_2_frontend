@@ -5,6 +5,7 @@
 
 export { apiRequest } from '@/services/api';
 export * as orderApi from '@/services/orderApi';
+export * as driverApi from '@/services/driverApi';
 
 
 export { adminService } from '@/services/adminService';
