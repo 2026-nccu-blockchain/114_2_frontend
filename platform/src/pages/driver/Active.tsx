@@ -2,28 +2,29 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { CalendarClock, MapPin, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { completeTask, getActiveTaskIds, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { mapOrderToDriverTask } from '@/pages/driver/driverData';
 import { useOrderStore } from '@/store/orderStore';
+import type { OrderStatus } from '@/types';
 import '@/styles/pages/driver/Active.css';
 export default function DriverActive() {
   const navigate = useNavigate();
   const { orders, fetchMyOrders, isLoading, error, updateOrderStatus } = useOrderStore();
-  const activeTaskIds = getActiveTaskIds();
-  const activeTasks = orders.map(mapOrderToDriverTask).filter((task) => activeTaskIds.includes(task.id));
+  const activeTasks = orders
+    .filter((order) => order.status !== 'arrived')
+    .map(mapOrderToDriverTask);
 
   useEffect(() => {
     void fetchMyOrders();
   }, [fetchMyOrders]);
 
-  const markArrived = async (taskId: string) => {
+  const updateDeliveryStatus = async (taskId: string, status: Extract<OrderStatus, 'deliver' | 'arrived'>) => {
     try {
-      await updateOrderStatus(taskId, 'arrived');
-      completeTask(taskId);
-      if (getActiveTaskIds().length === 0) {
+      await updateOrderStatus(taskId, status);
+      if (status === 'arrived') {
         navigate('/completed');
       }
     } catch {
-      toast.error('Failed to complete task.');
+      toast.error('Failed to update delivery status.');
     }
   };
 
@@ -125,9 +126,12 @@ export default function DriverActive() {
               type="button"
               className="driverActive__primaryButton"
               disabled={isLoading}
-              onClick={() => void markArrived(task.id)}
+              onClick={() => void updateDeliveryStatus(
+                task.id,
+                task.distance === 'packed' ? 'deliver' : 'arrived',
+              )}
             >
-              Arrived
+              {task.distance === 'packed' ? 'Start delivery' : 'Arrived'}
             </button>
           </div>
         </section>

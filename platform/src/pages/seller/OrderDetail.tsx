@@ -25,7 +25,7 @@ export default function SellerOrderDetail() {
     }
   }, [fetchOrderById, currentOrderId]);
 
-  const handleUpdateStatus = async (status: 'packed' | 'fail') => {
+  const handleUpdateStatus = async (status: 'success' | 'packed' | 'fail') => {
     if (!currentOrderId) return;
 
     try {
@@ -127,6 +127,17 @@ export default function SellerOrderDetail() {
 
         <div className="sellerOrderDetail__actions">
           {order.status === 'ordered' && (
+            <button
+              type="button"
+              className="sellerOrderDetail__assignButton"
+              disabled={isLoading}
+              onClick={() => void handleUpdateStatus('success')}
+            >
+              <Truck className="sellerOrderDetail__actionIcon" />
+              Confirm order
+            </button>
+          )}
+          {order.status === 'success' && (
             <button
               type="button"
               className="sellerOrderDetail__assignButton"

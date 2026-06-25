@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { ArrowLeft, CalendarClock, MapPin, PackageCheck, Route, Truck } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { acceptTask as saveAcceptedTask, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { mapOrderToDriverTask } from '@/pages/driver/driverData';
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/TaskDetail.css';
 export default function DriverTaskDetail() {
@@ -24,7 +24,6 @@ export default function DriverTaskDetail() {
 
     try {
       await takeOrder(taskId);
-      saveAcceptedTask(task.id);
       navigate('/active');
     } catch {
       toast.error('Failed to accept task.');

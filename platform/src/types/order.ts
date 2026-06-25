@@ -1,4 +1,4 @@
-export type OrderStatus = 'refund' | 'fail' | 'ordered' | 'success' | 'packed' | 'deliever' | 'arrived';
+export type OrderStatus = 'refund' | 'fail' | 'ordered' | 'success' | 'packed' | 'deliver' | 'arrived';
 
 export type OrderStatusFilter = 'all' | OrderStatus;
 
