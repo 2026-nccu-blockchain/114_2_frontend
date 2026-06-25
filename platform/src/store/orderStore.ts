@@ -2,6 +2,10 @@ import { create } from 'zustand';
 import { driverApi, orderApi } from '@/services';
 import { type Order, type OrderStatus } from '@/types';
 
+type FetchOrderOptions = {
+  requireItems?: boolean;
+};
+
 interface OrderState {
   orders: Order[];
   selectedOrder: Order | null;
@@ -10,7 +14,7 @@ interface OrderState {
   createOrder: (toAddress: string) => Promise<Order>;
   fetchMyOrders: () => Promise<Order[]>;
   fetchAvailableOrders: () => Promise<Order[]>;
-  fetchOrderById: (id: string) => Promise<Order>;
+  fetchOrderById: (id: string, options?: FetchOrderOptions) => Promise<Order>;
   takeOrder: (id: string) => Promise<Order>;
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<Order>;
   getOrderById: (id: string) => Order | undefined;
@@ -74,11 +78,11 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     }
   },
 
-  fetchOrderById: async (id) => {
+  fetchOrderById: async (id, options = {}) => {
     set({ isLoading: true, error: null });
 
     try {
-      const order = await orderApi.getOrder(id);
+      const order = await orderApi.getOrder(id, options);
       set((state) => ({
         selectedOrder: order,
         orders: state.orders.some((currentOrder) => currentOrder.id === id)

@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { AuthGuard } from '@/components/layout/AuthGuard';
 import { useAuthStore } from '@/store/authStore';
+import { authService } from '@/services/authService';
 import { Toaster } from 'react-hot-toast';
 
 import Login from '@/pages/auth/Login';
@@ -42,9 +44,57 @@ import {
   SellerProducts,
 } from '@/pages/seller';
 
-function AppRoutes() {
-  const { role } = useAuthStore();
+function HomePage() {
+  const { token, role, setRole, logout } = useAuthStore();
+  const [checking, setChecking] = useState(Boolean(token && !role));
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkRole = async () => {
+      if (!token) {
+        setChecking(false);
+        return;
+      }
+
+      setChecking(true);
+
+      try {
+        const response = await authService.checkRole(token);
+        if (!isMounted) return;
+
+        if (response.data.status_code !== '00000' || !response.data.role) {
+          logout();
+          return;
+        }
+
+        setRole(response.data.role);
+      } catch {
+        if (!isMounted) return;
+        logout();
+      } finally {
+        if (isMounted) {
+          setChecking(false);
+        }
+      }
+    };
+
+    void checkRole();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [logout, setRole, token]);
+
+  if (checking) return null;
+
+  if (role === 'seller') return <SellerDashboard />;
+  if (role === 'driver') return <Tasks />;
+  if (role === 'admin') return <AdminDashboard />;
+  return <BuyerProducts />;
+}
+
+function AppRoutes() {
   return (
     <Routes>
       <Route path="/login" element={<Login role="buyer" />} />
@@ -59,68 +109,49 @@ function AppRoutes() {
       <Route path="/forgot-password" element={<ForgotPassword />} />
 
       <Route path="/" element={<DashboardLayout />}>
-        <Route
-          index
-          //用token判斷role
-          element={
-            role === 'seller' ? (
-              <SellerDashboard />
-            ) : role === 'driver' ? (
-              <Tasks />
-            ) : role === 'admin' ? (
-              <AdminDashboard />
-            ) : (
-              <BuyerProducts />
-            )
-          }   
-        />
+        <Route index element={<HomePage />} />
         <Route path="products/:pid" element={<ProductDetail />} />
       </Route>
 
-      <Route element={<AuthGuard />}>
+      <Route element={<AuthGuard allowedRoles={['buyer', 'seller', 'driver', 'admin']} />}>
         <Route path="/" element={<DashboardLayout />}>
           {/* 個人資料頁 */}
           <Route path="profile" element={<Profile />} />
+        </Route>
+      </Route>
 
-          {/* buyer */}
-          {role === 'buyer' && (
-            <>
-              <Route path="cart" element={<BuyerCart />} />
-              <Route path="orders" element={<BuyerOrders />} />
-              <Route path="checkout" element={<BuyerCheckout />} />
-              <Route path="orders/:id" element={<BuyerOrderDetail />} />
-            </>
-          )}
+      <Route element={<AuthGuard allowedRoles={['buyer']} />}>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="cart" element={<BuyerCart />} />
+          <Route path="orders" element={<BuyerOrders />} />
+          <Route path="checkout" element={<BuyerCheckout />} />
+          <Route path="orders/:id" element={<BuyerOrderDetail />} />
+        </Route>
+      </Route>
 
-          {/* seller */} 
-          
-          {role === 'seller' && (
-            <>
-              <Route path="products" element={<SellerProducts />} />
-              <Route path="products/:productId/edit" element={<SellerEditProduct />} />
-              <Route path="add-product" element={<SellerAddProduct />} />
-              <Route path="orders" element={<SellerOrders />} />
-              <Route path="orders/:orderId" element={<SellerOrderDetail />} />
-            </>
-          )}
+      <Route element={<AuthGuard allowedRoles={['seller']} />}>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="products" element={<SellerProducts />} />
+          <Route path="products/:productId/edit" element={<SellerEditProduct />} />
+          <Route path="add-product" element={<SellerAddProduct />} />
+          <Route path="orders" element={<SellerOrders />} />
+          <Route path="orders/:orderId" element={<SellerOrderDetail />} />
+        </Route>
+      </Route>
 
-          {/* driver */}
-          {role === 'driver' && (
-            <>
-              <Route path="tasks/:taskId" element={<TaskDetail />} />
-              <Route path="active" element={<Activetask />} />
-              <Route path="completed" element={<Completedtask />} />
-            </>
-          )}
+      <Route element={<AuthGuard allowedRoles={['driver']} />}>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="tasks/:taskId" element={<TaskDetail />} />
+          <Route path="active" element={<Activetask />} />
+          <Route path="completed" element={<Completedtask />} />
+        </Route>
+      </Route>
 
-          {/* admin */}
-          {role === 'admin' && (
-            <>
-              <Route path="users" element={<AdminUsers />} />
-              <Route path="add-seller" element={<AdminAddSeller />} />
-              <Route path="add-driver" element={<AdminAddDriver />} />
-            </>
-          )}
+      <Route element={<AuthGuard allowedRoles={['admin']} />}>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="add-seller" element={<AdminAddSeller />} />
+          <Route path="add-driver" element={<AdminAddDriver />} />
         </Route>
       </Route>
 

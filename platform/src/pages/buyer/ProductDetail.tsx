@@ -6,14 +6,13 @@ import { useCartStore } from '@/store/cartStore';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '@/store/authStore';
 import type { ProductItem } from '@/services/productService';
-import { mockProducts } from '@/mock/products';
 import '@/styles/pages/buyer/ProductDetail.css';
 
 export default function ProductDetail() {
   const { pid } = useParams<{ pid: string }>();
   const navigate = useNavigate();
   const addItem = useCartStore((state) => state.addItem); 
-  const { role, token } = useAuthStore();
+  const { token } = useAuthStore();
   const { getProduct, loading } = useProduct();
   const [quantity, setQuantity] = useState(1);
   
@@ -23,13 +22,10 @@ export default function ProductDetail() {
   useEffect(() => {
     const fetchProduct = async () => {
       if (!pid) return;
+      setVariants([]);
+      setSelectedVariant(null);
       const data = await getProduct(pid);
-      const fallbackProduct = mockProducts.find(product => product.pid === pid);
-      const productData = data && data.length > 0
-        ? data
-        : fallbackProduct
-          ? [fallbackProduct]
-          : [];
+      const productData = data ?? [];
       
       if (productData.length > 0) {
         const activeVariants = productData.filter(v => v.status);
@@ -79,7 +75,7 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = async () => {
-    if (!role || !token) {
+    if (!token) {
       toast.error('Please sign in to add items to your cart.', {
         className: 'buyerProductDetail__errorToast',
         iconTheme: { primary: '#ef4444', secondary: '#fff' },

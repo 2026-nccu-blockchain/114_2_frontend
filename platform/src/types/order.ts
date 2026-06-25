@@ -3,24 +3,24 @@ export type OrderStatus = 'refund' | 'fail' | 'ordered' | 'success' | 'packed' |
 export type OrderStatusFilter = 'all' | OrderStatus;
 
 export interface OrderProductDto {
-  product_id: string;
-  name: string;
-  type: string;
-  price: number;
-  count: number;
+  product_id?: string;
+  name?: string;
+  type?: string;
+  price?: number;
+  count?: number;
   seller_id?: string;
 }
 
 export interface OrderDto {
-  order_id: string;
+  order_id?: string;
   oid?: string;
-  buyer_id: string;
-  seller_id: string;
+  buyer_id?: string;
+  seller_id?: string;
   driver_id?: string;
   from_addr?: string;
-  to_addr: string;
-  order_status: OrderStatus;
-  total_price: number;
+  to_addr?: string;
+  order_status?: OrderStatus;
+  total_price?: number;
   product?: OrderProductDto[];
 }
 
@@ -71,8 +71,8 @@ export interface OrderItem {
 export interface Order {
   id: string;
   oid?: string;
-  buyerId: string;
-  sellerId: string;
+  buyerId?: string;
+  sellerId?: string;
   driverId?: string;
   createdAt: string;
   fromAddress?: string;

@@ -32,10 +32,9 @@ export const useProfile = () => {
       case '00004': 
       case '10004':
       case '10005': 
-        toast.error('登入已過期或無權限，請重新登入');
         logout();
-        navigate('/login');
-        return '登入已過期或無權限';
+        navigate('/');
+        return null;
 
       case '00005': return '請求的資源不存在';
       case '00006': return '系統伺服器錯誤，請聯絡系統管理員';
@@ -139,7 +138,7 @@ export const useProfile = () => {
       if (code === '00000') {
         toast.success('帳號註銷成功！');
         logout(); 
-        navigate('/login'); 
+        navigate('/'); 
       } else {
         const errorMessage = handleStatusCode(code, responsePayload?.message);
         toast.error(errorMessage || '帳號註銷失敗');

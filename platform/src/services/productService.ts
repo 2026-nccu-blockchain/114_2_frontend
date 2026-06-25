@@ -9,21 +9,26 @@ export interface ProductItem {
   stock: number;
   status: boolean;
   seller_id: string;
+  seller_name?: string;
+  seller_company?: string;
   desc: string;
   type: string;
   product_url?: string;
 }
 
 export interface ProductDto {
-  product_id: string;
-  pid: string;
-  name: string;
-  price: number;
-  stock: number;
-  status: boolean;
-  seller_id: string;
-  desc: string;
-  type: string;
+  product_id?: string;
+  prodduct_id?: string;
+  pid?: string;
+  name?: string;
+  price?: number;
+  stock?: number;
+  status?: boolean;
+  seller_id?: string;
+  seller_name?: string;
+  seller_company?: string;
+  desc?: string;
+  type?: string;
   product_url?: string;
 }
 
@@ -61,32 +66,49 @@ export interface ProductListResponse extends ProductBaseResponse {
   product?: ProductDto[];
 }
 
-export const mapProductDtoToProductItem = (product: ProductDto): ProductItem => ({
-  uuid: product.product_id,
-  pid: product.pid,
-  name: product.name,
-  price: product.price,
-  stock: product.stock,
-  status: product.status,
-  seller_id: product.seller_id,
-  desc: product.desc,
-  type: product.type,
-  product_url: product.product_url,
-});
+const requireProductField = <T>(value: T | null | undefined, field: string): T => {
+  if (value === null || value === undefined || value === '') {
+    throw new Error(`Product response is missing ${field}`);
+  }
+
+  return value;
+};
+
+export const mapProductDtoToProductItem = (product: ProductDto): ProductItem => {
+  const productId = requireProductField(product.product_id ?? product.prodduct_id, 'product_id');
+
+  return {
+    uuid: productId,
+    pid: requireProductField(product.pid, 'pid'),
+    name: requireProductField(product.name, 'name'),
+    price: requireProductField(product.price, 'price'),
+    stock: requireProductField(product.stock, 'stock'),
+    status: requireProductField(product.status, 'status'),
+    seller_id: requireProductField(product.seller_id, 'seller_id'),
+    seller_name: product.seller_name,
+    seller_company: product.seller_company,
+    desc: requireProductField(product.desc, 'desc'),
+    type: requireProductField(product.type, 'type'),
+    product_url: product.product_url,
+  };
+};
 
 export const mapProductActionToProductItem = (product: ProductActionResponse): ProductItem | null => {
-  if (!product.product_id || !product.pid || !product.name) return null;
+  const productId = product.product_id ?? product.prodduct_id;
+  if (!productId || !product.pid || !product.name) return null;
 
   return mapProductDtoToProductItem({
-    product_id: product.product_id,
+    product_id: productId,
     pid: product.pid,
     name: product.name,
-    price: product.price ?? 0,
-    stock: product.stock ?? 0,
-    status: product.status ?? true,
-    seller_id: product.seller_id ?? '',
-    desc: product.desc ?? '',
-    type: product.type ?? '',
+    price: product.price,
+    stock: product.stock,
+    status: product.status,
+    seller_id: product.seller_id,
+    seller_name: product.seller_name,
+    seller_company: product.seller_company,
+    desc: product.desc,
+    type: product.type,
     product_url: product.product_url,
   });
 };
@@ -151,6 +173,13 @@ export const productService = {
     return apiRequest<ProductListResponse>('/products/me', {
       method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
+    });
+  },
+  //未登入/匿名列出所有可購買商品
+  getPublicProducts: () => {
+    return apiRequest<ProductListResponse>('/products/me', {
+      method: 'GET',
+      auth: false,
     });
   },
 };

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LogOut, User as UserIcon, ShoppingCart } from 'lucide-react';
+import { LogOut, User as UserIcon, ShoppingCart, Package } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useCartStore } from '@/store/cartStore';
 
@@ -19,6 +19,11 @@ export default function NavActions() {
   }, [fetchCart, role]);
 
   const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const handleBrowseProducts = () => {
     logout();
     navigate('/');
   };
@@ -42,6 +47,17 @@ export default function NavActions() {
 
   return (
     <div className="flex items-center gap-6 text-sm text-gray-600">
+      {(role === 'seller' || role === 'driver') && (
+        <button
+          type="button"
+          onClick={handleBrowseProducts}
+          className="flex items-center gap-1.5 hover:text-teal-600 transition-colors"
+        >
+          <Package className="w-4 h-4" />
+          <span>Browse products</span>
+        </button>
+      )}
+
       {/* 買家專屬：購物車 */}
       {role === 'buyer' && (
         <Link

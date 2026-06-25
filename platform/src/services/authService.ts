@@ -8,6 +8,16 @@ export interface AuthResponse {
   token?: string;
 }
 
+export type AuthRole = 'buyer' | 'seller' | 'admin' | 'driver';
+
+export interface CheckRoleResponse {
+  status_code: string;
+  message: string;
+  response_datetime?: string;
+  datetime?: string;
+  role?: AuthRole;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -88,6 +98,12 @@ export const authService = {
       method: 'POST',
       body: data,
       headers: { 'Authorization': `Bearer ${token}` }
+    });
+  },
+  checkRole: (token: string) => {
+    return apiRequest<CheckRoleResponse>('/auth/check', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` },
     });
   },
 };

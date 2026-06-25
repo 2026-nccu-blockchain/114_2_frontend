@@ -2,17 +2,23 @@ import { useState } from 'react';
 import { useAuthStore } from '@/store/authStore';
 import { uploadService } from '@/services/uploadService';
 import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 export const useUpload = () => {
   const [uploading, setUploading] = useState(false);
-  const { token } = useAuthStore();
+  const { token, logout } = useAuthStore();
+  const navigate = useNavigate();
+
   const handleUploadStatusCode = (statusCode: string, defaultMessage: string) => {
     switch (statusCode) {
       case '00000': return null;
       case '00001': return '圖片上傳失敗，請稍後再試';
       case '00002': return '上傳參數格式錯誤';
-      case '00003': return '登入憑證已失效，請重新登入';
-      case '00004': return '無權限執行此操作';
+      case '00003':
+      case '00004':
+        logout();
+        navigate('/');
+        return null;
       case '00006': return '伺服器儲存空間異常';
       case '40001': return '您選擇的檔案不是合法的圖片格式'; 
       default:

@@ -2,35 +2,28 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2, Search } from 'lucide-react';
 import { useProduct } from '@/hooks/useProduct';
-import { useAuthStore } from '@/store/authStore';
 import type { ProductItem } from '@/services/productService';
-import { mockProducts } from '@/mock/products';
 import '@/styles/pages/buyer/Products.css';
 
 export default function BuyerProducts() {
-  const { token } = useAuthStore();
-  const { getMyProducts, loading, error } = useProduct();
+  const { getPublicProducts, loading, error } = useProduct();
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-
     const loadProducts = async () => {
-      const data = await getMyProducts();
+      const data = await getPublicProducts();
       if (!data) return;
       setProducts(data.filter((product) => product.status));
     };
 
     void loadProducts();
-  }, [getMyProducts, token]);
-//為登入時可以看到商品
+  }, [getPublicProducts]);
+
   const visibleProducts = useMemo(
-    () => (token ? products : mockProducts).filter((product) => product.status),
-    [products, token],
+    () => products.filter((product) => product.status),
+    [products],
   );
 
   const categories = useMemo(() => ['All', ...new Set(visibleProducts.map(p => p.type))], [visibleProducts]);
@@ -40,8 +33,6 @@ export default function BuyerProducts() {
     const matchesCategory = selectedCategory === 'All' || product.type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
-  const getProductPath = (pid: string) => token ? `/products/${pid}` : '/login';
 
   return (
     <div className="buyerProducts__page">
@@ -86,11 +77,11 @@ export default function BuyerProducts() {
 
         {/* 商品卡片網格 */}
         <div className="buyerProducts__style8">
-          {token && loading && products.length === 0 ? (
+          {loading && products.length === 0 ? (
             <div className="buyerProducts__style9">
               <Loader2 className="animate-spin" size={24} />
             </div>
-          ) : token && error && products.length === 0 ? (
+          ) : error && products.length === 0 ? (
             <div className="buyerProducts__style9">{error}</div>
           ) : filteredProducts.length === 0 ? (
             <div className="buyerProducts__style9">No products found.</div>
@@ -99,7 +90,7 @@ export default function BuyerProducts() {
               {filteredProducts.map((product) => (
                 <Link
                   key={product.pid}
-                  to={getProductPath(product.pid)} 
+                  to={`/products/${product.pid}`} 
                   className="group buyerProducts__panel2"
                 >
                   {/* 商品圖片 */}

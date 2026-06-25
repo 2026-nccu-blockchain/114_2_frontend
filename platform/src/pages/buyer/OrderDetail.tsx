@@ -14,7 +14,7 @@ export default function BuyerOrderDetail() {
 
   useEffect(() => {
     if (id) {
-      void fetchOrderById(id);
+      void fetchOrderById(id, { requireItems: true });
     }
   }, [fetchOrderById, id]);
 

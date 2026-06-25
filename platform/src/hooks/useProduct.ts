@@ -22,6 +22,10 @@ const isEmptyProductError = (error: unknown) => {
   return apiError?.status === 404 || isEmptyProductResponse(apiError?.statusCode);
 };
 
+const getProductErrorMessage = (error: unknown) => (
+  error instanceof Error ? error.message : '網路連線失敗，請檢查網路連線後再試'
+);
+
 export const useProduct = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,10 +43,9 @@ export const useProduct = () => {
       case '00004': 
       case '10004': 
       case '10005': 
-        toast.error('登入已過期或無權限，請重新登入');
         logout();
-        navigate('/login');
-        return '登入已過期或無權限';
+        navigate('/');
+        return null;
       case '00005': return '資源不存在';
       case '00006': return '伺服器錯誤';
       case '20001': return '找不到商品';
@@ -230,7 +233,7 @@ export const useProduct = () => {
         return [];
       }
       console.error(err);
-      setError('網路連線失敗，請檢查網路連線後再試');
+      setError(getProductErrorMessage(err));
       return null;
     } finally {
       setLoading(false);
@@ -259,12 +262,40 @@ export const useProduct = () => {
         return [];
       }
       console.error(err);
-      setError('網路連線失敗，請檢查網路連線後再試');
+      setError(getProductErrorMessage(err));
       return null;
     } finally {
       setLoading(false);
     }
   }, [handleProductStatusCode, token]);
+
+  //列出所有可購買商品，未登入也可使用
+  const getPublicProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await productService.getPublicProducts();
+      const responsePayload = res?.data ?? res;
+      const code = responsePayload?.status_code;
+      if (code === '00000') {
+        return (res.data.product ?? []).map(mapProductDtoToProductItem);
+      } else if (isEmptyProductResponse(code)) {
+        return [];
+      } else {
+        setError(handleProductStatusCode(code, responsePayload?.message || ''));
+        return null;
+      }
+    } catch (err) {
+      if (isEmptyProductError(err)) {
+        return [];
+      }
+      console.error(err);
+      setError(getProductErrorMessage(err));
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, [handleProductStatusCode]);
 
   return {
     loading,
@@ -278,5 +309,6 @@ export const useProduct = () => {
     deleteProductType,
     getProduct,
     getMyProducts,
+    getPublicProducts,
   };
 };

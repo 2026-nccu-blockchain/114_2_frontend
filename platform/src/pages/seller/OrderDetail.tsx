@@ -20,7 +20,7 @@ export default function SellerOrderDetail() {
 
   useEffect(() => {
     if (orderId) {
-      void fetchOrderById(orderId);
+      void fetchOrderById(orderId, { requireItems: true });
     }
   }, [fetchOrderById, orderId]);
 

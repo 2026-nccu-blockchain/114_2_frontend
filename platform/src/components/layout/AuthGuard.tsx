@@ -1,21 +1,91 @@
-import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore } from '@/store/authStore'; 
+import { useEffect, useState } from 'react';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { authService } from '@/services/authService';
+import { useAuthStore, type UserRole } from '@/store/authStore'; 
 
 interface AuthGuardProps {
-  allowedRoles?: string[];
+  allowedRoles?: Exclude<UserRole, null>[];
 }
 
-export const AuthGuard = ({ allowedRoles }: AuthGuardProps) => {
-  const { role } = useAuthStore();
+const loginPathByRole: Record<Exclude<UserRole, null>, string> = {
+  buyer: '/login',
+  seller: '/seller',
+  driver: '/driver',
+  admin: '/admin',
+};
 
-  //沒有身分(訪客)，回登入頁面
-  if (!role) {
-    return <Navigate to="/login" replace />;
+export const AuthGuard = ({ allowedRoles }: AuthGuardProps) => {
+  const { token, role, setRole, logout } = useAuthStore();
+  const location = useLocation();
+  const [isChecking, setIsChecking] = useState(true);
+  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+  const allowedRolesKey = allowedRoles?.join(',') ?? '';
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkRole = async () => {
+      setIsChecking(true);
+      setRedirectTo(null);
+
+      const normalizedAllowedRoles = allowedRolesKey
+        .split(',')
+        .filter(Boolean) as Exclude<UserRole, null>[];
+
+      if (!token) {
+        const targetRole = normalizedAllowedRoles[0] ?? 'buyer';
+        setRedirectTo(loginPathByRole[targetRole]);
+        setIsChecking(false);
+        return;
+      }
+
+      try {
+        const response = await authService.checkRole(token);
+        const checkedRole = response.data.role ?? null;
+
+        if (!isMounted) return;
+
+        if (response.data.status_code !== '00000' || !checkedRole) {
+          logout();
+          setRedirectTo('/');
+          return;
+        }
+
+        if (normalizedAllowedRoles.length && !normalizedAllowedRoles.includes(checkedRole)) {
+          logout();
+          setRedirectTo(loginPathByRole[normalizedAllowedRoles[0]]);
+          return;
+        }
+
+        setRole(checkedRole);
+      } catch {
+        if (!isMounted) return;
+        logout();
+        setRedirectTo('/');
+      } finally {
+        if (isMounted) {
+          setIsChecking(false);
+        }
+      }
+    };
+
+    void checkRole();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [allowedRolesKey, location.pathname, logout, setRole, token]);
+
+  if (isChecking) {
+    return null;
   }
 
-  if (allowedRoles && !allowedRoles.includes(role)) {
-    // 沒有權限，直接強制踢回首頁
-    return <Navigate to="/" replace />; 
+  if (redirectTo) {
+    return <Navigate to={redirectTo} replace />;
+  }
+
+  if (!role) {
+    return null;
   }
 
   return <Outlet />;

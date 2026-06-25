@@ -10,6 +10,10 @@ import type {
   UpdateOrderStatusRequest,
 } from '@/types';
 
+type GetOrderOptions = {
+  requireItems?: boolean;
+};
+
 export const createOrder = async (toAddress: string): Promise<Order> => {
   const { data } = await apiRequest<OrderResponse>('/orders/order', {
     method: 'POST',
@@ -19,7 +23,10 @@ export const createOrder = async (toAddress: string): Promise<Order> => {
   const [order] = data.order ?? [];
   if (!order) throw new Error('Order response is empty');
 
-  return mapOrderDtoToOrder(order, data.response_datetime);
+  return mapOrderDtoToOrder(order, data.response_datetime, {
+    requireItems: true,
+    source: 'Create order response',
+  });
 };
 
 export const getMyOrders = async (): Promise<Order[]> => {
@@ -27,9 +34,9 @@ export const getMyOrders = async (): Promise<Order[]> => {
   return mapMyOrdersResponseToOrders(data);
 };
 
-export const getOrder = async (orderId: string): Promise<Order> => {
+export const getOrder = async (orderId: string, options: GetOrderOptions = {}): Promise<Order> => {
   const { data } = await apiRequest<OrderDetailResponse>(`/orders/order/${orderId}`);
-  return mapOrderDetailResponseToOrder(data);
+  return mapOrderDetailResponseToOrder(data, options);
 };
 
 export const updateOrderStatus = async (orderId: string, status: OrderStatus): Promise<Order> => {
