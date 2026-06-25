@@ -55,7 +55,7 @@ export const getPasswordValidationError = (password: string) => {
 export const useAuth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { role, token, setAuth } = useAuthStore();
+  const { role, token, setAuth, logout } = useAuthStore();
   const navigate = useNavigate();
 
   const handleStatusCode = (statusCode: string | undefined, defaultMessage = '') => {
@@ -70,8 +70,8 @@ export const useAuth = () => {
       case '10001': return '該使用者帳號不存在';
       case '10002': return '密碼輸入錯誤，請重新確認';
       case '10003': return '帳號或密碼錯誤，登入失敗';
-      case '10004': return '登入憑證無效，請重新登入';
-      case '10005': return '登入已過期，請重新登入';
+      case '10004': return '操作失敗，請稍後再試';
+      case '10005': return '操作失敗，請稍後再試';
       case '10006': return '此 Email 帳號已被註冊';
       case '10007': return 'Email 格式不正確';
       case '10008': return '權限不足';
@@ -115,7 +115,17 @@ export const useAuth = () => {
         return;
       }
 
-      setAuth(responsePayload.token, loginRole);
+      setAuth(responsePayload.token);
+      const roleResponse = await authService.checkRole(responsePayload.token);
+      const checkedRole = roleResponse.data.role;
+
+      if (roleResponse.data.status_code !== '00000' || !checkedRole || checkedRole !== loginRole) {
+        logout();
+        setError('帳號或密碼錯誤，登入失敗');
+        return;
+      }
+
+      setAuth(responsePayload.token, checkedRole);
       toast.success('登入成功！');
       navigate('/');
     } catch (err) {
@@ -260,7 +270,7 @@ export const useAuth = () => {
     }
   };
 
-  const resetPassword = async (password: string) => {
+  const resetPassword = async (oldPassword: string, newPassword: string) => {
     setLoading(true);
     setError(null);
 
@@ -271,7 +281,10 @@ export const useAuth = () => {
     }
 
     try {
-      const response = await authService.resetPassword({ password }, token);
+      const response = await authService.resetPassword({
+        old_password: oldPassword,
+        new_password: newPassword,
+      }, token);
       const responsePayload = response.data;
       const errorMessage = handleStatusCode(responsePayload.status_code, responsePayload.message);
 

@@ -4,7 +4,7 @@ import { getActiveTaskIds, getCompletedTaskIds, mapOrderToDriverTask } from '@/p
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/Tasks.css';
 export default function DriverTasks() {
-  const { orders, fetchMyOrders, isLoading, error } = useOrderStore();
+  const { orders, fetchAvailableOrders, isLoading, error } = useOrderStore();
   const activeTaskIds = getActiveTaskIds();
   const completedTaskIds = getCompletedTaskIds();
   const availableTasks = orders
@@ -12,8 +12,8 @@ export default function DriverTasks() {
     .filter((task) => !activeTaskIds.includes(task.id) && !completedTaskIds.includes(task.id));
 
   useEffect(() => {
-    void fetchMyOrders();
-  }, [fetchMyOrders]);
+    void fetchAvailableOrders();
+  }, [fetchAvailableOrders]);
 
   return (
     <div className="driverTasks__page">
@@ -35,8 +35,8 @@ export default function DriverTasks() {
             <Link key={task.id} to={`/tasks/${task.id}`} className="driverTasks__card">
               <div className="driverTasks__cardTop">
                 <div>
-                  <p className="driverTasks__cardTitle">{task.id}</p>
-                  <p className="driverTasks__cardMeta">{task.orderId}</p>
+                  <p className="driverTasks__cardTitle">{task.orderLabel}</p>
+                  <p className="driverTasks__cardMeta">{task.customer}</p>
                 </div>
                 <span className="driverTasks__badge">{task.distance}</span>
               </div>

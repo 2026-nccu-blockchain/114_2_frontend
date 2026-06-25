@@ -6,7 +6,8 @@ import { statusStyles } from '@/constants/order';
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/seller/OrderDetail.css';
 export default function SellerOrderDetail() {
-  const { orderId } = useParams();
+  const { orderId, id } = useParams();
+  const currentOrderId = orderId ?? id;
   const {
     selectedOrder,
     isLoading,
@@ -15,20 +16,20 @@ export default function SellerOrderDetail() {
     getOrderById,
     updateOrderStatus,
   } = useOrderStore();
-  const cachedOrder = getOrderById(orderId || '');
-  const order = selectedOrder?.id === orderId ? selectedOrder : cachedOrder;
+  const cachedOrder = getOrderById(currentOrderId || '');
+  const order = selectedOrder?.id === currentOrderId ? selectedOrder : cachedOrder;
 
   useEffect(() => {
-    if (orderId) {
-      void fetchOrderById(orderId);
+    if (currentOrderId) {
+      void fetchOrderById(currentOrderId, { requireItems: true });
     }
-  }, [fetchOrderById, orderId]);
+  }, [fetchOrderById, currentOrderId]);
 
   const handleUpdateStatus = async (status: 'packed' | 'fail') => {
-    if (!orderId) return;
+    if (!currentOrderId) return;
 
     try {
-      await updateOrderStatus(orderId, status);
+      await updateOrderStatus(currentOrderId, status);
       toast.success('Order status updated.');
     } catch {
       toast.error('Failed to update order status.');
@@ -69,8 +70,8 @@ export default function SellerOrderDetail() {
       <section className="sellerOrderDetail__panel">
         <div className="sellerOrderDetail__detailHeader">
           <div>
-            <h1 className="sellerOrderDetail__detailTitle">{order.id}</h1>
-            <p className="sellerOrderDetail__detailMeta">Buyer {order.buyerId}</p>
+            <h1 className="sellerOrderDetail__detailTitle">{order.oid ? `Order ${order.oid}` : 'Order detail'}</h1>
+            <p className="sellerOrderDetail__detailMeta">Customer order</p>
           </div>
           <span className={`${'sellerOrderDetail__status'} ${statusStyles[order.status]}`}>{order.status}</span>
         </div>
@@ -106,8 +107,8 @@ export default function SellerOrderDetail() {
           </h2>
           <div className="sellerOrderDetail__infoGrid">
             <div>
-              <p className="sellerOrderDetail__infoLabel">Buyer ID</p>
-              <p className="sellerOrderDetail__infoValue">{order.buyerId}</p>
+              <p className="sellerOrderDetail__infoLabel">Customer</p>
+              <p className="sellerOrderDetail__infoValue">Buyer</p>
             </div>
             <div>
               <p className="sellerOrderDetail__infoLabel">From</p>
@@ -119,7 +120,7 @@ export default function SellerOrderDetail() {
             </div>
             <div>
               <p className="sellerOrderDetail__infoLabel">Driver</p>
-              <p className="sellerOrderDetail__infoValue">{order.driverId || 'Unassigned'}</p>
+              <p className="sellerOrderDetail__infoValue">{order.driverId ? 'Assigned' : 'Unassigned'}</p>
             </div>
           </div>
         </section>

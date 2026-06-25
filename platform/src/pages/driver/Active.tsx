@@ -78,8 +78,8 @@ export default function DriverActive() {
       {activeTasks.map((task) => (
         <section key={task.id} className="driverActive__panel">
           <header className="driverActive__style2">
-            <h2 className="driverActive__sectionTitle2">{task.id}</h2>
-            <p className="driverActive__mutedText">{task.orderId}</p>
+            <h2 className="driverActive__sectionTitle2">{task.orderLabel}</h2>
+            <p className="driverActive__mutedText">{task.customer}</p>
           </header>
 
           <section className="driverActive__section">

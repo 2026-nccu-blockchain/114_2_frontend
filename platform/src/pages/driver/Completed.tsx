@@ -30,8 +30,8 @@ export default function DriverCompleted() {
             <article key={task.id} className="driverCompleted__card">
               <div className="driverCompleted__cardTop">
                 <div>
-                  <p className="driverCompleted__cardTitle">{task.id}</p>
-                  <p className="driverCompleted__cardMeta">{task.orderId}</p>
+                  <p className="driverCompleted__cardTitle">{task.orderLabel}</p>
+                  <p className="driverCompleted__cardMeta">{task.customer}</p>
                 </div>
                 <span className="driverCompleted__badge">Arrived</span>
               </div>

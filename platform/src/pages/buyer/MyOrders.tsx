@@ -34,7 +34,7 @@ export default function BuyerOrders() {
               <div>
                 <div className="buyerMyOrders__style">
                   <h3 className="buyerMyOrders__style2">
-                    Order #{order.id}
+                    {order.oid ? `Order ${order.oid}` : 'Order'}
                   </h3>
                   <span className="buyerMyOrders__style3">
                     {order.status}

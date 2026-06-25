@@ -2,26 +2,24 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader2, Search } from 'lucide-react';
 import { useProduct } from '@/hooks/useProduct';
-import { useAuthStore } from '@/store/authStore';
 import type { ProductItem } from '@/services/productService';
 import '@/styles/pages/buyer/Products.css';
 
 export default function BuyerProducts() {
-  const { token } = useAuthStore();
-  const { getMyProducts, loading, error } = useProduct();
+  const { getPublicProducts, loading, error } = useProduct();
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     const loadProducts = async () => {
-      const data = await getMyProducts();
+      const data = await getPublicProducts();
       if (!data) return;
       setProducts(data.filter((product) => product.status));
     };
 
     void loadProducts();
-  }, [getMyProducts]);
+  }, [getPublicProducts]);
 
   const visibleProducts = useMemo(
     () => products.filter((product) => product.status),
@@ -35,8 +33,6 @@ export default function BuyerProducts() {
     const matchesCategory = selectedCategory === 'All' || product.type === selectedCategory;
     return matchesSearch && matchesCategory;
   });
-
-  const getProductPath = (pid: string) => token ? `/products/${pid}` : '/login';
 
   return (
     <div className="buyerProducts__page">
@@ -94,7 +90,7 @@ export default function BuyerProducts() {
               {filteredProducts.map((product) => (
                 <Link
                   key={product.pid}
-                  to={getProductPath(product.pid)} 
+                  to={`/products/${product.pid}`} 
                   className="group buyerProducts__panel2"
                 >
                   {/* 商品圖片顯示邏輯 */}

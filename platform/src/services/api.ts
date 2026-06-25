@@ -27,8 +27,22 @@ const buildUrl = (url: string) => {
 const buildError = async (response: Response): Promise<ApiError> => {
   try {
     const data = await response.json();
+    const validationMessage = Array.isArray(data?.detail)
+      ? data.detail
+          .map((issue: { loc?: Array<string | number>; msg?: string }) => {
+            const field = issue.loc?.filter((part) => part !== 'body').join('.');
+            return [field, issue.msg].filter(Boolean).join(': ');
+          })
+          .join('; ')
+      : typeof data?.detail === 'string'
+        ? data.detail
+        : undefined;
+    const fallbackMessage = data?.message || data?.desc || validationMessage || response.statusText;
+
     return {
-      message: getApiStatusMessage(data?.status_code, data?.message || response.statusText),
+      message: data?.status_code
+        ? getApiStatusMessage(data.status_code, fallbackMessage)
+        : fallbackMessage,
       status: response.status,
       statusCode: data?.status_code,
     };

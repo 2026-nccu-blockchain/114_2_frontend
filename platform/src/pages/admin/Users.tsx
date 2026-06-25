@@ -54,7 +54,7 @@ export default function AdminUsers() {
                 <tr key={user.id}>
                   <td className={styles.td}>
                     <p className={styles.name}>{user.name}</p>
-                    <p>{user.id}</p>
+                    <p>{user.role}</p>
                   </td>
                   <td className={styles.td}>{user.email}</td>
                   <td className={styles.td}>

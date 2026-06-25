@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from '
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useProduct } from '@/hooks/useProduct';
-import { useProfile } from '@/hooks/useProfile';
 import { useUpload } from '@/hooks/useUpload';
 import type { ProductItem } from '@/services/productService';
 import '@/styles/pages/seller/EditProduct.css';
@@ -40,11 +39,9 @@ export default function SellerEditProduct() {
     loading: isSubmitting,
     updateProductType,
   } = useProduct();
-  const { fetchProfile } = useProfile();
   const { upload, uploading } = useUpload();
 
   const [isLoadingProduct, setIsLoadingProduct] = useState(true);
-  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [productUrl, setProductUrl] = useState('');
@@ -56,9 +53,6 @@ export default function SellerEditProduct() {
       if (!productId) return;
 
       setIsLoadingProduct(true);
-      const profile = await fetchProfile();
-      if (profile) setEmail(profile.email);
-
       const data = await getProduct(productId);
       if (!data || data.length === 0) {
         setIsLoadingProduct(false);
@@ -85,7 +79,7 @@ export default function SellerEditProduct() {
     };
 
     void loadProduct();
-  }, [fetchProfile, getProduct, productId]);
+  }, [getProduct, productId]);
 
   const accessedAt = useMemo(
     () => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date()),
@@ -97,7 +91,7 @@ export default function SellerEditProduct() {
     if (!file) return;
 
     setPhotoName(file.name);
-    const url = await upload(file, email);
+    const url = await upload(file);
     if (!url) return;
     setProductUrl(url);
   };
@@ -182,7 +176,7 @@ export default function SellerEditProduct() {
 
       <section className="sellerEditProduct__panel">
         <p className="sellerEditProduct__eyebrow">Edit Product</p>
-        <h1 className="sellerEditProduct__title">Product #{productId}</h1>
+        <h1 className="sellerEditProduct__title">Edit product</h1>
 
         <form id="edit-product-form" className="sellerEditProduct__form" onSubmit={handleSubmit}>
           <div className="sellerEditProduct__field">

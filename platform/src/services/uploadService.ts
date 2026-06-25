@@ -14,7 +14,7 @@ export const uploadService = {
    * @param email 當前登入使用者的帳號（嚴格對齊規格書 Essential 要求）
    * @param token 權限憑證
    */
-  uploadImage: (file: File, _email: string, token: string) => {
+  uploadImage: (file: File, token: string) => {
     const formData = new FormData();
     formData.append('image', file);
 

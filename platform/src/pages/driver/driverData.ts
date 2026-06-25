@@ -10,6 +10,7 @@ export interface DriverTaskItem {
 export interface DriverTask {
   id: string;
   orderId: string;
+  orderLabel: string;
   customer: string;
   createdAt: string;
   from: string;
@@ -46,7 +47,8 @@ const saveStoredIds = (key: string, ids: string[]) => {
 export const mapOrderToDriverTask = (order: Order): DriverTask => ({
   id: order.id,
   orderId: order.id,
-  customer: `Buyer ${order.buyerId}`,
+  orderLabel: order.oid ? `Order ${order.oid}` : 'Order',
+  customer: 'Customer',
   createdAt: order.createdAt || 'Order time unavailable',
   from: order.fromAddress || 'Pickup address unavailable',
   to: order.toAddress,

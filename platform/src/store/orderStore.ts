@@ -1,6 +1,10 @@
 import { create } from 'zustand';
-import { orderApi } from '@/services';
+import { driverApi, orderApi } from '@/services';
 import { type Order, type OrderStatus } from '@/types';
+
+type FetchOrderOptions = {
+  requireItems?: boolean;
+};
 
 interface OrderState {
   orders: Order[];
@@ -9,7 +13,9 @@ interface OrderState {
   error: string | null;
   createOrder: (toAddress: string) => Promise<Order>;
   fetchMyOrders: () => Promise<Order[]>;
-  fetchOrderById: (id: string) => Promise<Order>;
+  fetchAvailableOrders: () => Promise<Order[]>;
+  fetchOrderById: (id: string, options?: FetchOrderOptions) => Promise<Order>;
+  takeOrder: (id: string) => Promise<Order>;
   updateOrderStatus: (id: string, status: OrderStatus) => Promise<Order>;
   getOrderById: (id: string) => Order | undefined;
 }
@@ -59,11 +65,24 @@ export const useOrderStore = create<OrderState>((set, get) => ({
     }
   },
 
-  fetchOrderById: async (id) => {
+  fetchAvailableOrders: async () => {
     set({ isLoading: true, error: null });
 
     try {
-      const order = await orderApi.getOrder(id);
+      const orders = await driverApi.getAvailableOrders();
+      set({ orders, isLoading: false });
+      return orders;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to load available orders'), isLoading: false });
+      throw error;
+    }
+  },
+
+  fetchOrderById: async (id, options = {}) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const order = await orderApi.getOrder(id, options);
       set((state) => ({
         selectedOrder: order,
         orders: state.orders.some((currentOrder) => currentOrder.id === id)
@@ -74,6 +93,23 @@ export const useOrderStore = create<OrderState>((set, get) => ({
       return order;
     } catch (error) {
       set({ error: getErrorMessage(error, 'Failed to load order'), isLoading: false });
+      throw error;
+    }
+  },
+
+  takeOrder: async (id) => {
+    set({ isLoading: true, error: null });
+
+    try {
+      const order = await driverApi.takeOrder(id);
+      set((state) => ({
+        selectedOrder: order,
+        orders: state.orders.filter((currentOrder) => currentOrder.id !== id),
+        isLoading: false,
+      }));
+      return order;
+    } catch (error) {
+      set({ error: getErrorMessage(error, 'Failed to take order'), isLoading: false });
       throw error;
     }
   },
