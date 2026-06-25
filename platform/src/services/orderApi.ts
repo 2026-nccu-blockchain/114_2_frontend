@@ -1,7 +1,8 @@
 import { apiRequest } from '@/services/api';
-import { mapOrderDetailResponseToOrder, mapOrderDtoToOrder } from '@/services/orderMapper';
+import { mapMyOrdersResponseToOrders, mapOrderDetailResponseToOrder, mapOrderDtoToOrder } from '@/services/orderMapper';
 import type {
   CreateOrderRequest,
+  MyOrdersResponse,
   Order,
   OrderDetailResponse,
   OrderResponse,
@@ -22,8 +23,8 @@ export const createOrder = async (toAddress: string): Promise<Order> => {
 };
 
 export const getMyOrders = async (): Promise<Order[]> => {
-  const { data } = await apiRequest<OrderResponse>('/orders/me');
-  return (data.order ?? []).map((order) => mapOrderDtoToOrder(order, data.response_datetime));
+  const { data } = await apiRequest<MyOrdersResponse>('/orders/me');
+  return mapMyOrdersResponseToOrders(data);
 };
 
 export const getOrder = async (orderId: string): Promise<Order> => {

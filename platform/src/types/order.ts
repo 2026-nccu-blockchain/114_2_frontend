@@ -13,6 +13,7 @@ export interface OrderProductDto {
 
 export interface OrderDto {
   order_id: string;
+  oid?: string;
   buyer_id: string;
   seller_id: string;
   driver_id?: string;
@@ -27,6 +28,20 @@ export interface OrderResponse {
   status_code: string;
   message: string;
   response_datetime: string;
+  order?: OrderDto[];
+}
+
+export interface MyOrdersResponse {
+  status_code: string;
+  message: string;
+  response_datetime: string;
+  ordered_order?: OrderDto[];
+  success_order?: OrderDto[];
+  packed_order?: OrderDto[];
+  deliver_order?: OrderDto[];
+  arrived_order?: OrderDto[];
+  refund_order?: OrderDto[];
+  fail_order?: OrderDto[];
   order?: OrderDto[];
 }
 
@@ -55,6 +70,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string;
+  oid?: string;
   buyerId: string;
   sellerId: string;
   driverId?: string;
