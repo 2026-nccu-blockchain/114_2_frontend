@@ -4,7 +4,6 @@ import { Loader2, Search } from 'lucide-react';
 import { useProduct } from '@/hooks/useProduct';
 import { useAuthStore } from '@/store/authStore';
 import type { ProductItem } from '@/services/productService';
-import { mockProducts } from '@/mock/products';
 import '@/styles/pages/buyer/Products.css';
 
 export default function BuyerProducts() {
@@ -15,10 +14,6 @@ export default function BuyerProducts() {
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    if (!token) {
-      return;
-    }
-
     const loadProducts = async () => {
       const data = await getMyProducts();
       if (!data) return;
@@ -26,11 +21,11 @@ export default function BuyerProducts() {
     };
 
     void loadProducts();
-  }, [getMyProducts, token]);
-//為登入時可以看到商品
+  }, [getMyProducts]);
+
   const visibleProducts = useMemo(
-    () => (token ? products : mockProducts).filter((product) => product.status),
-    [products, token],
+    () => products.filter((product) => product.status),
+    [products],
   );
 
   const categories = useMemo(() => ['All', ...new Set(visibleProducts.map(p => p.type))], [visibleProducts]);
@@ -86,11 +81,11 @@ export default function BuyerProducts() {
 
         {/* 商品卡片網格 */}
         <div className="buyerProducts__style8">
-          {token && loading && products.length === 0 ? (
+          {loading && products.length === 0 ? (
             <div className="buyerProducts__style9">
               <Loader2 className="animate-spin" size={24} />
             </div>
-          ) : token && error && products.length === 0 ? (
+          ) : error && products.length === 0 ? (
             <div className="buyerProducts__style9">{error}</div>
           ) : filteredProducts.length === 0 ? (
             <div className="buyerProducts__style9">No products found.</div>
@@ -102,11 +97,20 @@ export default function BuyerProducts() {
                   to={getProductPath(product.pid)} 
                   className="group buyerProducts__panel2"
                 >
-                  {/* 商品圖片 */}
-                  <div className="buyerProducts__style11">
-                    <div className="buyerProducts__style12">
-                      Product
-                    </div>
+                  {/* 商品圖片顯示邏輯 */}
+                  <div className="buyerProducts__style11" style={{ overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {/* 判斷有沒有圖片網址，有就顯示圖片，沒有就顯示預設文字 */}
+                    {product.product_url ? (
+                      <img 
+                        src={product.product_url} 
+                        alt={product.name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div className="buyerProducts__style12">
+                        Product
+                      </div>
+                    )}
                   </div>
 
                   {/* 商品資訊 */}

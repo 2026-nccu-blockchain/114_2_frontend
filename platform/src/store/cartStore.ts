@@ -32,14 +32,28 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const item = await cartApi.addCartItem(product.uuid, quantity);
-      set((state) => ({
-        items: state.items.some((currentItem) => currentItem.cartId === item.cartId)
-          ? state.items.map((currentItem) => (currentItem.cartId === item.cartId ? item : currentItem))
-          : [...state.items.filter((currentItem) => currentItem.uuid !== item.uuid), item],
-        isLoading: false,
-      }));
-      return item;
+      const state = get();
+      const existingItem = state.items.find((item) => item.uuid === product.uuid);
+
+      if (existingItem && existingItem.cartId) {
+        const newQuantity = Number(existingItem.quantity) + Number(quantity);
+        await cartApi.updateCartItem(existingItem.cartId, newQuantity);
+
+        set((state) => ({
+          items: state.items.map((item) => 
+            item.cartId === existingItem.cartId 
+              ? { ...item, quantity: newQuantity } 
+              : item
+          ),
+          isLoading: false,
+        }));
+        void get().fetchCart(); 
+        return existingItem; 
+      } else {
+        const item = await cartApi.addCartItem(product.uuid, quantity);
+        await get().fetchCart();
+        return item;
+      }
     } catch (error) {
       set({ error: getErrorMessage(error, 'Failed to add item to cart'), isLoading: false });
       throw error;
@@ -65,12 +79,18 @@ export const useCartStore = create<CartState>((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const item = await cartApi.updateCartItem(cartId, quantity);
+      await cartApi.updateCartItem(cartId, quantity);
       set((state) => ({
-        items: state.items.map((currentItem) => (currentItem.cartId === cartId ? item : currentItem)),
+        items: state.items.map((item) => 
+          item.cartId === cartId 
+            ? { ...item, quantity: Number(quantity) } 
+            : item
+        ),
         isLoading: false,
       }));
-      return item;
+      const updatedItem = get().items.find(item => item.cartId === cartId);
+      return updatedItem as CartItem;
+      
     } catch (error) {
       set({ error: getErrorMessage(error, 'Failed to update cart item'), isLoading: false });
       throw error;
@@ -104,6 +124,10 @@ export const useCartStore = create<CartState>((set, get) => ({
   },
 
   getTotalPrice: () => {
-    return get().items.reduce((total, item) => total + item.price * item.quantity, 0);
+    return get().items.reduce((total, item) => {
+      const price = Number(item.price) || 0;
+      const quantity = Number(item.quantity) || 0;
+      return total + (price * quantity);
+    }, 0);
   },
 }));

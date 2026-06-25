@@ -47,7 +47,7 @@ export default function Profile() {
       
     };
     loadData();
-  }, [role, fetchProfile]);
+  }, [role]);
   
    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -170,12 +170,11 @@ export default function Profile() {
 
           <div>
             <label className="sharedProfile__style6">
-              Avatar URL <span className="sharedProfile__required">*</span>
+              Avatar URL <span className="sharedProfile__required"></span>
             </label>
             <div className="sharedProfile__formGrid sharedProfile__formGrid--2cols">
               <input
                 type="text"
-                required
                 placeholder="https://example.com/image.jpg"
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
