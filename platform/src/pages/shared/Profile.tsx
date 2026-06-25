@@ -362,7 +362,7 @@ export default function Profile() {
           <div className="sharedProfile__dangerZone">
             <h3 className="sharedProfile__dangerTitle">Danger Zone</h3>
             <p className="sharedProfile__dangerDesc">
-              帳號刪除後將無法復原，請謹慎操作。
+              Once deleted, your account cannot be restored. Please proceed carefully.
             </p>
             <button
               onClick={() => deleteAccount(userId)}
