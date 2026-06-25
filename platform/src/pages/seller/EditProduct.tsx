@@ -176,7 +176,7 @@ export default function SellerEditProduct() {
 
       <section className="sellerEditProduct__panel">
         <p className="sellerEditProduct__eyebrow">Edit Product</p>
-        <h1 className="sellerEditProduct__title">Product #{productId}</h1>
+        <h1 className="sellerEditProduct__title">Edit product</h1>
 
         <form id="edit-product-form" className="sellerEditProduct__form" onSubmit={handleSubmit}>
           <div className="sellerEditProduct__field">

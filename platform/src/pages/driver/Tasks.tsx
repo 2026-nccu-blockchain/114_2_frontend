@@ -35,8 +35,8 @@ export default function DriverTasks() {
             <Link key={task.id} to={`/tasks/${task.id}`} className="driverTasks__card">
               <div className="driverTasks__cardTop">
                 <div>
-                  <p className="driverTasks__cardTitle">{task.id}</p>
-                  <p className="driverTasks__cardMeta">{task.orderId}</p>
+                  <p className="driverTasks__cardTitle">{task.orderLabel}</p>
+                  <p className="driverTasks__cardMeta">{task.customer}</p>
                 </div>
                 <span className="driverTasks__badge">{task.distance}</span>
               </div>

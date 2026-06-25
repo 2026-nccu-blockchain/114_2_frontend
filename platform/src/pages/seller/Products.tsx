@@ -48,8 +48,8 @@ function ProductCard({
             <p className="sellerProducts__metaValue">{product.stock}</p>
           </div>
           <div>
-            <p className="sellerProducts__metaLabel">Product ID</p>
-            <p className="sellerProducts__metaValue sellerProducts__pidValue">{product.pid}</p>
+            <p className="sellerProducts__metaLabel">Variant</p>
+            <p className="sellerProducts__metaValue sellerProducts__pidValue">{product.type}</p>
           </div>
         </div>
 

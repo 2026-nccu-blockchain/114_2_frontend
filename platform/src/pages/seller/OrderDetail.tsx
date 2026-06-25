@@ -69,8 +69,8 @@ export default function SellerOrderDetail() {
       <section className="sellerOrderDetail__panel">
         <div className="sellerOrderDetail__detailHeader">
           <div>
-            <h1 className="sellerOrderDetail__detailTitle">{order.id}</h1>
-            <p className="sellerOrderDetail__detailMeta">Buyer {order.buyerId}</p>
+            <h1 className="sellerOrderDetail__detailTitle">{order.oid ? `Order ${order.oid}` : 'Order detail'}</h1>
+            <p className="sellerOrderDetail__detailMeta">Customer order</p>
           </div>
           <span className={`${'sellerOrderDetail__status'} ${statusStyles[order.status]}`}>{order.status}</span>
         </div>
@@ -106,8 +106,8 @@ export default function SellerOrderDetail() {
           </h2>
           <div className="sellerOrderDetail__infoGrid">
             <div>
-              <p className="sellerOrderDetail__infoLabel">Buyer ID</p>
-              <p className="sellerOrderDetail__infoValue">{order.buyerId}</p>
+              <p className="sellerOrderDetail__infoLabel">Customer</p>
+              <p className="sellerOrderDetail__infoValue">Buyer</p>
             </div>
             <div>
               <p className="sellerOrderDetail__infoLabel">From</p>
@@ -119,7 +119,7 @@ export default function SellerOrderDetail() {
             </div>
             <div>
               <p className="sellerOrderDetail__infoLabel">Driver</p>
-              <p className="sellerOrderDetail__infoValue">{order.driverId || 'Unassigned'}</p>
+              <p className="sellerOrderDetail__infoValue">{order.driverId ? 'Assigned' : 'Unassigned'}</p>
             </div>
           </div>
         </section>

@@ -65,8 +65,8 @@ export default function DriverTaskDetail() {
       <section className="driverTaskDetail__panel">
         <div className="driverTaskDetail__detailHeader">
           <div>
-            <h1 className="driverTaskDetail__detailTitle">{task.id}</h1>
-            <p className="driverTaskDetail__detailMeta">{task.orderId}</p>
+            <h1 className="driverTaskDetail__detailTitle">{task.orderLabel}</h1>
+            <p className="driverTaskDetail__detailMeta">{task.customer}</p>
           </div>
           <span className="driverTaskDetail__badge">{task.distance}</span>
         </div>

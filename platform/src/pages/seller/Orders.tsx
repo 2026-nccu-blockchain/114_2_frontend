@@ -55,8 +55,8 @@ export default function SellerOrders() {
             <Link key={order.id} to={`/orders/${order.id}`} className="sellerOrders__orderCard">
               <div className="sellerOrders__orderTop">
                 <div>
-                  <p className="sellerOrders__orderId">{order.id}</p>
-                  <p className="sellerOrders__orderMeta">Buyer {order.buyerId}</p>
+                  <p className="sellerOrders__orderId">{order.oid ? `Order ${order.oid}` : 'Order'}</p>
+                  <p className="sellerOrders__orderMeta">Customer order</p>
                 </div>
                 <span className={`${'sellerOrders__status'} ${statusStyles[order.status]}`}>{order.status}</span>
               </div>

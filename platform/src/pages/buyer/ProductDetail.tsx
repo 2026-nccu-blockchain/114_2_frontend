@@ -165,11 +165,6 @@ export default function ProductDetail() {
           </div>
 
           <div className="buyerProductDetail__style12">
-            <div className="buyerProductDetail__style13">
-               <h3 className="buyerProductDetail__style14">Seller ID</h3>
-               <p className="buyerProductDetail__style15">{selectedVariant.seller_id}</p>
-            </div>
-
             <div className="buyerProductDetail__style16">
               <div className="buyerProductDetail__icon2">
                 <button onClick={decreaseQuantity} disabled={quantity <= 1} className="buyerProductDetail__style17">

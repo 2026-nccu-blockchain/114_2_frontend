@@ -62,7 +62,7 @@ export default function BuyerOrderDetail() {
       {/* 頂部標題與狀態 */}
       <div className="buyerOrderDetail__style3">
         <div>
-          <h1 className="buyerOrderDetail__title">Order #{order.id}</h1>
+          <h1 className="buyerOrderDetail__title">{order.oid ? `Order ${order.oid}` : 'Order detail'}</h1>
           <p className="buyerOrderDetail__style4">{order.createdAt || 'Order time unavailable'}</p>
         </div>
         <span className="buyerOrderDetail__style5">
@@ -95,11 +95,11 @@ export default function BuyerOrderDetail() {
         <div className="buyerOrderDetail__style15">
           <div>
             <p className="buyerOrderDetail__style11">Recipient</p>
-            <p className="buyerOrderDetail__style16">{order.buyerId}</p>
+            <p className="buyerOrderDetail__style16">You</p>
           </div>
           <div>
             <p className="buyerOrderDetail__style11">Seller</p>
-            <p className="buyerOrderDetail__style16">{order.sellerId}</p>
+            <p className="buyerOrderDetail__style16">Assigned seller</p>
           </div>
         </div>
         <div className="buyerOrderDetail__page2">
