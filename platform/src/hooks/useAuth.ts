@@ -260,7 +260,7 @@ export const useAuth = () => {
     }
   };
 
-  const resetPassword = async (password: string) => {
+  const resetPassword = async (oldPassword: string, newPassword: string) => {
     setLoading(true);
     setError(null);
 
@@ -271,7 +271,10 @@ export const useAuth = () => {
     }
 
     try {
-      const response = await authService.resetPassword({ password }, token);
+      const response = await authService.resetPassword({
+        old_password: oldPassword,
+        new_password: newPassword,
+      }, token);
       const responsePayload = response.data;
       const errorMessage = handleStatusCode(responsePayload.status_code, responsePayload.message);
 

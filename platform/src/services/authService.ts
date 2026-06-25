@@ -20,7 +20,8 @@ export interface ForgotPasswordRequest {
 }
 
 export interface ResetPasswordRequest {
-  password: string;
+  old_password: string;
+  new_password: string;
 }
 
 export const authService = {

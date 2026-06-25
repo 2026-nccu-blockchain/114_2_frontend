@@ -20,6 +20,7 @@ export default function Profile() {
   const [companyAddress, setCompanyAddress] = useState('');
   const [companyPhone, setCompanyPhone] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordLocalError, setPasswordLocalError] = useState('');
@@ -91,6 +92,11 @@ export default function Profile() {
     e.preventDefault();
     setPasswordLocalError('');
 
+    if (!oldPassword) {
+      setPasswordLocalError('Please enter your current password.');
+      return;
+    }
+
     const validationError = getPasswordValidationError(newPassword);
     if (validationError) {
       setPasswordLocalError(validationError);
@@ -102,8 +108,9 @@ export default function Profile() {
       return;
     }
 
-    const updated = await resetPassword(newPassword);
+    const updated = await resetPassword(oldPassword, newPassword);
     if (updated) {
+      setOldPassword('');
       setNewPassword('');
       setConfirmPassword('');
     }
@@ -296,6 +303,20 @@ export default function Profile() {
           )}
 
           <form onSubmit={handlePasswordSubmit} className="sharedProfile__passwordForm">
+            <div>
+              <label className="sharedProfile__style6">
+                Current Password <span className="sharedProfile__required">*</span>
+              </label>
+              <input
+                type="password"
+                required
+                placeholder="Enter your current password"
+                value={oldPassword}
+                onChange={(event) => setOldPassword(event.target.value)}
+                className="sharedProfile__input"
+              />
+            </div>
+
             <div className="sharedProfile__formGrid sharedProfile__formGrid--2cols">
               <div>
                 <label className="sharedProfile__style6">
