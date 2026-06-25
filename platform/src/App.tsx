@@ -57,6 +57,11 @@ function HomePage() {
         return;
       }
 
+      if (role) {
+        setChecking(false);
+        return;
+      }
+
       setChecking(true);
 
       try {
@@ -84,7 +89,7 @@ function HomePage() {
     return () => {
       isMounted = false;
     };
-  }, [logout, setRole, token]);
+  }, [logout, role, setRole, token]);
 
   if (checking) return null;
 
@@ -92,6 +97,20 @@ function HomePage() {
   if (role === 'driver') return <Tasks />;
   if (role === 'admin') return <AdminDashboard />;
   return <BuyerProducts />;
+}
+
+function OrdersPage() {
+  const role = useAuthStore((state) => state.role);
+
+  if (role === 'seller') return <SellerOrders />;
+  return <BuyerOrders />;
+}
+
+function OrderDetailPage() {
+  const role = useAuthStore((state) => state.role);
+
+  if (role === 'seller') return <SellerOrderDetail />;
+  return <BuyerOrderDetail />;
 }
 
 function AppRoutes() {
@@ -123,9 +142,14 @@ function AppRoutes() {
       <Route element={<AuthGuard allowedRoles={['buyer']} />}>
         <Route path="/" element={<DashboardLayout />}>
           <Route path="cart" element={<BuyerCart />} />
-          <Route path="orders" element={<BuyerOrders />} />
           <Route path="checkout" element={<BuyerCheckout />} />
-          <Route path="orders/:id" element={<BuyerOrderDetail />} />
+        </Route>
+      </Route>
+
+      <Route element={<AuthGuard allowedRoles={['buyer', 'seller']} />}>
+        <Route path="/" element={<DashboardLayout />}>
+          <Route path="orders" element={<OrdersPage />} />
+          <Route path="orders/:id" element={<OrderDetailPage />} />
         </Route>
       </Route>
 
@@ -134,8 +158,6 @@ function AppRoutes() {
           <Route path="products" element={<SellerProducts />} />
           <Route path="products/:productId/edit" element={<SellerEditProduct />} />
           <Route path="add-product" element={<SellerAddProduct />} />
-          <Route path="orders" element={<SellerOrders />} />
-          <Route path="orders/:orderId" element={<SellerOrderDetail />} />
         </Route>
       </Route>
 

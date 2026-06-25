@@ -6,7 +6,8 @@ import { statusStyles } from '@/constants/order';
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/seller/OrderDetail.css';
 export default function SellerOrderDetail() {
-  const { orderId } = useParams();
+  const { orderId, id } = useParams();
+  const currentOrderId = orderId ?? id;
   const {
     selectedOrder,
     isLoading,
@@ -15,20 +16,20 @@ export default function SellerOrderDetail() {
     getOrderById,
     updateOrderStatus,
   } = useOrderStore();
-  const cachedOrder = getOrderById(orderId || '');
-  const order = selectedOrder?.id === orderId ? selectedOrder : cachedOrder;
+  const cachedOrder = getOrderById(currentOrderId || '');
+  const order = selectedOrder?.id === currentOrderId ? selectedOrder : cachedOrder;
 
   useEffect(() => {
-    if (orderId) {
-      void fetchOrderById(orderId, { requireItems: true });
+    if (currentOrderId) {
+      void fetchOrderById(currentOrderId, { requireItems: true });
     }
-  }, [fetchOrderById, orderId]);
+  }, [fetchOrderById, currentOrderId]);
 
   const handleUpdateStatus = async (status: 'packed' | 'fail') => {
-    if (!orderId) return;
+    if (!currentOrderId) return;
 
     try {
-      await updateOrderStatus(orderId, status);
+      await updateOrderStatus(currentOrderId, status);
       toast.success('Order status updated.');
     } catch {
       toast.error('Failed to update order status.');

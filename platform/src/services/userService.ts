@@ -60,7 +60,7 @@ export const userService = {
     return response;
   },
   deleteBuyer: (buyerId: string, token: string) => {
-    return apiRequest<BaseResponse>(`/api/v2/buyer/${buyerId}`, {
+    return apiRequest<BaseResponse>(`/buyer/${buyerId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -79,7 +79,7 @@ export const userService = {
     return response;
   },
   deleteSeller: (sellerId: string, token: string) => {
-    return apiRequest<BaseResponse>(`/api/v2/seller/${sellerId}`, {
+    return apiRequest<BaseResponse>(`/seller/${sellerId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
@@ -98,7 +98,7 @@ export const userService = {
     return response;
   },
   deleteDriver: (driverId: string, token: string) => {
-    return apiRequest<BaseResponse>(`/api/v2/driver/${driverId}`, {
+    return apiRequest<BaseResponse>(`/driver/${driverId}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });

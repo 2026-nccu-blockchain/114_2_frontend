@@ -7,7 +7,7 @@ import '@/styles/pages/buyer/Cart.css';
 
 export default function BuyerCart() {
   const navigate = useNavigate();
-  const { items, removeItem, updateQuantity, clearCart, fetchCart, getTotalPrice, isLoading, error } = useCartStore();
+  const { items, removeItem, updateQuantity, clearCart, fetchCart, isLoading, error } = useCartStore();
 
   useEffect(() => {
     void fetchCart();
@@ -42,6 +42,8 @@ export default function BuyerCart() {
       toast.error('Failed to clear cart.');
     }
   };
+  const totalItemsCount = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+  const grandTotal = items.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.quantity) || 0)), 0);
 
   if (isLoading && items.length === 0) {
     return (
@@ -169,10 +171,13 @@ export default function BuyerCart() {
       {/* 結帳總計區塊 */}
       <div className="buyerCart__panel2">
         <div className="buyerCart__style3">
-          <span className="buyerCart__style16">Subtotal ({items.length} items)</span>
-          <span className="buyerCart__title2">${getTotalPrice().toFixed(2)}</span>
+          <span className="buyerCart__style16">
+            Subtotal ({totalItemsCount} items)
+          </span>
+          <span className="buyerCart__title2">
+            ${grandTotal.toFixed(2)}
+          </span>
         </div>
-        
         <button
           onClick={() => navigate('/checkout')}
           className="buyerCart__primaryButton2">
@@ -182,3 +187,4 @@ export default function BuyerCart() {
     </div>
   );
 }
+

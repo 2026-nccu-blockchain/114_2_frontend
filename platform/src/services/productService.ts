@@ -124,7 +124,7 @@ export const productService = {
   },
   //賣家增加商品種類
   addProductType: (pid: string, data: AddTypePayload, token: string) => {
-    return apiRequest<ProductActionResponse>(`/api/v2/products/type/${pid}`, {
+    return apiRequest<ProductActionResponse>(`/products/type/${pid}`, {
       method: 'POST',
       body: data,
       headers: { 'Authorization': `Bearer ${token}` },
@@ -132,7 +132,7 @@ export const productService = {
   },
   //賣家編輯商品
   editProductBase: (pid: string, name: string, token: string) => {
-    return apiRequest<ProductBaseResponse>(`/api/v2/products/product/${pid}`, {
+    return apiRequest<ProductBaseResponse>(`/products/product/${pid}`, {
       method: 'PUT',
       body: { name },
       headers: { 'Authorization': `Bearer ${token}` },
@@ -148,7 +148,7 @@ export const productService = {
   },
   //賣家刪除商品
   deleteProduct: (pid: string, token: string) => {
-    return apiRequest<ProductBaseResponse>(`/api/v2/products/product/${pid}`, {
+    return apiRequest<ProductBaseResponse>(`/products/product/${pid}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` },
     });
@@ -162,7 +162,7 @@ export const productService = {
   },
   //查看商品
   getProduct: (pid: string, token?: string) => {
-    return apiRequest<ProductSingleResponse>(`/api/v2/products/product/${pid}`, {
+    return apiRequest<ProductSingleResponse>(`/products/product/${pid}`, {
       method: 'GET',
       auth: Boolean(token),
       headers: token ? { 'Authorization': `Bearer ${token}` } : undefined,

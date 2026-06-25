@@ -20,8 +20,9 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuth: (token, role) => {
     const cookieOptions: Cookies.CookieAttributes = {
       expires: 7,
-      secure: true,
+      secure: window.location.protocol === 'https:',
       sameSite: 'strict',
+      path: '/',
     }
 
     Cookies.set('token', token, cookieOptions)

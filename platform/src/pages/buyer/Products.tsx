@@ -93,11 +93,20 @@ export default function BuyerProducts() {
                   to={`/products/${product.pid}`} 
                   className="group buyerProducts__panel2"
                 >
-                  {/* 商品圖片 */}
-                  <div className="buyerProducts__style11">
-                    <div className="buyerProducts__style12">
-                      Product
-                    </div>
+                  {/* 商品圖片顯示邏輯 */}
+                  <div className="buyerProducts__style11" style={{ overflow: 'hidden', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {/* 判斷有沒有圖片網址，有就顯示圖片，沒有就顯示預設文字 */}
+                    {product.product_url ? (
+                      <img 
+                        src={product.product_url} 
+                        alt={product.name} 
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    ) : (
+                      <div className="buyerProducts__style12">
+                        Product
+                      </div>
+                    )}
                   </div>
 
                   {/* 商品資訊 */}

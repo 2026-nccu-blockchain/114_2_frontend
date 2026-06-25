@@ -102,7 +102,7 @@ export const authService = {
   },
   checkRole: (token: string) => {
     return apiRequest<CheckRoleResponse>('/auth/check', {
-      method: 'POST',
+      method: 'GET',
       headers: { 'Authorization': `Bearer ${token}` },
     });
   },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import { authService } from '@/services/authService';
 import { useAuthStore, type UserRole } from '@/store/authStore'; 
 
@@ -16,29 +16,34 @@ const loginPathByRole: Record<Exclude<UserRole, null>, string> = {
 
 export const AuthGuard = ({ allowedRoles }: AuthGuardProps) => {
   const { token, role, setRole, logout } = useAuthStore();
-  const location = useLocation();
-  const [isChecking, setIsChecking] = useState(true);
-  const [redirectTo, setRedirectTo] = useState<string | null>(null);
+  const [checkFailedRedirectTo, setCheckFailedRedirectTo] = useState<string | null>(null);
   const allowedRolesKey = allowedRoles?.join(',') ?? '';
+  const normalizedAllowedRoles = allowedRolesKey
+    .split(',')
+    .filter(Boolean) as Exclude<UserRole, null>[];
+  const targetRole = normalizedAllowedRoles[0] ?? 'buyer';
+  const roleMismatch = Boolean(
+    token &&
+    role &&
+    normalizedAllowedRoles.length &&
+    !normalizedAllowedRoles.includes(role),
+  );
 
   useEffect(() => {
+    if (!roleMismatch) return;
+
+    logout();
+  }, [logout, roleMismatch]);
+
+  useEffect(() => {
+    if (!token || role) return;
+
     let isMounted = true;
+    const rolesToCheck = allowedRolesKey
+      .split(',')
+      .filter(Boolean) as Exclude<UserRole, null>[];
 
     const checkRole = async () => {
-      setIsChecking(true);
-      setRedirectTo(null);
-
-      const normalizedAllowedRoles = allowedRolesKey
-        .split(',')
-        .filter(Boolean) as Exclude<UserRole, null>[];
-
-      if (!token) {
-        const targetRole = normalizedAllowedRoles[0] ?? 'buyer';
-        setRedirectTo(loginPathByRole[targetRole]);
-        setIsChecking(false);
-        return;
-      }
-
       try {
         const response = await authService.checkRole(token);
         const checkedRole = response.data.role ?? null;
@@ -47,13 +52,13 @@ export const AuthGuard = ({ allowedRoles }: AuthGuardProps) => {
 
         if (response.data.status_code !== '00000' || !checkedRole) {
           logout();
-          setRedirectTo('/');
+          setCheckFailedRedirectTo('/');
           return;
         }
 
-        if (normalizedAllowedRoles.length && !normalizedAllowedRoles.includes(checkedRole)) {
+        if (rolesToCheck.length && !rolesToCheck.includes(checkedRole)) {
           logout();
-          setRedirectTo(loginPathByRole[normalizedAllowedRoles[0]]);
+          setCheckFailedRedirectTo(loginPathByRole[targetRole]);
           return;
         }
 
@@ -61,11 +66,7 @@ export const AuthGuard = ({ allowedRoles }: AuthGuardProps) => {
       } catch {
         if (!isMounted) return;
         logout();
-        setRedirectTo('/');
-      } finally {
-        if (isMounted) {
-          setIsChecking(false);
-        }
+        setCheckFailedRedirectTo('/');
       }
     };
 
@@ -74,14 +75,18 @@ export const AuthGuard = ({ allowedRoles }: AuthGuardProps) => {
     return () => {
       isMounted = false;
     };
-  }, [allowedRolesKey, location.pathname, logout, setRole, token]);
+  }, [allowedRolesKey, logout, role, setRole, targetRole, token]);
 
-  if (isChecking) {
-    return null;
+  if (!token) {
+    return <Navigate to={loginPathByRole[targetRole]} replace />;
   }
 
-  if (redirectTo) {
-    return <Navigate to={redirectTo} replace />;
+  if (checkFailedRedirectTo) {
+    return <Navigate to={checkFailedRedirectTo} replace />;
+  }
+
+  if (roleMismatch) {
+    return <Navigate to={loginPathByRole[targetRole]} replace />;
   }
 
   if (!role) {
