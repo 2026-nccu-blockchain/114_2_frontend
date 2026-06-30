@@ -1,15 +1,11 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getActiveTaskIds, getCompletedTaskIds, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { mapOrderToDriverTask } from '@/pages/driver/driverData';
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/Tasks.css';
 export default function DriverTasks() {
   const { orders, fetchAvailableOrders, isLoading, error } = useOrderStore();
-  const activeTaskIds = getActiveTaskIds();
-  const completedTaskIds = getCompletedTaskIds();
-  const availableTasks = orders
-    .map(mapOrderToDriverTask)
-    .filter((task) => !activeTaskIds.includes(task.id) && !completedTaskIds.includes(task.id));
+  const availableTasks = orders.map(mapOrderToDriverTask);
 
   useEffect(() => {
     void fetchAvailableOrders();

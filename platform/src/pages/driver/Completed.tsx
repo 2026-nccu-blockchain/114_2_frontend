@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { getCompletedTaskIds, mapOrderToDriverTask } from '@/pages/driver/driverData';
+import { mapOrderToDriverTask } from '@/pages/driver/driverData';
 import { useOrderStore } from '@/store/orderStore';
 import '@/styles/pages/driver/Completed.css';
 export default function DriverCompleted() {
   const { orders, fetchMyOrders, isLoading, error } = useOrderStore();
-  const completedTaskIds = getCompletedTaskIds();
   const completedTasks = orders
+    .filter((order) => order.status === 'arrived')
     .map(mapOrderToDriverTask)
-    .filter((task) => completedTaskIds.includes(task.id) || task.distance === 'arrived');
 
   useEffect(() => {
     void fetchMyOrders();

@@ -177,16 +177,9 @@ export default function Profile() {
 
           <div>
             <label className="sharedProfile__style6">
-              Avatar URL <span className="sharedProfile__required"></span>
+              Profile Photo <span className="sharedProfile__required"></span>
             </label>
-            <div className="sharedProfile__formGrid sharedProfile__formGrid--2cols">
-              <input
-                type="text"
-                placeholder="https://example.com/image.jpg"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                className="sharedProfile__input2"
-              />
+            <div>
               <input 
                 type="file"
                 ref={fileInputRef}
@@ -362,7 +355,7 @@ export default function Profile() {
           <div className="sharedProfile__dangerZone">
             <h3 className="sharedProfile__dangerTitle">Danger Zone</h3>
             <p className="sharedProfile__dangerDesc">
-              帳號刪除後將無法復原，請謹慎操作。
+              Once deleted, your account cannot be restored. Please proceed carefully.
             </p>
             <button
               onClick={() => deleteAccount(userId)}
